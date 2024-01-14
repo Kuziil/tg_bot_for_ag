@@ -30,11 +30,26 @@ async def process_start_command(message: Message):
 
 @router.message(Command(commands='help'))
 async def process_help_command(message: Message):
+    """_summary_
+    Данный хэндлер служит для предоставления списка команд и
+    справки по работе с ботом
+    реагирует на /help
+
+    Args:
+        message (Message): _description_
+    """
     await message.answer(LEXICON_COMMANDS_RU[message.text])
 
 
 @router.callback_query(F.data == 'in_the_system')
 async def process_in_the_system_press(callback: CallbackQuery):
+    """_summary_
+    Данный хэндлер реагирует на нажатие кнопки в системе
+    выдает список кнопок ориентации в главном меню для Junior
+
+    Args:
+        callback (CallbackQuery): _description_
+    """
     await callback.message.edit_text(
         text=LEXICON_RU['main_menu_junior'],
         reply_markup=create_menu_keyboard(
