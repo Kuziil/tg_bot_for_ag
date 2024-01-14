@@ -2,8 +2,9 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 
-from lexicon.lexicon_ru import LEXICON_COMMANDS_RU
-from keyboards.kb import create_start_keyboard
+from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
+from keyboards.kb_single_line_horizontally import create_start_keyboard
+from keyboards.kb_single_line_vertically import create_menu_keyboard
 
 router = Router()
 
@@ -35,5 +36,14 @@ async def process_help_command(message: Message):
 @router.callback_query(F.data == 'in_the_system')
 async def process_in_the_system_press(callback: CallbackQuery):
     await callback.message.edit_text(
-        text='Ого'
+        text=LEXICON_RU['main_menu_junior'],
+        reply_markup=create_menu_keyboard(
+            'check_in',
+            'clock_out',
+            'write_a_report',
+            'schedule',
+            'my_money',
+            'model_statistics',
+            'training_materials'
+        )
     )
