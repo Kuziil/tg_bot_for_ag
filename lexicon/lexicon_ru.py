@@ -18,6 +18,7 @@ LEXICON_COMMANDS_DESC_RU: dict[str, str] = {
 
 # текст для кнопок
 LEXICON_BUTTON_RU: dict[str, str] = {
+    'back': 'назад!',
     'not_in_the_system': 'еще не в системе?',
     'in_the_system': 'Уже в системе?',
     'check_in': 'Зайти на смену🕳',
@@ -28,4 +29,26 @@ LEXICON_BUTTON_RU: dict[str, str] = {
     'model_statistics': 'статистика модели🎢',
     'training_materials': 'обучающие материалы📖'
 
+}
+
+LEXICON_MODELS_RU: dict[str, str] = {
+    'Kate': 'Катя',
+    'Tanya': 'Таня'
+}
+
+LEXICON_SCHEDULE_RU: dict[str, str] = {
+    'pre_model': '<<<',
+    'next_model': '>>>',
+    'pre_year': '<<',
+    'next_year': '>>',
+    'pre_month': '<',
+    'next_ahead': '>',
+    'monday': 'Пн',
+    'tuesday': 'Вт',
+    'wednesday': 'Ср',
+    'thursday': 'Чт',
+    'friday': 'Пт',
+    'saturday': 'Сб',
+    'sunday': 'Вс',
+    'today': 'Сегодня'
 }
