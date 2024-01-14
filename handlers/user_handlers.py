@@ -2,9 +2,12 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 
+
 from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
 from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
+
+from aiogram_calendar import SimpleCalendar, get_user_locale
 
 router = Router()
 
@@ -61,4 +64,12 @@ async def process_in_the_system_press(callback: CallbackQuery):
             'model_statistics',
             'training_materials'
         )
+    )
+
+
+@router.callback_query(F.data == 'schedule')
+async def nav_cal_handler(callback: CallbackQuery):
+    await callback.message.edit_text(
+        "Please select a date: ",
+        reply_markup=await SimpleCalendar(locale=await get_user_locale(callback.from_user)).start_calendar()
     )
