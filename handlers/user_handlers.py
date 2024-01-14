@@ -10,3 +10,7 @@ router = Router()
 @router.message(Command(commands='start'))
 async def process_start_command(message: Message):
     await message.answer(LEXICON_COMMANDS_RU[message.text])
+
+@router.message(Command(commands='help'))
+async def process_start_command(message: Message):
+    await message.answer(LEXICON_COMMANDS_RU[message.text])
