@@ -1,6 +1,6 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
 from lexicon.lexicon_ru import LEXICON_COMMANDS_RU
 from keyboards.kb import create_start_keyboard
@@ -30,3 +30,10 @@ async def process_start_command(message: Message):
 @router.message(Command(commands='help'))
 async def process_help_command(message: Message):
     await message.answer(LEXICON_COMMANDS_RU[message.text])
+
+
+@router.callback_query(F.data == 'in_the_system')
+async def process_in_the_system_press(callback: CallbackQuery):
+    await callback.message.edit_text(
+        text='Ого'
+    )
