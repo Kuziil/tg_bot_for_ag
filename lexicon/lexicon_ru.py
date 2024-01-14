@@ -14,3 +14,9 @@ LEXICON_COMMANDS_DESC_RU: dict[str, str] = {
     '/start': 'команда start',
     '/help': 'может помогать, но пока не умеет'
 }
+
+# текст для кнопок
+LEXICON_BUTTON_RU: dict[str, str] = {
+    'not_in_the_system': 'еще не в системе?',
+    'in_the_system': 'Уже в системе?'
+}
