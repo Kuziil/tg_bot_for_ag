@@ -1,5 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.filters.callback_data import CallbackData
 
 import locale
 from datetime import datetime
@@ -13,6 +14,12 @@ year = datetime.now().year
 month = datetime.now().month
 
 cal = calendar.monthcalendar(year, month)
+
+
+class DateCallbackData(CallbackData, prefix='date1', sep='-'):
+    day: int
+    month: int
+    year: int
 
 
 def create_schedule() -> InlineKeyboardMarkup:
@@ -80,8 +87,21 @@ def create_schedule() -> InlineKeyboardMarkup:
     )
     # дни
     for week in cal:
+        week_arg = list()
+        for day in week:
+            day_t = str(day)
+            if day == 0:
+                day_t = " "
+            week_arg.append(InlineKeyboardButton(
+                text=day_t,
+                callback_data=DateCallbackData(
+                    day=day,
+                    month=month,
+                    year=year
+                ).pack()
+            ))
         kb_builder.row(
-            *[InlineKeyboardButton(text=str(day) if day != 0 else " ", callback_data=str(day)) for day in week]
+            *week_arg
         )
 
     # модель

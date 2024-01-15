@@ -8,7 +8,7 @@ from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.kb_schedule import create_schedule
 
-from aiogram_calendar import SimpleCalendar, get_user_locale
+# from aiogram_calendar import SimpleCalendar, get_user_locale
 
 router = Router()
 
