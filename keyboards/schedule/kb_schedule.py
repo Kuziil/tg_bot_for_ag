@@ -1,7 +1,29 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.filters.callback_data import CallbackData
+
+import locale
+from datetime import datetime
+import calendar
 
 from lexicon.lexicon_ru import LEXICON_SCHEDULE_RU, LEXICON_MODELS_RU, LEXICON_SHIFTS_RU, LEXICON_BUTTON_RU
+
+locale.setlocale(locale.LC_TIME, 'ru_RU')
+
+year_now = datetime.now().year
+month_now = datetime.now().month
+
+cal = calendar.monthcalendar(year_now, month_now)
+
+
+class DayCallbackData(CallbackData, prefix='day', sep='-'):
+    day: int
+    month: int
+    year: int
+
+class MonthCallbackData(CallbackData, prefix='month', sep='-'):
+    month: int
+    year: int
 
 
 def create_schedule() -> InlineKeyboardMarkup:
@@ -13,8 +35,8 @@ def create_schedule() -> InlineKeyboardMarkup:
             callback_data='pre_year'
         ),
         InlineKeyboardButton(
-            text='2024',
-            callback_data='2024'
+            text=str(year_now),
+            callback_data=str(year_now)
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_year'],
@@ -28,8 +50,8 @@ def create_schedule() -> InlineKeyboardMarkup:
             callback_data='pre_month'
         ),
         InlineKeyboardButton(
-            text='Январь',
-            callback_data='Jan'
+            text=str(month_now),
+            callback_data=str(month_now)
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_month'],
@@ -68,10 +90,24 @@ def create_schedule() -> InlineKeyboardMarkup:
         )
     )
     # дни
-    for line in range(1, 7):
+    for week in cal:
+        week_arg = list()
+        for day in week:
+            day_t = str(day)
+            if day == 0:
+                day_t = " "
+            week_arg.append(InlineKeyboardButton(
+                text=day_t,
+                callback_data=DayCallbackData(
+                    day=day,
+                    month=month_now,
+                    year=year_now
+                ).pack()
+            ))
         kb_builder.row(
-            *[InlineKeyboardButton(text=str(line * column), callback_data=str(line * column)) for column in range(1, 7)]
+            *week_arg
         )
+
     # модель
     kb_builder.row(
         InlineKeyboardButton(
