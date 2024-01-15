@@ -10,14 +10,18 @@ from lexicon.lexicon_ru import LEXICON_SCHEDULE_RU, LEXICON_MODELS_RU, LEXICON_S
 
 locale.setlocale(locale.LC_TIME, 'ru_RU')
 
-year = datetime.now().year
-month = datetime.now().month
+year_now = datetime.now().year
+month_now = datetime.now().month
 
-cal = calendar.monthcalendar(year, month)
+cal = calendar.monthcalendar(year_now, month_now)
 
 
-class DateCallbackData(CallbackData, prefix='date1', sep='-'):
+class DayCallbackData(CallbackData, prefix='day', sep='-'):
     day: int
+    month: int
+    year: int
+
+class MonthCallbackData(CallbackData, prefix='month', sep='-'):
     month: int
     year: int
 
@@ -31,8 +35,8 @@ def create_schedule() -> InlineKeyboardMarkup:
             callback_data='pre_year'
         ),
         InlineKeyboardButton(
-            text=str(year),
-            callback_data=str(year)
+            text=str(year_now),
+            callback_data=str(year_now)
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_year'],
@@ -46,8 +50,8 @@ def create_schedule() -> InlineKeyboardMarkup:
             callback_data='pre_month'
         ),
         InlineKeyboardButton(
-            text=str(month),
-            callback_data=str(month)
+            text=str(month_now),
+            callback_data=str(month_now)
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_month'],
@@ -94,10 +98,10 @@ def create_schedule() -> InlineKeyboardMarkup:
                 day_t = " "
             week_arg.append(InlineKeyboardButton(
                 text=day_t,
-                callback_data=DateCallbackData(
+                callback_data=DayCallbackData(
                     day=day,
-                    month=month,
-                    year=year
+                    month=month_now,
+                    year=year_now
                 ).pack()
             ))
         kb_builder.row(
