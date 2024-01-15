@@ -1,7 +1,18 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+import locale
+from datetime import datetime
+import calendar
+
 from lexicon.lexicon_ru import LEXICON_SCHEDULE_RU, LEXICON_MODELS_RU, LEXICON_SHIFTS_RU, LEXICON_BUTTON_RU
+
+locale.setlocale(locale.LC_TIME, 'ru_RU')
+
+year = datetime.now().year
+month = datetime.now().month
+
+cal = calendar.monthcalendar(year, month)
 
 
 def create_schedule() -> InlineKeyboardMarkup:
@@ -13,8 +24,8 @@ def create_schedule() -> InlineKeyboardMarkup:
             callback_data='pre_year'
         ),
         InlineKeyboardButton(
-            text='2024',
-            callback_data='2024'
+            text=str(year),
+            callback_data=str(year)
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_year'],
@@ -28,8 +39,8 @@ def create_schedule() -> InlineKeyboardMarkup:
             callback_data='pre_month'
         ),
         InlineKeyboardButton(
-            text='Январь',
-            callback_data='Jan'
+            text=str(month),
+            callback_data=str(month)
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_month'],
@@ -68,9 +79,9 @@ def create_schedule() -> InlineKeyboardMarkup:
         )
     )
     # дни
-    for line in range(1, 7):
+    for week in cal:
         kb_builder.row(
-            *[InlineKeyboardButton(text=str(line * column), callback_data=str(line * column)) for column in range(1, 7)]
+            *[InlineKeyboardButton(text=str(day), callback_data=str(day)) for day in week]
         )
     # модель
     kb_builder.row(
