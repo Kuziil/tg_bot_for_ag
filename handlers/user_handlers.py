@@ -68,15 +68,15 @@ async def process_in_the_system_press(callback: CallbackQuery):
     )
 
 
+# @router.callback_query(F.data == 'schedule')
+# async def nav_cal_handler(callback: CallbackQuery):
+#     await callback.message.edit_text(
+#         "Please select a date: ",
+#         reply_markup=await SimpleCalendar(locale=await get_user_locale(callback.from_user)).start_calendar()
+#     )
+
+
 @router.callback_query(F.data == 'schedule')
-async def nav_cal_handler(callback: CallbackQuery):
-    await callback.message.edit_text(
-        "Please select a date: ",
-        reply_markup=await SimpleCalendar(locale=await get_user_locale(callback.from_user)).start_calendar()
-    )
-
-
-@router.callback_query(F.data == 'check_in')
 async def process_cal(callback: CallbackQuery):
     await callback.message.edit_text(
         "Please select a date: ",

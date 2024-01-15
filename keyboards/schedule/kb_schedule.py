@@ -81,8 +81,9 @@ def create_schedule() -> InlineKeyboardMarkup:
     # дни
     for week in cal:
         kb_builder.row(
-            *[InlineKeyboardButton(text=str(day), callback_data=str(day)) for day in week]
+            *[InlineKeyboardButton(text=str(day) if day != 0 else " ", callback_data=str(day)) for day in week]
         )
+
     # модель
     kb_builder.row(
         InlineKeyboardButton(
