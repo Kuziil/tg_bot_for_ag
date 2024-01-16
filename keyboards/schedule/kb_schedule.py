@@ -20,6 +20,7 @@ class DayCallbackData(CallbackData, prefix='day', sep='-'):
 class MonthCallbackData(CallbackData, prefix='month', sep='-'):
     month: int
     year: int
+    napr: int
 
 
 def create_schedule(
@@ -63,7 +64,8 @@ def create_schedule(
             text=str(month),
             callback_data=MonthCallbackData(
                 month=month,
-                year=year
+                year=year,
+                napr=0
             ).pack()
         ),
         InlineKeyboardButton(
