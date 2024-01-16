@@ -23,8 +23,8 @@ class MonthCallbackData(CallbackData, prefix='month', sep='-'):
 
 
 def create_schedule(
-    year: int = datetime.now().year,
-    month: int = datetime.now().month
+    month: int = datetime.now().month,
+    year: int = datetime.now().year
 ) -> InlineKeyboardMarkup:
 
     cal = calendar.monthcalendar(year, month)
