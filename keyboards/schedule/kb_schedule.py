@@ -10,23 +10,34 @@ from lexicon.lexicon_ru import LEXICON_SCHEDULE_RU, LEXICON_MODELS_RU, LEXICON_S
 
 locale.setlocale(locale.LC_TIME, 'ru_RU')
 
-year_now = datetime.now().year
-month_now = datetime.now().month
-
-cal = calendar.monthcalendar(year_now, month_now)
-
 
 class DayCallbackData(CallbackData, prefix='day', sep='-'):
     day: int
     month: int
     year: int
 
+
 class MonthCallbackData(CallbackData, prefix='month', sep='-'):
     month: int
     year: int
+    napr: int
 
 
-def create_schedule() -> InlineKeyboardMarkup:
+def create_schedule(
+    month: int = datetime.now().month,
+    year: int = datetime.now().year
+) -> InlineKeyboardMarkup:
+
+    match month:
+        case 0:
+            year -= 1
+            month = 12
+        case 13:
+            year += 1
+            month = 1
+
+    cal = calendar.monthcalendar(year, month)
+
     kb_builder = InlineKeyboardBuilder()
     # год
     kb_builder.row(
@@ -35,8 +46,8 @@ def create_schedule() -> InlineKeyboardMarkup:
             callback_data='pre_year'
         ),
         InlineKeyboardButton(
-            text=str(year_now),
-            callback_data=str(year_now)
+            text=str(year),
+            callback_data=str(year)
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_year'],
@@ -50,14 +61,19 @@ def create_schedule() -> InlineKeyboardMarkup:
             callback_data='pre_month'
         ),
         InlineKeyboardButton(
-            text=str(month_now),
-            callback_data=str(month_now)
+            text=str(month),
+            callback_data=MonthCallbackData(
+                month=month,
+                year=year,
+                napr=0
+            ).pack()
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_month'],
             callback_data='next_month'
         )
     )
+
     # дни недели
     kb_builder.row(
         InlineKeyboardButton(
@@ -100,8 +116,8 @@ def create_schedule() -> InlineKeyboardMarkup:
                 text=day_t,
                 callback_data=DayCallbackData(
                     day=day,
-                    month=month_now,
-                    year=year_now
+                    month=month,
+                    year=year
                 ).pack()
             ))
         kb_builder.row(
