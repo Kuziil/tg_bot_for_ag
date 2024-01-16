@@ -53,13 +53,17 @@ def create_schedule(
         ),
         InlineKeyboardButton(
             text=str(month),
-            callback_data=str(month)
+            callback_data=MonthCallbackData(
+                month=month,
+                year=year
+            ).pack()
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_month'],
             callback_data='next_month'
         )
     )
+
     # дни недели
     kb_builder.row(
         InlineKeyboardButton(

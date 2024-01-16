@@ -6,7 +6,7 @@ from aiogram.types import Message, CallbackQuery
 from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
 from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
-from keyboards.schedule.kb_schedule import create_schedule, DayCallbackData
+from keyboards.schedule.kb_schedule import create_schedule, DayCallbackData, MonthCallbackData
 
 # from aiogram_calendar import SimpleCalendar, get_user_locale
 
@@ -86,5 +86,11 @@ async def process_cal(callback: CallbackQuery):
 @router.callback_query(DayCallbackData.filter())
 async def process_category_press(callback: CallbackQuery,
                                  callback_data: DayCallbackData):
+    await callback.message.answer(text=callback_data.pack())
+    await callback.answer()
+
+@router.callback_query(MonthCallbackData.filter())
+async def process_category_press(callback: CallbackQuery,
+                                 callback_data: MonthCallbackData):
     await callback.message.answer(text=callback_data.pack())
     await callback.answer()
