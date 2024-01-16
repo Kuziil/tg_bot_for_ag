@@ -94,5 +94,9 @@ async def process_day_press(callback: CallbackQuery):
 async def process_month_press(callback: CallbackQuery,
                               callback_data: MonthCallbackData):
     await callback.message.edit_text(text=LEXICON_RU['schedule'],
-                                     reply_markup=create_schedule(month=int(callback_data.pack().split("-")[1])+1))
+                                     reply_markup=create_schedule(
+                                         month=int(
+                                             callback_data.pack().split("-")[1])+1,
+                                         year=int(
+                                             callback_data.pack().split("-")[2])))
     await callback.answer()
