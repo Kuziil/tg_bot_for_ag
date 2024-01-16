@@ -27,6 +27,14 @@ def create_schedule(
     year: int = datetime.now().year
 ) -> InlineKeyboardMarkup:
 
+    match month:
+        case 0:
+            year -= 1
+            month = 12
+        case 13:
+            year += 1
+            month = 1
+
     cal = calendar.monthcalendar(year, month)
 
     kb_builder = InlineKeyboardBuilder()
