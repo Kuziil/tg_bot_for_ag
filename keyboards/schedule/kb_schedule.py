@@ -26,6 +26,21 @@ def current_date(d_m_y: str,
                  year: int,
                  month: int = datetime.now().month,
                  day: int = datetime.now().day) -> str:
+    """Данная функция проверяет текущая ли дата
+
+    Args:
+        d_m_y (str):  Описывает, какую часть даты возвращать
+        ("day", "month" или "year").
+        year (int): какой год нужно проверить или использовать для проверки.
+        month (int, optional): какой год нужно проверить или
+        использовать для проверки.Defaults to datetime.now().month.
+        day (int, optional): какой день нужно проврить.
+        Defaults to datetime.now().day.
+
+    Returns:
+        str: возвращает или форматированую дату в "[]"
+        или просто возвращает дату.
+    """
     now = datetime.now()
     if day == now.day and month == now.month and year == now.year:
         match d_m_y:
@@ -52,7 +67,20 @@ def create_schedule(
     # TODO : добавить текущую смену
     shift: int = 0
 ) -> InlineKeyboardMarkup:
+    """Данная функция служит для создания клавиатуры для рассписания
+    Args:
+        month (int, optional): месяц.
+        Defaults to datetime.now().month.
+        year (int, optional): год.
+        Defaults to datetime.now().year.
+        number (int, optional): номер модели в словаре.
+        Defaults to 0.
+        shift (int, optional): номер смены в словаре.
+        Defaults to 0.
 
+    Returns:
+        InlineKeyboardMarkup: _description_
+    """
     match month:
         case 0:
             year -= 1
