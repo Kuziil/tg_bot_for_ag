@@ -1,8 +1,13 @@
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
-from keyboards.schedule.classes_callback_data import DayCallbackData, ModelCallbackData, MonthCallbackData, ShiftCallbackData, YearCallbackData
-
+from keyboards.schedule.classes_callback_data import (
+    DayCallbackData,
+    ModelCallbackData,
+    MonthCallbackData,
+    ShiftCallbackData,
+    YearCallbackData
+)
 
 from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
 from keyboards.kb_single_line_horizontally import create_start_keyboard

@@ -4,11 +4,13 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 import locale
 from datetime import datetime
 import calendar
-from keyboards.schedule.classes_callback_data import (DayCallbackData,
-                                                      ModelCallbackData,
-                                                      MonthCallbackData,
-                                                      ShiftCallbackData,
-                                                      YearCallbackData)
+from keyboards.schedule.classes_callback_data import (
+    DayCallbackData,
+    ModelCallbackData,
+    MonthCallbackData,
+    ShiftCallbackData,
+    YearCallbackData
+)
 
 from lexicon.lexicon_ru import (
     LEXICON_SCHEDULE_RU,
