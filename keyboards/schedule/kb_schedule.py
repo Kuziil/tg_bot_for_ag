@@ -103,34 +103,11 @@ def create_schedule(
 
     # дни недели
     kb_builder.row(
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['monday'],
-            callback_data='monday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['tuesday'],
-            callback_data='tuesday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['wednesday'],
-            callback_data='wednesday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['thursday'],
-            callback_data='thursday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['friday'],
-            callback_data='friday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['saturday'],
-            callback_data='saturday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['sunday'],
-            callback_data='sunday'
-        )
+        *[InlineKeyboardButton(
+            text=weekday,
+            callback_data=f'weekday-{weekday}')
+          for weekday in list(calendar.day_abbr)
+          ]
     )
     # дни
     for week in cal:
