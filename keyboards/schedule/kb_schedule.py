@@ -84,7 +84,7 @@ def create_schedule(
             ).pack()
         ),
         InlineKeyboardButton(
-            text=str(month),
+            text=str(datetime(year=year, month=month, day=1).strftime('%B')),
             callback_data=MonthCallbackData(
                 month=month,
                 year=year,
