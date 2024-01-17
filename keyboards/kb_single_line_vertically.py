@@ -14,7 +14,8 @@ def create_menu_keyboard(*buttons: str) -> InlineKeyboardMarkup:
     kb_builder = InlineKeyboardBuilder()
     for button in buttons:
         kb_builder.row(InlineKeyboardButton(
-            text=LEXICON_BUTTON_RU[button] if button in LEXICON_BUTTON_RU else button,
+            text=LEXICON_BUTTON_RU[button]
+            if button in LEXICON_BUTTON_RU else button,
             callback_data=button
         ))
     return kb_builder.as_markup()

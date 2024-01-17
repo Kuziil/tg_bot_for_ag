@@ -6,7 +6,12 @@ import locale
 from datetime import datetime
 import calendar
 
-from lexicon.lexicon_ru import LEXICON_SCHEDULE_RU, LEXICON_MODELS_RU, LEXICON_SHIFTS_RU, LEXICON_BUTTON_RU
+from lexicon.lexicon_ru import (
+    LEXICON_SCHEDULE_RU,
+    LEXICON_MODELS_RU,
+    LEXICON_SHIFTS_RU,
+    LEXICON_BUTTON_RU
+)
 
 locale.setlocale(locale.LC_TIME, 'ru_RU')
 
