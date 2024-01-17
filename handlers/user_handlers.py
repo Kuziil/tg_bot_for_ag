@@ -1,28 +1,26 @@
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
-
+from keyboards.schedule.classes_callback_data import (
+    DayCallbackData,
+    ModelCallbackData,
+    MonthCallbackData,
+    ShiftCallbackData,
+    YearCallbackData
+)
 
 from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
 from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.kb_schedule import (
-    create_schedule,
-    DayCallbackData,
-    MonthCallbackData,
-    YearCallbackData,
-    ModelCallbackData,
-    ShiftCallbackData)
-
-# from aiogram_calendar import SimpleCalendar, get_user_locale
+    create_schedule)
 
 router = Router()
 
 
 @router.message(Command(commands='start'))
 async def process_start_command(message: Message):
-    """_summary_
-    Данный хэндлер отвечает на команду /start
+    """Данный хэндлер отвечает на команду /start
     и возвращает текст с кнопками позволяющие пользователю выбрать
     существует ли у него уже аккаунт
     Args:
@@ -40,8 +38,7 @@ async def process_start_command(message: Message):
 
 @router.message(Command(commands='help'))
 async def process_help_command(message: Message):
-    """_summary_
-    Данный хэндлер служит для предоставления списка команд и
+    """Данный хэндлер служит для предоставления списка команд и
     справки по работе с ботом
     реагирует на /help
 
@@ -53,8 +50,7 @@ async def process_help_command(message: Message):
 
 @router.callback_query(F.data == 'in_the_system')
 async def process_in_the_system_press(callback: CallbackQuery):
-    """_summary_
-    Данный хэндлер реагирует на нажатие кнопки в системе
+    """Данный хэндлер реагирует на нажатие кнопки в системе
     выдает список кнопок ориентации в главном меню для Junior
 
     Args:
@@ -74,25 +70,26 @@ async def process_in_the_system_press(callback: CallbackQuery):
     )
 
 
-# @router.callback_query(F.data == 'schedule')
-# async def nav_cal_handler(callback: CallbackQuery):
-#     await callback.message.edit_text(
-#         "Please select a date: ",
-#         reply_markup=await SimpleCalendar(
-    # locale=await get_user_locale(callback.from_user)).start_calendar()
-#     )
-
-
 @router.callback_query(F.data == 'schedule')
 async def process_cal(callback: CallbackQuery):
+    """Данный хэндлер отрабатывает на нажатие кнопки расписание ->
+    выдает инлайн клавиатуру с расписанием
+
+    Args:
+        callback (CallbackQuery): _description_
+    """
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule()
     )
 
-
+# TODO: прописать реакцию при нажатии на кнопку
 @router.callback_query(DayCallbackData.filter())
 async def process_day_press(callback: CallbackQuery):
+    """Данный хэндлер срабатывает при нажатие на любую дату
+    Args:
+        callback (CallbackQuery): _description_
+    """
     await callback.message.answer(text=LEXICON_RU['schedule'])
     await callback.answer()
 
@@ -100,8 +97,16 @@ async def process_day_press(callback: CallbackQuery):
 @router.callback_query(MonthCallbackData.filter())
 async def process_month_press(callback: CallbackQuery,
                               callback_data: MonthCallbackData):
+    """Этот хэндлер срабатывает при нажатии на кнопки ответственные за месяцы
+    если napr 0 то состояние неизменно
+    если napr 1 то следущий месяц
+    если napr 2 то предыдущий месяц
+    Args:
+        callback (CallbackQuery): _description_
+        callback_data (MonthCallbackData): _description_
+    """
     call_cal: list[str] = callback_data.pack().split("-")
-    napr: int = int(call_cal[5])
+    napr: int = int(call_cal[6])
     match napr:
         case 1:
             napr = -1
@@ -111,17 +116,26 @@ async def process_month_press(callback: CallbackQuery,
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
-            month=int(call_cal[3])+napr,
-            year=int(call_cal[4]),
-            number=int(call_cal[2])))
+            shift=int(call_cal[1]),
+            month=int(call_cal[4])+napr,
+            year=int(call_cal[5]),
+            number=int(call_cal[3])))
     await callback.answer()
 
 
 @router.callback_query(YearCallbackData.filter())
 async def process_year_press(callback: CallbackQuery,
                              callback_data: YearCallbackData):
+    """Этот хэндлер срабатывает при нажатии на кнопки ответственные за год
+    если napr 0 то состояние неизменно
+    если napr 1 то следущий месяц
+    если napr 2 то предыдущий месяц
+    Args:
+        callback (CallbackQuery): _description_
+        callback_data (MonthCallbackData): _description_
+    """
     call_cal: list[str] = callback_data.pack().split("-")
-    napr: int = int(call_cal[5])
+    napr: int = int(call_cal[6])
     match napr:
         case 1:
             napr = -1
@@ -131,17 +145,26 @@ async def process_year_press(callback: CallbackQuery,
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
+            shift=int(call_cal[1]),
             month=1,
-            year=int(call_cal[4]) + napr,
-            number=int(call_cal[2])))
+            year=int(call_cal[5]) + napr,
+            number=int(call_cal[3])))
     await callback.answer()
 
 
 @router.callback_query(ModelCallbackData.filter())
 async def process_model_press(callback: CallbackQuery,
                               callback_data: ModelCallbackData):
+    """Этот хэндлер срабатывает при нажатии на кнопки ответственные за модель
+    если napr 0 то состояние неизменно
+    если napr 1 то следущий месяц
+    если napr 2 то предыдущий месяц
+    Args:
+        callback (CallbackQuery): _description_
+        callback_data (MonthCallbackData): _description_
+    """
     call_cal: list[str] = callback_data.pack().split("-")
-    napr: int = int(call_cal[5])
+    napr: int = int(call_cal[6])
     match napr:
         case 1:
             napr = -1
@@ -151,15 +174,21 @@ async def process_model_press(callback: CallbackQuery,
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
-            month=int(call_cal[3]),
-            year=int(call_cal[4]),
-            number=int(call_cal[2]) + napr))
+            shift=int(call_cal[1]),
+            month=int(call_cal[4]),
+            year=int(call_cal[5]),
+            number=int(call_cal[3]) + napr))
     await callback.answer()
 
 
 @router.callback_query(ShiftCallbackData.filter())
 async def process_shift_press(callback: CallbackQuery,
                               callback_data: ShiftCallbackData):
+    """Этот хэндлер срабатывает при нажатии на кнопку ответственную за смену
+    Args:
+        callback (CallbackQuery): _description_
+        callback_data (MonthCallbackData): _description_
+    """
     call_cal: list[str] = callback_data.pack().split("-")
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
