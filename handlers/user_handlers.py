@@ -100,7 +100,7 @@ async def process_day_press(callback: CallbackQuery):
 async def process_month_press(callback: CallbackQuery,
                               callback_data: MonthCallbackData):
     call_cal: list[str] = callback_data.pack().split("-")
-    napr: int = int(call_cal[3])
+    napr: int = int(call_cal[5])
     match napr:
         case 1:
             napr = -1
@@ -110,8 +110,9 @@ async def process_month_press(callback: CallbackQuery,
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
-            month=int(call_cal[1])+napr,
-            year=int(call_cal[2])))
+            month=int(call_cal[3])+napr,
+            year=int(call_cal[4]),
+            number=int(call_cal[2])))
     await callback.answer()
 
 
@@ -119,7 +120,7 @@ async def process_month_press(callback: CallbackQuery,
 async def process_year_press(callback: CallbackQuery,
                              callback_data: YearCallbackData):
     call_cal: list[str] = callback_data.pack().split("-")
-    napr: int = int(call_cal[2])
+    napr: int = int(call_cal[5])
     match napr:
         case 1:
             napr = -1
@@ -130,7 +131,8 @@ async def process_year_press(callback: CallbackQuery,
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
             month=1,
-            year=int(call_cal[1]) + napr))
+            year=int(call_cal[4]) + napr,
+            number=int(call_cal[2])))
     await callback.answer()
 
 
