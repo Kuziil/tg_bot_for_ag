@@ -35,14 +35,22 @@ LEXICON_BUTTON_RU: dict[str, str] = {
 
 LEXICON_MODELS_RU: dict[str, str] = {
     'Kate': 'Катя',
-    'Tanya': 'Таня'
+    'Caroline':  'Каролина',
+    'Tanya_free': 'Таня_free',
+    'Tanya_vip': 'Таня_vip',
+    'Vika': 'Вика',
+    'Odina': 'Одина',
+    'Elly': 'Элли',
+    'Lora': 'Лора',
+    'Alina': 'Алина'
+
 }
 
 LEXICON_SHIFTS_RU: dict[str, str] = {
-    '0-6': '00:00-06:00',
-    '6-12': '6:00-12:00',
-    '12-18': '12:00-18:00',
-    '18-0': '18:00-00:00'
+    '0_6': '00:00-06:00',
+    '6_12': '6:00-12:00',
+    '12_18': '12:00-18:00',
+    '18_0': '18:00-00:00'
 }
 
 LEXICON_SCHEDULE_RU: dict[str, str] = {
