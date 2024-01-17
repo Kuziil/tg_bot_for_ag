@@ -20,8 +20,7 @@ router = Router()
 
 @router.message(Command(commands='start'))
 async def process_start_command(message: Message):
-    """_summary_
-    Данный хэндлер отвечает на команду /start
+    """Данный хэндлер отвечает на команду /start
     и возвращает текст с кнопками позволяющие пользователю выбрать
     существует ли у него уже аккаунт
     Args:
@@ -39,8 +38,7 @@ async def process_start_command(message: Message):
 
 @router.message(Command(commands='help'))
 async def process_help_command(message: Message):
-    """_summary_
-    Данный хэндлер служит для предоставления списка команд и
+    """Данный хэндлер служит для предоставления списка команд и
     справки по работе с ботом
     реагирует на /help
 
@@ -52,8 +50,7 @@ async def process_help_command(message: Message):
 
 @router.callback_query(F.data == 'in_the_system')
 async def process_in_the_system_press(callback: CallbackQuery):
-    """_summary_
-    Данный хэндлер реагирует на нажатие кнопки в системе
+    """Данный хэндлер реагирует на нажатие кнопки в системе
     выдает список кнопок ориентации в главном меню для Junior
 
     Args:
@@ -75,14 +72,24 @@ async def process_in_the_system_press(callback: CallbackQuery):
 
 @router.callback_query(F.data == 'schedule')
 async def process_cal(callback: CallbackQuery):
+    """Данный хэндлер отрабатывает на нажатие кнопки расписание ->
+    выдает инлайн клавиатуру с расписанием
+
+    Args:
+        callback (CallbackQuery): _description_
+    """
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule()
     )
 
-
+# TODO: прописать реакцию при нажатии на кнопку
 @router.callback_query(DayCallbackData.filter())
 async def process_day_press(callback: CallbackQuery):
+    """Данный хэндлер срабатывает при нажатие на любую дату
+    Args:
+        callback (CallbackQuery): _description_
+    """
     await callback.message.answer(text=LEXICON_RU['schedule'])
     await callback.answer()
 
@@ -90,6 +97,14 @@ async def process_day_press(callback: CallbackQuery):
 @router.callback_query(MonthCallbackData.filter())
 async def process_month_press(callback: CallbackQuery,
                               callback_data: MonthCallbackData):
+    """Этот хэндлер срабатывает при нажатии на кнопки ответственные за месяцы
+    если napr 0 то состояние неизменно
+    если napr 1 то следущий месяц
+    если napr 2 то предыдущий месяц
+    Args:
+        callback (CallbackQuery): _description_
+        callback_data (MonthCallbackData): _description_
+    """
     call_cal: list[str] = callback_data.pack().split("-")
     napr: int = int(call_cal[6])
     match napr:
@@ -111,6 +126,14 @@ async def process_month_press(callback: CallbackQuery,
 @router.callback_query(YearCallbackData.filter())
 async def process_year_press(callback: CallbackQuery,
                              callback_data: YearCallbackData):
+    """Этот хэндлер срабатывает при нажатии на кнопки ответственные за год
+    если napr 0 то состояние неизменно
+    если napr 1 то следущий месяц
+    если napr 2 то предыдущий месяц
+    Args:
+        callback (CallbackQuery): _description_
+        callback_data (MonthCallbackData): _description_
+    """
     call_cal: list[str] = callback_data.pack().split("-")
     napr: int = int(call_cal[6])
     match napr:
@@ -132,6 +155,14 @@ async def process_year_press(callback: CallbackQuery,
 @router.callback_query(ModelCallbackData.filter())
 async def process_model_press(callback: CallbackQuery,
                               callback_data: ModelCallbackData):
+    """Этот хэндлер срабатывает при нажатии на кнопки ответственные за модель
+    если napr 0 то состояние неизменно
+    если napr 1 то следущий месяц
+    если napr 2 то предыдущий месяц
+    Args:
+        callback (CallbackQuery): _description_
+        callback_data (MonthCallbackData): _description_
+    """
     call_cal: list[str] = callback_data.pack().split("-")
     napr: int = int(call_cal[6])
     match napr:
@@ -153,6 +184,11 @@ async def process_model_press(callback: CallbackQuery,
 @router.callback_query(ShiftCallbackData.filter())
 async def process_shift_press(callback: CallbackQuery,
                               callback_data: ShiftCallbackData):
+    """Этот хэндлер срабатывает при нажатии на кнопку ответственную за смену
+    Args:
+        callback (CallbackQuery): _description_
+        callback_data (MonthCallbackData): _description_
+    """
     call_cal: list[str] = callback_data.pack().split("-")
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
