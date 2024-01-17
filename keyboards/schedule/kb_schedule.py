@@ -25,7 +25,7 @@ class DayCallbackData(CallbackData, prefix='day', sep='-'):
 class MonthCallbackData(CallbackData, prefix='month', sep='-'):
     month: int
     year: int
-    napr: int
+    napr: int  # 0 - средняя кнопка 1 - назад 2 - вперед
 
 
 def create_schedule(
@@ -63,7 +63,11 @@ def create_schedule(
     kb_builder.row(
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['pre_month'],
-            callback_data='pre_month'
+            callback_data=MonthCallbackData(
+                month=month,
+                year=year,
+                napr=1
+            ).pack()
         ),
         InlineKeyboardButton(
             text=str(month),
@@ -75,7 +79,11 @@ def create_schedule(
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_month'],
-            callback_data='next_month'
+            callback_data=MonthCallbackData(
+                month=month,
+                year=year,
+                napr=2
+            ).pack()
         )
     )
 
