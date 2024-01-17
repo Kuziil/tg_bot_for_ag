@@ -46,10 +46,20 @@ class ModelCallbackData(CallbackData, prefix='model', sep='-'):
     napr: int  # 0 - средняя кнопка 1 - назад 2 - вперед
 
 
+class ShiftCallbackData(CallbackData, prefix='shift', sep='-'):
+    shift: int
+    model: str
+    number: int
+    month: int
+    year: int
+
+
 def create_schedule(
     month: int = datetime.now().month,
     year: int = datetime.now().year,
-    number: int = 0
+    # TODO : Добавить модель дефолт от юзера
+    number: int = 0,
+    shift: int = 0
 ) -> InlineKeyboardMarkup:
 
     match month:
@@ -65,6 +75,10 @@ def create_schedule(
         number = len(models) - 1
     elif number == len(models) + 1:
         number = 0
+
+    shifts: list[str] = list(LEXICON_SHIFTS_RU.keys())
+    if shift == len(shifts):
+        shift = 0
 
     model: str = models[number]
 
@@ -205,8 +219,14 @@ def create_schedule(
             callback_data='back'
         ),
         InlineKeyboardButton(
-            text=list(LEXICON_SHIFTS_RU.values())[0],
-            callback_data=list(LEXICON_SHIFTS_RU.keys())[0]
+            text=LEXICON_SHIFTS_RU[shifts[shift]],
+            callback_data=ShiftCallbackData(
+                shift=shift,
+                model=model,
+                number=number,
+                month=month,
+                year=year
+            ).pack()
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['today'],

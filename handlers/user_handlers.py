@@ -11,7 +11,8 @@ from keyboards.schedule.kb_schedule import (
     DayCallbackData,
     MonthCallbackData,
     YearCallbackData,
-    ModelCallbackData)
+    ModelCallbackData,
+    ShiftCallbackData)
 
 # from aiogram_calendar import SimpleCalendar, get_user_locale
 
@@ -153,4 +154,18 @@ async def process_model_press(callback: CallbackQuery,
             month=int(call_cal[3]),
             year=int(call_cal[4]),
             number=int(call_cal[2]) + napr))
+    await callback.answer()
+
+
+@router.callback_query(ShiftCallbackData.filter())
+async def process_shift_press(callback: CallbackQuery,
+                              callback_data: ShiftCallbackData):
+    call_cal: list[str] = callback_data.pack().split("-")
+    await callback.message.edit_text(
+        text=LEXICON_RU['schedule'],
+        reply_markup=create_schedule(
+            month=int(call_cal[4]),
+            year=int(call_cal[5]),
+            number=int(call_cal[3]),
+            shift=int(call_cal[1]) + 1))
     await callback.answer()
