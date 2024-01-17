@@ -6,7 +6,12 @@ import locale
 from datetime import datetime
 import calendar
 
-from lexicon.lexicon_ru import LEXICON_SCHEDULE_RU, LEXICON_MODELS_RU, LEXICON_SHIFTS_RU, LEXICON_BUTTON_RU
+from lexicon.lexicon_ru import (
+    LEXICON_SCHEDULE_RU,
+    LEXICON_MODELS_RU,
+    LEXICON_SHIFTS_RU,
+    LEXICON_BUTTON_RU
+)
 
 locale.setlocale(locale.LC_TIME, 'ru_RU')
 
@@ -20,7 +25,12 @@ class DayCallbackData(CallbackData, prefix='day', sep='-'):
 class MonthCallbackData(CallbackData, prefix='month', sep='-'):
     month: int
     year: int
-    napr: int
+    napr: int  # 0 - средняя кнопка 1 - назад 2 - вперед
+
+
+class YearCallbackData(CallbackData, prefix='year', sep='-'):
+    year: int
+    napr: int  # 0 - средняя кнопка 1 - назад 2 - вперед
 
 
 def create_schedule(
@@ -43,25 +53,38 @@ def create_schedule(
     kb_builder.row(
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['pre_year'],
-            callback_data='pre_year'
+            callback_data=YearCallbackData(
+                year=year,
+                napr=1
+            ).pack()
         ),
         InlineKeyboardButton(
             text=str(year),
-            callback_data=str(year)
+            callback_data=YearCallbackData(
+                year=year,
+                napr=0
+            ).pack()
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_year'],
-            callback_data='next_year'
+            callback_data=YearCallbackData(
+                year=year,
+                napr=2
+            ).pack()
         )
     )
     # месяц
     kb_builder.row(
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['pre_month'],
-            callback_data='pre_month'
+            callback_data=MonthCallbackData(
+                month=month,
+                year=year,
+                napr=1
+            ).pack()
         ),
         InlineKeyboardButton(
-            text=str(month),
+            text=str(datetime(year=year, month=month, day=1).strftime('%B')),
             callback_data=MonthCallbackData(
                 month=month,
                 year=year,
@@ -70,40 +93,21 @@ def create_schedule(
         ),
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_month'],
-            callback_data='next_month'
+            callback_data=MonthCallbackData(
+                month=month,
+                year=year,
+                napr=2
+            ).pack()
         )
     )
 
     # дни недели
     kb_builder.row(
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['monday'],
-            callback_data='monday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['tuesday'],
-            callback_data='tuesday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['wednesday'],
-            callback_data='wednesday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['thursday'],
-            callback_data='thursday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['friday'],
-            callback_data='friday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['saturday'],
-            callback_data='saturday'
-        ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['sunday'],
-            callback_data='sunday'
-        )
+        *[InlineKeyboardButton(
+            text=weekday,
+            callback_data=f'weekday-{weekday}')
+          for weekday in list(calendar.day_abbr)
+          ]
     )
     # дни
     for week in cal:
