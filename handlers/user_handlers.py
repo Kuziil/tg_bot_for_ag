@@ -34,6 +34,7 @@ async def process_start_command(message: Message):
             'in_the_system'
         )
     )
+    await callback.answer()
 
 
 @router.message(Command(commands='help'))
@@ -46,6 +47,7 @@ async def process_help_command(message: Message):
         message (Message): _description_
     """
     await message.answer(LEXICON_COMMANDS_RU[message.text])
+    await callback.answer()
 
 
 @router.callback_query(F.data == 'in_the_system')
@@ -68,6 +70,7 @@ async def process_in_the_system_press(callback: CallbackQuery):
             'training_materials'
         )
     )
+    await callback.answer()
 
 
 @router.callback_query(F.data == 'schedule')
@@ -82,8 +85,11 @@ async def process_cal(callback: CallbackQuery):
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule()
     )
+    await callback.answer()
 
 # TODO: прописать реакцию при нажатии на кнопку
+
+
 @router.callback_query(DayCallbackData.filter())
 async def process_day_press(callback: CallbackQuery):
     """Данный хэндлер срабатывает при нажатие на любую дату
@@ -197,4 +203,18 @@ async def process_shift_press(callback: CallbackQuery,
             year=int(call_cal[5]),
             number=int(call_cal[3]),
             shift=int(call_cal[1]) + 1))
+    await callback.answer()
+
+
+@router.callback_query(F.data == 'today')
+async def process_today(callback: CallbackQuery):
+    """Данный хэндлер отрабатывает на нажатие кнопки сегодня ->
+    переносит расписание на текущую дату.
+    Args:
+        callback (CallbackQuery): _description_
+    """
+    await callback.message.edit_text(
+        text=LEXICON_RU['schedule'],
+        reply_markup=create_schedule()
+    )
     await callback.answer()
