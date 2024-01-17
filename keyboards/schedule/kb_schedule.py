@@ -1,10 +1,14 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.filters.callback_data import CallbackData
 
 import locale
 from datetime import datetime
 import calendar
+from keyboards.schedule.classes_callback_data import (DayCallbackData,
+                                                      ModelCallbackData,
+                                                      MonthCallbackData,
+                                                      ShiftCallbackData,
+                                                      YearCallbackData)
 
 from lexicon.lexicon_ru import (
     LEXICON_SCHEDULE_RU,
@@ -14,44 +18,6 @@ from lexicon.lexicon_ru import (
 )
 
 locale.setlocale(locale.LC_TIME, 'ru_RU')
-
-
-class DayCallbackData(CallbackData, prefix='day', sep='-'):
-    day: int
-    month: int
-    year: int
-
-
-class MonthCallbackData(CallbackData, prefix='month', sep='-'):
-    model: str
-    number: int
-    month: int
-    year: int
-    napr: int  # 0 - средняя кнопка 1 - назад 2 - вперед
-
-
-class YearCallbackData(CallbackData, prefix='year', sep='-'):
-    model: str
-    number: int
-    month: int
-    year: int
-    napr: int  # 0 - средняя кнопка 1 - назад 2 - вперед
-
-
-class ModelCallbackData(CallbackData, prefix='model', sep='-'):
-    model: str
-    number: int
-    month: int
-    year: int
-    napr: int  # 0 - средняя кнопка 1 - назад 2 - вперед
-
-
-class ShiftCallbackData(CallbackData, prefix='shift', sep='-'):
-    shift: int
-    model: str
-    number: int
-    month: int
-    year: int
 
 
 def current_date(d_m_y: str,
