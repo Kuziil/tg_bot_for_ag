@@ -54,6 +54,28 @@ class ShiftCallbackData(CallbackData, prefix='shift', sep='-'):
     year: int
 
 
+def current_date(d_m_y: str,
+                 year: int,
+                 month: int = datetime.now().month,
+                 day: int = datetime.now().day) -> str:
+    now = datetime.now()
+    if day == now.day and month == now.month and year == now.year:
+        match d_m_y:
+            case "day":
+                return f'[{day}]'
+            case "month":
+                return f'[{month}]'
+            case "year":
+                return f'[{year}]'
+    match d_m_y:
+        case "day":
+            return f'{day}'
+        case "month":
+            return f'{month}'
+        case "year":
+            return f'{year}'
+
+
 def create_schedule(
     month: int = datetime.now().month,
     year: int = datetime.now().year,
@@ -98,7 +120,7 @@ def create_schedule(
             ).pack()
         ),
         InlineKeyboardButton(
-            text=str(year),
+            text=current_date(d_m_y="year", year=year),
             callback_data=YearCallbackData(
                 model=model,
                 number=number,
@@ -119,6 +141,7 @@ def create_schedule(
         )
     )
     # месяц
+    month_t: str = datetime(year=year, month=month, day=1).strftime('%B')
     kb_builder.row(
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['pre_month'],
@@ -131,7 +154,10 @@ def create_schedule(
             ).pack()
         ),
         InlineKeyboardButton(
-            text=str(datetime(year=year, month=month, day=1).strftime('%B')),
+            text=f'[{month_t}]' if current_date(
+                d_m_y='month',
+                year=year,
+                month=month).startswith('[') else month_t,
             callback_data=MonthCallbackData(
                 model=model,
                 number=number,
@@ -164,7 +190,10 @@ def create_schedule(
     for week in cal:
         week_arg = list()
         for day in week:
-            day_t = str(day)
+            day_t = current_date(day=day,
+                                 month=month,
+                                 year=year,
+                                 d_m_y="day")
             if day == 0:
                 day_t = " "
             week_arg.append(InlineKeyboardButton(
