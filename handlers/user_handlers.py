@@ -9,7 +9,8 @@ from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.kb_schedule import (
     create_schedule,
     DayCallbackData,
-    MonthCallbackData)
+    MonthCallbackData,
+    YearCallbackData)
 
 # from aiogram_calendar import SimpleCalendar, get_user_locale
 
@@ -110,4 +111,23 @@ async def process_month_press(callback: CallbackQuery,
         reply_markup=create_schedule(
             month=int(call_cal[1])+napr,
             year=int(call_cal[2])))
+    await callback.answer()
+
+
+@router.callback_query(YearCallbackData.filter())
+async def process_year_press(callback: CallbackQuery,
+                             callback_data: YearCallbackData):
+    call_cal: list[str] = callback_data.pack().split("-")
+    napr: int = int(call_cal[2])
+    match napr:
+        case 1:
+            napr = -1
+        case 2:
+            napr = 1
+
+    await callback.message.edit_text(
+        text=LEXICON_RU['schedule'],
+        reply_markup=create_schedule(
+            month=1,
+            year=int(call_cal[1]) + napr))
     await callback.answer()
