@@ -98,9 +98,16 @@ async def process_day_press(callback: CallbackQuery):
 async def process_month_press(callback: CallbackQuery,
                               callback_data: MonthCallbackData):
     call_cal: list[str] = callback_data.pack().split("-")
+    napr: int = int(call_cal[3])
+    match napr:
+        case 1:
+            napr = -1
+        case 2:
+            napr = 1
+
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
-            month=int(call_cal[1])+1,
+            month=int(call_cal[1])+napr,
             year=int(call_cal[2])))
     await callback.answer()
