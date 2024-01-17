@@ -49,6 +49,7 @@ def create_schedule(
     year: int = datetime.now().year,
     # TODO : Добавить модель дефолт от юзера
     number: int = 0,
+    # TODO : добавить текущую смену
     shift: int = 0
 ) -> InlineKeyboardMarkup:
 
@@ -80,6 +81,7 @@ def create_schedule(
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['pre_year'],
             callback_data=YearCallbackData(
+                shift=shift,
                 model=model,
                 number=number,
                 month=month,
@@ -90,6 +92,7 @@ def create_schedule(
         InlineKeyboardButton(
             text=current_date(d_m_y="year", year=year),
             callback_data=YearCallbackData(
+                shift=shift,
                 model=model,
                 number=number,
                 month=month,
@@ -100,6 +103,7 @@ def create_schedule(
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_year'],
             callback_data=YearCallbackData(
+                shift=shift,
                 model=model,
                 number=number,
                 month=month,
@@ -114,6 +118,7 @@ def create_schedule(
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['pre_month'],
             callback_data=MonthCallbackData(
+                shift=shift,
                 model=model,
                 number=number,
                 month=month,
@@ -127,6 +132,7 @@ def create_schedule(
                 year=year,
                 month=month).startswith('[') else month_t,
             callback_data=MonthCallbackData(
+                shift=shift,
                 model=model,
                 number=number,
                 month=month,
@@ -137,6 +143,7 @@ def create_schedule(
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_month'],
             callback_data=MonthCallbackData(
+                shift=shift,
                 model=model,
                 number=number,
                 month=month,
@@ -181,6 +188,7 @@ def create_schedule(
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['pre_model'],
             callback_data=ModelCallbackData(
+                shift=shift,
                 model=model,
                 number=number,
                 month=month,
@@ -191,6 +199,7 @@ def create_schedule(
         InlineKeyboardButton(
             text=LEXICON_MODELS_RU[model],
             callback_data=ModelCallbackData(
+                shift=shift,
                 model=model,
                 number=number,
                 month=month,
@@ -201,6 +210,7 @@ def create_schedule(
         InlineKeyboardButton(
             text=LEXICON_SCHEDULE_RU['next_model'],
             callback_data=ModelCallbackData(
+                shift=shift,
                 model=model,
                 number=number,
                 month=month,

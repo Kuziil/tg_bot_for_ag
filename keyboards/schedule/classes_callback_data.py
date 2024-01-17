@@ -8,6 +8,7 @@ class DayCallbackData(CallbackData, prefix='day', sep='-'):
 
 
 class MonthCallbackData(CallbackData, prefix='month', sep='-'):
+    shift: int
     model: str
     number: int
     month: int
@@ -16,6 +17,7 @@ class MonthCallbackData(CallbackData, prefix='month', sep='-'):
 
 
 class YearCallbackData(CallbackData, prefix='year', sep='-'):
+    shift: int
     model: str
     number: int
     month: int
@@ -24,6 +26,7 @@ class YearCallbackData(CallbackData, prefix='year', sep='-'):
 
 
 class ModelCallbackData(CallbackData, prefix='model', sep='-'):
+    shift: int
     model: str
     number: int
     month: int
