@@ -35,7 +35,15 @@ LEXICON_BUTTON_RU: dict[str, str] = {
 
 LEXICON_MODELS_RU: dict[str, str] = {
     'Kate': 'Катя',
-    'Tanya': 'Таня'
+    'Caroline':  'Каролина',
+    'Tanya_free': 'Таня_free',
+    'Tanya_vip': 'Таня_vip',
+    'Vika': 'Вика',
+    'Odina': 'Одина',
+    'Elly': 'Элли',
+    'Lora': 'Лора',
+    'Alina': 'Алина'
+
 }
 
 LEXICON_SHIFTS_RU: dict[str, str] = {
