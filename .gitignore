@@ -1,5 +1,4 @@
 .env
-database/database.py
 
 .mypy_cache/
 .vscode/
