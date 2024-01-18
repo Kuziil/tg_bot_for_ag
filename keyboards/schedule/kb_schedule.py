@@ -60,6 +60,7 @@ def current_date(d_m_y: str,
 
 
 def create_schedule(
+    day: int = None,
     month: int = datetime.now().month,
     year: int = datetime.now().year,
     # TODO : Добавить модель дефолт от юзера
@@ -186,17 +187,21 @@ def create_schedule(
     # дни
     for week in cal:
         week_arg = list()
-        for day in week:
-            day_t = current_date(day=day,
+        for day_cal in week:
+            day_t = current_date(day=day_cal,
                                  month=month,
                                  year=year,
                                  d_m_y="day")
-            if day == 0:
+            if day_cal == 0:
                 day_t = " "
+            elif day_cal == day:
+                day_t = ":)"
             week_arg.append(InlineKeyboardButton(
                 text=day_t,
                 callback_data=DayCallbackData(
-                    day=day,
+                    shift=shift,
+                    number=number,
+                    day=day_cal,
                     month=month,
                     year=year
                 ).pack()

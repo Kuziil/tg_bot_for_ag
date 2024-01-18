@@ -93,12 +93,21 @@ async def process_cal(callback: CallbackQuery):
 
 
 @router.callback_query(DayCallbackData.filter())
-async def process_day_press(callback: CallbackQuery):
+async def process_day_press(callback: CallbackQuery,
+                            callback_data: DayCallbackData):
     """Данный хэндлер срабатывает при нажатие на любую дату
     Args:
         callback (CallbackQuery): _description_
     """
-    await callback.message.answer(text=LEXICON_RU['schedule'])
+    call_cal: list[str] = callback_data.pack().split("-")
+    await callback.message.edit_text(
+        text=LEXICON_RU['schedule'],
+        reply_markup=create_schedule(
+            day=int(call_cal[3]),
+            month=int(call_cal[4]),
+            year=int(call_cal[5]),
+            number=int(call_cal[2]),
+            shift=int(call_cal[1])))
     await callback.answer()
 
 

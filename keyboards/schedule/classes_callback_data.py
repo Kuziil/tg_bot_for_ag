@@ -2,6 +2,8 @@ from aiogram.filters.callback_data import CallbackData
 
 
 class DayCallbackData(CallbackData, prefix='day', sep='-'):
+    shift: int
+    number: int
     day: int
     month: int
     year: int
