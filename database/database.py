@@ -2,7 +2,7 @@ from bot import logger
 from config_data.config import Config, load_config
 
 
-class UserDatabaseManager:
+class DBManager:
     def __init__(self):
         # Загружаем конфиг в переменную config
         self.config: Config = load_config()
@@ -41,17 +41,20 @@ class UserDatabaseManager:
             logger.info(f"Пользователь с ID {user_id} не найден")
             return '1'
 
+    def get_emot_by_shift(self, shift) -> str:
+        return self.user_database[self.shifts[shift]]['emoticon']
+
 
 # Создаем экземпляр класса
-user_db_manager = UserDatabaseManager()
+db = DBManager()
 
 # Пример использования методов класса
-user_db_manager.add_user(
-    user_id=user_db_manager.config.tg_bot.admin_ids[0],
+db.add_user(
+    user_id=db.config.tg_bot.admin_ids[0],
     username="Mic",
-    emoticon=":)")
+    emoticon="😏")
 
-user_db_manager.add_user(
-    user_id=user_db_manager.config.tg_bot.operator_ids[0],
+db.add_user(
+    user_id=db.config.tg_bot.operator_ids[0],
     username="Dac",
-    emoticon=";)")
+    emoticon="🤔")

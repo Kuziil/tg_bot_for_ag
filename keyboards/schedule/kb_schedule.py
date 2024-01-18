@@ -19,7 +19,7 @@ from lexicon.lexicon_ru import (
     LEXICON_BUTTON_RU
 )
 
-from database.database import user_db_manager
+from database.database import db
 
 locale.setlocale(locale.LC_TIME, 'ru_RU')
 
@@ -189,13 +189,13 @@ def create_schedule(
     )
     # дни
     for week in cal:
-        week_arg = list()
+        week_arg: list[InlineKeyboardButton] = list()
         for day_cal in week:
-            day_t = current_date(day=day_cal,
-                                 month=month,
-                                 year=year,
-                                 d_m_y="day")
-            shift_t = DayCallbackData(
+            day_t: str = current_date(day=day_cal,
+                                      month=month,
+                                      year=year,
+                                      d_m_y="day")
+            shift_t: str = DayCallbackData(
                 shift=shift,
                 number=number,
                 day=day_cal,
@@ -206,8 +206,10 @@ def create_schedule(
             if day_cal == 0:
                 day_t = " "
             elif day_cal == day:
-                day_t = user_db_manager.add_shift(
+                day_t = db.add_shift(
                     user_id=user_id, shift=shift_t)
+            elif shift_t in db.shifts:
+                day_t = db.get_emot_by_shift(shift_t)
 
             week_arg.append(InlineKeyboardButton(
                 text=day_t,

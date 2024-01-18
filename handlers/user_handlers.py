@@ -14,7 +14,6 @@ from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.kb_schedule import (
     create_schedule)
-from bot import logger
 
 router = Router()
 
