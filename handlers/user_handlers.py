@@ -34,6 +34,8 @@ async def process_start_command(message: Message):
             'in_the_system'
         )
     )
+    # TODO: TypeError:
+    # Message.answer() missing 1 required positional argument: 'text'
     await message.answer()
 
 
@@ -91,12 +93,23 @@ async def process_cal(callback: CallbackQuery):
 
 
 @router.callback_query(DayCallbackData.filter())
-async def process_day_press(callback: CallbackQuery):
+async def process_day_press(callback: CallbackQuery,
+                            callback_data: DayCallbackData):
     """Данный хэндлер срабатывает при нажатие на любую дату
     Args:
         callback (CallbackQuery): _description_
     """
-    await callback.message.answer(text=LEXICON_RU['schedule'])
+    call_cal: list[str] = callback_data.pack().split("-")
+    await callback.message.edit_text(
+        text=LEXICON_RU['schedule'],
+
+        reply_markup=create_schedule(
+            user_id=callback.from_user.id,
+            day=int(call_cal[3]),
+            month=int(call_cal[4]),
+            year=int(call_cal[5]),
+            number=int(call_cal[2]),
+            shift=int(call_cal[1])))
     await callback.answer()
 
 
@@ -112,7 +125,7 @@ async def process_month_press(callback: CallbackQuery,
         callback_data (MonthCallbackData): _description_
     """
     call_cal: list[str] = callback_data.pack().split("-")
-    napr: int = int(call_cal[6])
+    napr: int = int(call_cal[5])
     match napr:
         case 1:
             napr = -1
@@ -123,9 +136,9 @@ async def process_month_press(callback: CallbackQuery,
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
             shift=int(call_cal[1]),
-            month=int(call_cal[4])+napr,
-            year=int(call_cal[5]),
-            number=int(call_cal[3])))
+            month=int(call_cal[3])+napr,
+            year=int(call_cal[4]),
+            number=int(call_cal[2])))
     await callback.answer()
 
 
@@ -141,7 +154,7 @@ async def process_year_press(callback: CallbackQuery,
         callback_data (MonthCallbackData): _description_
     """
     call_cal: list[str] = callback_data.pack().split("-")
-    napr: int = int(call_cal[6])
+    napr: int = int(call_cal[5])
     match napr:
         case 1:
             napr = -1
@@ -153,8 +166,8 @@ async def process_year_press(callback: CallbackQuery,
         reply_markup=create_schedule(
             shift=int(call_cal[1]),
             month=1,
-            year=int(call_cal[5]) + napr,
-            number=int(call_cal[3])))
+            year=int(call_cal[4]) + napr,
+            number=int(call_cal[2])))
     await callback.answer()
 
 
@@ -170,7 +183,7 @@ async def process_model_press(callback: CallbackQuery,
         callback_data (MonthCallbackData): _description_
     """
     call_cal: list[str] = callback_data.pack().split("-")
-    napr: int = int(call_cal[6])
+    napr: int = int(call_cal[5])
     match napr:
         case 1:
             napr = -1
@@ -181,9 +194,9 @@ async def process_model_press(callback: CallbackQuery,
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
             shift=int(call_cal[1]),
-            month=int(call_cal[4]),
-            year=int(call_cal[5]),
-            number=int(call_cal[3]) + napr))
+            month=int(call_cal[3]),
+            year=int(call_cal[4]),
+            number=int(call_cal[2]) + napr))
     await callback.answer()
 
 
@@ -199,9 +212,9 @@ async def process_shift_press(callback: CallbackQuery,
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
-            month=int(call_cal[4]),
-            year=int(call_cal[5]),
-            number=int(call_cal[3]),
+            month=int(call_cal[3]),
+            year=int(call_cal[4]),
+            number=int(call_cal[2]),
             shift=int(call_cal[1]) + 1))
     await callback.answer()
 

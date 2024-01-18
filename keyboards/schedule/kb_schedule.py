@@ -19,6 +19,8 @@ from lexicon.lexicon_ru import (
     LEXICON_BUTTON_RU
 )
 
+from database.database import db
+
 locale.setlocale(locale.LC_TIME, 'ru_RU')
 
 
@@ -60,6 +62,8 @@ def current_date(d_m_y: str,
 
 
 def create_schedule(
+    day: int = None,
+    user_id: int = None,
     month: int = datetime.now().month,
     year: int = datetime.now().year,
     # TODO : Добавить модель дефолт от юзера
@@ -110,7 +114,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['pre_year'],
             callback_data=YearCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -121,7 +124,6 @@ def create_schedule(
             text=current_date(d_m_y="year", year=year),
             callback_data=YearCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -132,7 +134,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['next_year'],
             callback_data=YearCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -147,7 +148,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['pre_month'],
             callback_data=MonthCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -161,7 +161,6 @@ def create_schedule(
                 month=month).startswith('[') else month_t,
             callback_data=MonthCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -172,7 +171,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['next_month'],
             callback_data=MonthCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -191,21 +189,31 @@ def create_schedule(
     )
     # дни
     for week in cal:
-        week_arg = list()
-        for day in week:
-            day_t = current_date(day=day,
-                                 month=month,
-                                 year=year,
-                                 d_m_y="day")
-            if day == 0:
+        week_arg: list[InlineKeyboardButton] = list()
+        for day_cal in week:
+            day_t: str = current_date(day=day_cal,
+                                      month=month,
+                                      year=year,
+                                      d_m_y="day")
+            shift_t: str = DayCallbackData(
+                shift=shift,
+                number=number,
+                day=day_cal,
+                month=month,
+                year=year
+            ).pack()
+
+            if day_cal == 0:
                 day_t = " "
+            elif day_cal == day:
+                day_t = db.add_shift(
+                    user_id=user_id, shift=shift_t)
+            elif shift_t in db.shifts:
+                day_t = db.get_emot_by_shift(shift_t)
+
             week_arg.append(InlineKeyboardButton(
                 text=day_t,
-                callback_data=DayCallbackData(
-                    day=day,
-                    month=month,
-                    year=year
-                ).pack()
+                callback_data=shift_t
             ))
         kb_builder.row(
             *week_arg
@@ -217,7 +225,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['pre_model'],
             callback_data=ModelCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -228,7 +235,6 @@ def create_schedule(
             text=LEXICON_MODELS_RU[model],
             callback_data=ModelCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -239,7 +245,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['next_model'],
             callback_data=ModelCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -257,7 +262,6 @@ def create_schedule(
             text=LEXICON_SHIFTS_RU[shifts[shift]],
             callback_data=ShiftCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year

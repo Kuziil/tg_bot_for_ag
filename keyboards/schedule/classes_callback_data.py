@@ -2,6 +2,8 @@ from aiogram.filters.callback_data import CallbackData
 
 
 class DayCallbackData(CallbackData, prefix='day', sep='-'):
+    shift: int
+    number: int
     day: int
     month: int
     year: int
@@ -9,7 +11,6 @@ class DayCallbackData(CallbackData, prefix='day', sep='-'):
 
 class MonthCallbackData(CallbackData, prefix='month', sep='-'):
     shift: int
-    model: str
     number: int
     month: int
     year: int
@@ -18,7 +19,6 @@ class MonthCallbackData(CallbackData, prefix='month', sep='-'):
 
 class YearCallbackData(CallbackData, prefix='year', sep='-'):
     shift: int
-    model: str
     number: int
     month: int
     year: int
@@ -27,7 +27,6 @@ class YearCallbackData(CallbackData, prefix='year', sep='-'):
 
 class ModelCallbackData(CallbackData, prefix='model', sep='-'):
     shift: int
-    model: str
     number: int
     month: int
     year: int
@@ -36,7 +35,6 @@ class ModelCallbackData(CallbackData, prefix='model', sep='-'):
 
 class ShiftCallbackData(CallbackData, prefix='shift', sep='-'):
     shift: int
-    model: str
     number: int
     month: int
     year: int
