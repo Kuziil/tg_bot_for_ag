@@ -110,7 +110,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['pre_year'],
             callback_data=YearCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -121,7 +120,6 @@ def create_schedule(
             text=current_date(d_m_y="year", year=year),
             callback_data=YearCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -132,7 +130,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['next_year'],
             callback_data=YearCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -147,7 +144,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['pre_month'],
             callback_data=MonthCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -161,7 +157,6 @@ def create_schedule(
                 month=month).startswith('[') else month_t,
             callback_data=MonthCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -172,7 +167,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['next_month'],
             callback_data=MonthCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -217,7 +211,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['pre_model'],
             callback_data=ModelCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -228,7 +221,6 @@ def create_schedule(
             text=LEXICON_MODELS_RU[model],
             callback_data=ModelCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -239,7 +231,6 @@ def create_schedule(
             text=LEXICON_SCHEDULE_RU['next_model'],
             callback_data=ModelCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year,
@@ -257,7 +248,6 @@ def create_schedule(
             text=LEXICON_SHIFTS_RU[shifts[shift]],
             callback_data=ShiftCallbackData(
                 shift=shift,
-                model=model,
                 number=number,
                 month=month,
                 year=year
