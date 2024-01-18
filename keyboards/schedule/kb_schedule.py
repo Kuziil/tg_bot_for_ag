@@ -19,6 +19,8 @@ from lexicon.lexicon_ru import (
     LEXICON_BUTTON_RU
 )
 
+from database.database import user_db_manager
+
 locale.setlocale(locale.LC_TIME, 'ru_RU')
 
 
@@ -61,6 +63,7 @@ def current_date(d_m_y: str,
 
 def create_schedule(
     day: int = None,
+    user_id: int = None,
     month: int = datetime.now().month,
     year: int = datetime.now().year,
     # TODO : Добавить модель дефолт от юзера
@@ -192,19 +195,23 @@ def create_schedule(
                                  month=month,
                                  year=year,
                                  d_m_y="day")
+            shift_t = DayCallbackData(
+                shift=shift,
+                number=number,
+                day=day_cal,
+                month=month,
+                year=year
+            ).pack()
+
             if day_cal == 0:
                 day_t = " "
             elif day_cal == day:
-                day_t = ":)"
+                day_t = user_db_manager.add_shift(
+                    user_id=user_id, shift=shift_t)
+
             week_arg.append(InlineKeyboardButton(
                 text=day_t,
-                callback_data=DayCallbackData(
-                    shift=shift,
-                    number=number,
-                    day=day_cal,
-                    month=month,
-                    year=year
-                ).pack()
+                callback_data=shift_t
             ))
         kb_builder.row(
             *week_arg

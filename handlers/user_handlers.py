@@ -14,6 +14,7 @@ from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.kb_schedule import (
     create_schedule)
+from bot import logger
 
 router = Router()
 
@@ -102,7 +103,9 @@ async def process_day_press(callback: CallbackQuery,
     call_cal: list[str] = callback_data.pack().split("-")
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
+
         reply_markup=create_schedule(
+            user_id=callback.from_user.id,
             day=int(call_cal[3]),
             month=int(call_cal[4]),
             year=int(call_cal[5]),
