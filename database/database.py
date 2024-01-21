@@ -1,7 +1,7 @@
 from bot import logger
 from config_data.config import Config, load_config
 
-
+#ghbdt
 class DBManager:
     def __init__(self):
         # Загружаем конфиг в переменную config
