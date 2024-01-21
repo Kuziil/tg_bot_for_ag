@@ -38,9 +38,6 @@ async def process_start_command(message: Message):
             'in_the_system'
         )
     )
-    # TODO: TypeError:
-    # Message.answer() missing 1 required positional argument: 'text'
-    await message.answer()
 
 
 @router.message(Command(commands='help'))
