@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
@@ -14,6 +16,8 @@ from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.kb_schedule import (
     create_schedule)
+
+logger = logging.getLogger(__name__)
 
 router = Router()
 
@@ -99,17 +103,16 @@ async def process_day_press(callback: CallbackQuery,
     Args:
         callback (CallbackQuery): _description_
     """
-    call_cal: list[str] = callback_data.pack().split("-")
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
 
         reply_markup=create_schedule(
             user_id=callback.from_user.id,
-            day=int(call_cal[3]),
-            month=int(call_cal[4]),
-            year=int(call_cal[5]),
-            number=int(call_cal[2]),
-            shift=int(call_cal[1])))
+            day=callback_data.day,
+            month=callback_data.month,
+            year=callback_data.year,
+            number=callback_data.number,
+            shift=callback_data.shift))
     await callback.answer()
 
 
@@ -124,8 +127,7 @@ async def process_month_press(callback: CallbackQuery,
         callback (CallbackQuery): _description_
         callback_data (MonthCallbackData): _description_
     """
-    call_cal: list[str] = callback_data.pack().split("-")
-    napr: int = int(call_cal[5])
+    napr: int = callback_data.napr
     match napr:
         case 1:
             napr = -1
@@ -135,10 +137,10 @@ async def process_month_press(callback: CallbackQuery,
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
-            shift=int(call_cal[1]),
-            month=int(call_cal[3])+napr,
-            year=int(call_cal[4]),
-            number=int(call_cal[2])))
+            shift=callback_data.shift,
+            month=callback_data.month+napr,
+            year=callback_data.year,
+            number=callback_data.number))
     await callback.answer()
 
 
@@ -153,8 +155,7 @@ async def process_year_press(callback: CallbackQuery,
         callback (CallbackQuery): _description_
         callback_data (MonthCallbackData): _description_
     """
-    call_cal: list[str] = callback_data.pack().split("-")
-    napr: int = int(call_cal[5])
+    napr: int = callback_data.napr
     match napr:
         case 1:
             napr = -1
@@ -164,10 +165,10 @@ async def process_year_press(callback: CallbackQuery,
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
-            shift=int(call_cal[1]),
+            shift=callback_data.shift,
             month=1,
-            year=int(call_cal[4]) + napr,
-            number=int(call_cal[2])))
+            year=callback_data.year + napr,
+            number=callback_data.number))
     await callback.answer()
 
 
@@ -182,8 +183,7 @@ async def process_model_press(callback: CallbackQuery,
         callback (CallbackQuery): _description_
         callback_data (MonthCallbackData): _description_
     """
-    call_cal: list[str] = callback_data.pack().split("-")
-    napr: int = int(call_cal[5])
+    napr: int = callback_data.napr
     match napr:
         case 1:
             napr = -1
@@ -193,10 +193,10 @@ async def process_model_press(callback: CallbackQuery,
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
-            shift=int(call_cal[1]),
-            month=int(call_cal[3]),
-            year=int(call_cal[4]),
-            number=int(call_cal[2]) + napr))
+            shift=callback_data.shift,
+            month=callback_data.month,
+            year=callback_data.year,
+            number=callback_data.number + napr))
     await callback.answer()
 
 
@@ -208,14 +208,13 @@ async def process_shift_press(callback: CallbackQuery,
         callback (CallbackQuery): _description_
         callback_data (MonthCallbackData): _description_
     """
-    call_cal: list[str] = callback_data.pack().split("-")
     await callback.message.edit_text(
         text=LEXICON_RU['schedule'],
         reply_markup=create_schedule(
-            month=int(call_cal[3]),
-            year=int(call_cal[4]),
-            number=int(call_cal[2]),
-            shift=int(call_cal[1]) + 1))
+            month=callback_data.month,
+            year=callback_data.year,
+            number=callback_data.number,
+            shift=callback_data.shift + 1))
     await callback.answer()
 
 
