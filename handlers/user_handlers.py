@@ -91,8 +91,6 @@ async def process_cal(callback: CallbackQuery):
     )
     await callback.answer()
 
-# TODO: прописать реакцию при нажатии на кнопку
-
 
 @router.callback_query(DayCallbackData.filter())
 async def process_day_press(callback: CallbackQuery,

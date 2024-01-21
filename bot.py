@@ -29,7 +29,6 @@ async def main():
               parse_mode='HTML')
     dp = Dispatcher()
 
-    # TODO: Главное меню бота
     await set_main_menu(bot)
 
     # Регистриуем роутеры в диспетчере
