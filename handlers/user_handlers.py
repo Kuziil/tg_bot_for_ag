@@ -3,6 +3,7 @@ import logging
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
+
 from keyboards.schedule.classes_callback_data import (
     DayCallbackData,
     ModelCallbackData,
@@ -10,12 +11,12 @@ from keyboards.schedule.classes_callback_data import (
     ShiftCallbackData,
     YearCallbackData
 )
-
 from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
 from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.kb_schedule import (
     create_schedule)
+from database.database import db
 
 logger = logging.getLogger(__name__)
 
@@ -100,11 +101,13 @@ async def process_day_press(callback: CallbackQuery,
     Args:
         callback (CallbackQuery): _description_
     """
+    user_id = callback.from_user.id
     await callback.message.edit_text(
-        text=LEXICON_RU['schedule'],
-
+        text=LEXICON_RU['schedule'] if
+        db.is_user_in_system(user_id=user_id)
+        else LEXICON_RU['user_not_in_system'],
         reply_markup=create_schedule(
-            user_id=callback.from_user.id,
+            user_id=user_id,
             day=callback_data.day,
             month=callback_data.month,
             year=callback_data.year,
