@@ -1,5 +1,4 @@
 import logging
-import emoji
 
 from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
@@ -13,16 +12,13 @@ from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from handlers.in_system.in_systeam_handlers import in_systeam_router
 from FSMs.FSMs import FSMFillForm
+from filters.filters import IsEmoji
 
 logger = logging.getLogger(__name__)
 
 main_router = Router()
 
 main_router.include_router(in_systeam_router)
-
-
-def is_emoji(s):
-    return emoji.emoji_count(s) == 1 == len(s)
 
 
 user_dict: dict[int, dict[str, str]] = {}
@@ -105,9 +101,8 @@ async def process_name_sent(message: Message, state: FSMContext):
 
 
 @main_router.message(StateFilter(FSMFillForm.fill_emoticon),
-                     lambda x: is_emoji(x.text))
+                     IsEmoji())
 async def process_emoticon_sent(message: Message, state: FSMContext):
-    logger.info(is_emoji(message.text))
     await state.update_data(emoticon=message.text)
     user_dict[message.from_user.id] = await state.get_data()
     logger.info(user_dict)
