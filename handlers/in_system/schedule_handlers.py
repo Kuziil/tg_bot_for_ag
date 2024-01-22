@@ -18,7 +18,8 @@ from database.database import db
 schedule_router = Router()
 
 
-@schedule_router.callback_query(DayCallbackData.filter(), StateFilter(default_state))
+@schedule_router.callback_query(DayCallbackData.filter(),
+                                StateFilter(default_state))
 async def process_day_press(callback: CallbackQuery,
                             callback_data: DayCallbackData):
     """Данный хэндлер срабатывает при нажатие на любую дату
@@ -40,7 +41,8 @@ async def process_day_press(callback: CallbackQuery,
     await callback.answer()
 
 
-@schedule_router.callback_query(MonthCallbackData.filter(), StateFilter(default_state))
+@schedule_router.callback_query(MonthCallbackData.filter(),
+                                StateFilter(default_state))
 async def process_month_press(callback: CallbackQuery,
                               callback_data: MonthCallbackData):
     """Этот хэндлер срабатывает при нажатии на кнопки ответственные за месяцы
@@ -68,7 +70,8 @@ async def process_month_press(callback: CallbackQuery,
     await callback.answer()
 
 
-@schedule_router.callback_query(YearCallbackData.filter(), StateFilter(default_state))
+@schedule_router.callback_query(YearCallbackData.filter(),
+                                StateFilter(default_state))
 async def process_year_press(callback: CallbackQuery,
                              callback_data: YearCallbackData):
     """Этот хэндлер срабатывает при нажатии на кнопки ответственные за год
@@ -96,7 +99,8 @@ async def process_year_press(callback: CallbackQuery,
     await callback.answer()
 
 
-@schedule_router.callback_query(ModelCallbackData.filter(), StateFilter(default_state))
+@schedule_router.callback_query(ModelCallbackData.filter(),
+                                StateFilter(default_state))
 async def process_model_press(callback: CallbackQuery,
                               callback_data: ModelCallbackData):
     """Этот хэндлер срабатывает при нажатии на кнопки ответственные за модель
@@ -124,7 +128,8 @@ async def process_model_press(callback: CallbackQuery,
     await callback.answer()
 
 
-@schedule_router.callback_query(ShiftCallbackData.filter(), StateFilter(default_state))
+@schedule_router.callback_query(ShiftCallbackData.filter(),
+                                StateFilter(default_state))
 async def process_shift_press(callback: CallbackQuery,
                               callback_data: ShiftCallbackData):
     """Этот хэндлер срабатывает при нажатии на кнопку ответственную за смену
@@ -142,7 +147,8 @@ async def process_shift_press(callback: CallbackQuery,
     await callback.answer()
 
 
-@schedule_router.callback_query(F.data == 'today', StateFilter(default_state))
+@schedule_router.callback_query(F.data == 'today',
+                                StateFilter(default_state))
 async def process_today(callback: CallbackQuery):
     """Данный хэндлер отрабатывает на нажатие кнопки сегодня ->
     переносит расписание на текущую дату.

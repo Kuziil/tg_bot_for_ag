@@ -18,7 +18,8 @@ main_router = Router()
 main_router.include_router(in_systeam_router)
 
 
-@main_router.message(Command(commands='start'), StateFilter(default_state))
+@main_router.message(Command(commands='start'),
+                     StateFilter(default_state))
 async def process_start_command(message: Message):
     """Данный хэндлер отвечает на команду /start
     и возвращает текст с кнопками позволяющие пользователю выбрать
@@ -36,7 +37,8 @@ async def process_start_command(message: Message):
     )
 
 
-@main_router.message(Command(commands='help'), StateFilter(default_state))
+@main_router.message(Command(commands='help'),
+                     StateFilter(default_state))
 async def process_help_command(message: Message):
     """Данный хэндлер служит для предоставления списка команд и
     справки по работе с ботом
@@ -49,7 +51,8 @@ async def process_help_command(message: Message):
     await message.answer()
 
 
-@main_router.callback_query(F.data == 'in_the_system', StateFilter(default_state))
+@main_router.callback_query(F.data == 'in_the_system',
+                            StateFilter(default_state))
 async def process_in_the_system_press(callback: CallbackQuery):
     """Данный хэндлер реагирует на нажатие кнопки в системе
     выдает список кнопок ориентации в главном меню для Junior
@@ -72,7 +75,8 @@ async def process_in_the_system_press(callback: CallbackQuery):
     await callback.answer()
 
 
-@main_router.callback_query(F.data == 'not_in_the_system')
+@main_router.callback_query(F.data == 'not_in_the_system',
+                            StateFilter(default_state))
 async def process_not_in_the_system_press(callback: CallbackQuery):
     await callback.message.edit_text(
         text=LEXICON_RU['main_menu_junior'],

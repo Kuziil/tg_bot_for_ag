@@ -14,7 +14,8 @@ in_systeam_router = Router()
 in_systeam_router.include_router(schedule_router)
 
 
-@in_systeam_router.callback_query(F.data == 'schedule', StateFilter(default_state))
+@in_systeam_router.callback_query(F.data == 'schedule',
+                                  StateFilter(default_state))
 async def process_cal(callback: CallbackQuery):
     """Данный хэндлер отрабатывает на нажатие кнопки расписание ->
     выдает инлайн клавиатуру с расписанием
