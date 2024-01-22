@@ -1,6 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+import logging
 import locale
 from datetime import datetime
 import calendar
@@ -21,6 +22,7 @@ from lexicon.lexicon_ru import (
 
 from database.database import db
 
+logger = logging.getLogger(__name__)
 locale.setlocale(locale.LC_TIME, 'ru_RU')
 
 
@@ -195,25 +197,24 @@ def create_schedule(
                                       month=month,
                                       year=year,
                                       d_m_y="day")
-            shift_t: str = DayCallbackData(
+            day_call_back_t: str = DayCallbackData(
                 shift=shift,
                 number=number,
                 day=day_cal,
                 month=month,
                 year=year
             ).pack()
-
             if day_cal == 0:
                 day_t = " "
             elif day_cal == day:
                 day_t = db.add_shift(
-                    user_id=user_id, shift=shift_t)
-            elif shift_t in db.shifts:
-                day_t = db.get_emot_by_shift(shift_t)
+                    user_id=user_id, day_call_back_t=day_call_back_t)
+            elif day_call_back_t in db.shifts:
+                day_t = db.get_emot_by_day_call_back(day_call_back_t)
 
             week_arg.append(InlineKeyboardButton(
                 text=day_t,
-                callback_data=shift_t
+                callback_data=day_call_back_t
             ))
         kb_builder.row(
             *week_arg
