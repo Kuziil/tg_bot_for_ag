@@ -1,8 +1,9 @@
 import logging
 
 from aiogram import Router, F
-from aiogram.filters import Command
+from aiogram.filters import Command, StateFilter
 from aiogram.types import Message, CallbackQuery
+from aiogram.fsm.state import default_state
 
 
 from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
@@ -17,7 +18,7 @@ main_router = Router()
 main_router.include_router(in_systeam_router)
 
 
-@main_router.message(Command(commands='start'))
+@main_router.message(Command(commands='start'), StateFilter(default_state))
 async def process_start_command(message: Message):
     """Данный хэндлер отвечает на команду /start
     и возвращает текст с кнопками позволяющие пользователю выбрать
@@ -35,7 +36,7 @@ async def process_start_command(message: Message):
     )
 
 
-@main_router.message(Command(commands='help'))
+@main_router.message(Command(commands='help'), StateFilter(default_state))
 async def process_help_command(message: Message):
     """Данный хэндлер служит для предоставления списка команд и
     справки по работе с ботом
@@ -48,7 +49,7 @@ async def process_help_command(message: Message):
     await message.answer()
 
 
-@main_router.callback_query(F.data == 'in_the_system')
+@main_router.callback_query(F.data == 'in_the_system', StateFilter(default_state))
 async def process_in_the_system_press(callback: CallbackQuery):
     """Данный хэндлер реагирует на нажатие кнопки в системе
     выдает список кнопок ориентации в главном меню для Junior
@@ -56,6 +57,23 @@ async def process_in_the_system_press(callback: CallbackQuery):
     Args:
         callback (CallbackQuery): _description_
     """
+    await callback.message.edit_text(
+        text=LEXICON_RU['main_menu_junior'],
+        reply_markup=create_menu_keyboard(
+            'check_in',
+            'clock_out',
+            'write_a_report',
+            'schedule',
+            'my_money',
+            'model_statistics',
+            'training_materials'
+        )
+    )
+    await callback.answer()
+
+
+@main_router.callback_query(F.data == 'not_in_the_system')
+async def process_not_in_the_system_press(callback: CallbackQuery):
     await callback.message.edit_text(
         text=LEXICON_RU['main_menu_junior'],
         reply_markup=create_menu_keyboard(

@@ -2,8 +2,9 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
 from config_data.config import Config, load_config
-from handlers import other_handlers, user_handlers
+from handlers import main_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
 
 # Инициализируем логгер
@@ -21,18 +22,20 @@ async def main():
     # Выводим в консоль информацию о начале запуска бота
     logger.info('Starting bot')
 
+    # Инициализируем хранилище
+    storage = MemoryStorage()
     # Загружаем конфиг в переменную config
     config: Config = load_config()
 
     # Инициализируем бот и диспетчер
     bot = Bot(token=config.tg_bot.token,
               parse_mode='HTML')
-    dp = Dispatcher()
+    dp = Dispatcher(storage=storage)
 
     await set_main_menu(bot)
 
     # Регистриуем роутеры в диспетчере
-    dp.include_router(user_handlers.main_router)
+    dp.include_router(main_handlers.main_router)
     dp.include_router(other_handlers.router)
 
     # Пропускаем накопившиеся апдейты и запускаем polling
