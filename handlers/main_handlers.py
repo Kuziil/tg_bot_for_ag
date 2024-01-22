@@ -1,21 +1,31 @@
 import logging
+import emoji
 
 from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.state import default_state
+from aiogram.fsm.context import FSMContext
 
 
 from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
 from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from handlers.in_system.in_systeam_handlers import in_systeam_router
+from FSMs.FSMs import FSMFillForm
 
 logger = logging.getLogger(__name__)
 
 main_router = Router()
 
 main_router.include_router(in_systeam_router)
+
+
+def is_emoji(s):
+    return bool(emoji.emoji_count(s))
+
+
+user_dict: dict[int, dict[str, str | int | bool]] = {}
 
 
 @main_router.message(Command(commands='start'),
@@ -77,9 +87,33 @@ async def process_in_the_system_press(callback: CallbackQuery):
 
 @main_router.callback_query(F.data == 'not_in_the_system',
                             StateFilter(default_state))
-async def process_not_in_the_system_press(callback: CallbackQuery):
+async def process_not_in_the_system_press(callback: CallbackQuery,
+                                          state: FSMContext):
     await callback.message.edit_text(
-        text=LEXICON_RU['main_menu_junior'],
+        text=LEXICON_RU['main_menu_junior']
+    )
+    await state.set_state(FSMFillForm.fill_username)
+
+
+@main_router.message(StateFilter(FSMFillForm.fill_username), F.text.isalpha())
+async def process_name_sent(message: Message, state: FSMContext):
+    # Cохраняем введенное имя в хранилище по ключу "name"
+    await state.update_data(username=message.text)
+    await message.answer(text='Спасибо!\n\nА теперь введите стикер')
+    # Устанавливаем состояние ожидания ввода возраста
+    await state.set_state(FSMFillForm.fill_emoticon)
+
+
+@main_router.message(StateFilter(FSMFillForm.fill_emoticon),
+                     lambda x: is_emoji(x.text))
+async def process_emoticon_sent(message: Message, state: FSMContext):
+    logger.info(is_emoji(message.text))
+    await state.update_data(emoticon=message.text)
+    user_dict[message.from_user.id] = await state.get_data()
+    logger.info(user_dict)
+    await message.answer(
+        text='регистрация успешно выполнена\n' +
+        LEXICON_RU['main_menu_junior'],
         reply_markup=create_menu_keyboard(
             'check_in',
             'clock_out',
@@ -90,4 +124,3 @@ async def process_not_in_the_system_press(callback: CallbackQuery):
             'training_materials'
         )
     )
-    await callback.answer()
