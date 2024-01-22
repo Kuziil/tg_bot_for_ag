@@ -22,10 +22,10 @@ main_router.include_router(in_systeam_router)
 
 
 def is_emoji(s):
-    return bool(emoji.emoji_count(s))
+    return emoji.emoji_count(s) == 1 == len(s)
 
 
-user_dict: dict[int, dict[str, str | int | bool]] = {}
+user_dict: dict[int, dict[str, str]] = {}
 
 
 @main_router.message(Command(commands='start'),
@@ -90,7 +90,7 @@ async def process_in_the_system_press(callback: CallbackQuery):
 async def process_not_in_the_system_press(callback: CallbackQuery,
                                           state: FSMContext):
     await callback.message.edit_text(
-        text=LEXICON_RU['main_menu_junior']
+        text='введите имя'
     )
     await state.set_state(FSMFillForm.fill_username)
 
@@ -111,6 +111,7 @@ async def process_emoticon_sent(message: Message, state: FSMContext):
     await state.update_data(emoticon=message.text)
     user_dict[message.from_user.id] = await state.get_data()
     logger.info(user_dict)
+    await state.clear()
     await message.answer(
         text='регистрация успешно выполнена\n' +
         LEXICON_RU['main_menu_junior'],
