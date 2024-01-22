@@ -86,7 +86,7 @@ async def process_in_the_system_press(callback: CallbackQuery):
 async def process_not_in_the_system_press(callback: CallbackQuery,
                                           state: FSMContext):
     await callback.message.edit_text(
-        text='введите имя'
+        text=LEXICON_RU['enter_username']
     )
     await state.set_state(FSMFillForm.fill_username)
 
@@ -95,9 +95,16 @@ async def process_not_in_the_system_press(callback: CallbackQuery,
 async def process_name_sent(message: Message, state: FSMContext):
     # Cохраняем введенное имя в хранилище по ключу "name"
     await state.update_data(username=message.text)
-    await message.answer(text='Спасибо!\n\nА теперь введите стикер')
+    await message.answer(text=LEXICON_RU['enter_emoticon'])
     # Устанавливаем состояние ожидания ввода возраста
     await state.set_state(FSMFillForm.fill_emoticon)
+
+
+@main_router.message(StateFilter(FSMFillForm.fill_username))
+async def warning_not_name(message: Message):
+    await message.answer(
+        text=LEXICON_RU['entered_not_name'] + LEXICON_RU['enter_username']
+    )
 
 
 @main_router.message(StateFilter(FSMFillForm.fill_emoticon),
@@ -108,7 +115,7 @@ async def process_emoticon_sent(message: Message, state: FSMContext):
     logger.info(user_dict)
     await state.clear()
     await message.answer(
-        text='регистрация успешно выполнена\n' +
+        text=LEXICON_RU['registration_done'] +
         LEXICON_RU['main_menu_junior'],
         reply_markup=create_menu_keyboard(
             'check_in',
@@ -119,4 +126,11 @@ async def process_emoticon_sent(message: Message, state: FSMContext):
             'model_statistics',
             'training_materials'
         )
+    )
+
+
+@main_router.message(StateFilter(FSMFillForm.fill_emoticon))
+async def warning_not_emoticon(message: Message):
+    await message.answer(
+        text=LEXICON_RU['entered_not_emoticon']
     )
