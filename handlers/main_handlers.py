@@ -12,7 +12,7 @@ from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from handlers.in_system.in_systeam_handlers import in_systeam_router
 from FSMs.FSMs import FSMFillForm
-from filters.filters import IsEmoji
+from filters.filters import IsEmoji, IsUserInSystem
 from database.database import db
 
 logger = logging.getLogger(__name__)
@@ -23,15 +23,38 @@ main_router.include_router(in_systeam_router)
 
 
 @main_router.message(Command(commands='start'),
-                     StateFilter(default_state))
+                     StateFilter(default_state),
+                     IsUserInSystem())
 async def process_start_command(message: Message):
+    """Данный хэндлер реагирует на команду /start
+    выдает список кнопок ориентации в главном меню для Junior
+
+    Args:
+        callback (CallbackQuery): _description_
+    """
+    await message.answer(
+        text=LEXICON_RU['main_menu_junior'],
+        reply_markup=create_menu_keyboard(
+            'check_in',
+            'clock_out',
+            'write_a_report',
+            'schedule',
+            'my_money',
+            'model_statistics',
+            'training_materials'
+        )
+    )
+
+
+@main_router.message(Command(commands='start'),
+                     StateFilter(default_state))
+async def process_start_command_for_new_id(message: Message):
     """Данный хэндлер отвечает на команду /start
     и возвращает текст с кнопками позволяющие пользователю выбрать
     существует ли у него уже аккаунт
     Args:
         message (Message): _description_
     """
-    # TODO: убрать если пользователь в системе
     text = LEXICON_COMMANDS_RU[message.text]
     await message.answer(
         text=text,
