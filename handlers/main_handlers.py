@@ -13,15 +13,13 @@ from keyboards.kb_single_line_vertically import create_menu_keyboard
 from handlers.in_system.in_systeam_handlers import in_systeam_router
 from FSMs.FSMs import FSMFillForm
 from filters.filters import IsEmoji
+from database.database import db
 
 logger = logging.getLogger(__name__)
 
 main_router = Router()
 
 main_router.include_router(in_systeam_router)
-
-# TODO: объеденить с упрощенной бд
-user_dict: dict[int, dict[str, str]] = {}
 
 
 @main_router.message(Command(commands='start'),
@@ -114,8 +112,9 @@ async def warning_not_name(message: Message):
                      IsEmoji())
 async def process_emoticon_sent(message: Message, state: FSMContext):
     await state.update_data(emoticon=message.text)
-    user_dict[message.from_user.id] = await state.get_data()
-    logger.info(user_dict)
+    # TODO: объеденить следущие две строчки, что бы тратить меньше ресурсов бд
+    db.user_database[message.from_user.id] = await state.get_data()
+    await db.add_empty_key(message.from_user.id)
     await state.clear()
     await message.answer(
         # TODO: Добавить приветствие по имени и стикеру
