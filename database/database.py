@@ -12,7 +12,7 @@ class DBManager:
         self.config: Config = load_config()
 
         # Создаем пустой словарь для базы данных
-        self.user_database: dict[int, dict] = {}
+        self.user_database: dict[int, dict[str, str | list[str]]] = {}
 
         self.shifts: dict[str, int] = {}
 
@@ -32,6 +32,12 @@ class DBManager:
                                            'emoticon': emoticon,
                                            'shifts': []}
             logger.info(f"Пользователь {username} добавлен с ID {user_id}")
+
+    # Функция для добавления недостающих ключей
+    async def add_empty_key(self, user_id: int) -> None:
+        self.user_database[user_id].update({
+            'shifts': list()
+        })
 
     # Функция для добавления смены пользователю
     def add_shift(self,
