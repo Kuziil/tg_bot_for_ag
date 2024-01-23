@@ -37,9 +37,11 @@ async def warning_not_name(message: Message):
 @not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon),
                                IsEmoji())
 async def process_emoticon_sent(message: Message, state: FSMContext):
-    await state.update_data(emoticon=message.text)
+    await state.update_data(emoticon=message.text, shifts=list())
     db.user_database[message.from_user.id] = await state.get_data()
     await state.clear()
+    logger.info(db.user_database)
+    logger.info(db.user_databases)
     await message.answer(
         text=LEXICON_RU['registration_done'] +
         f'Приветсвую {db.user_database[message.from_user.id]['username']}'
