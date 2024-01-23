@@ -12,11 +12,17 @@ class DBManager:
         self.config: Config = load_config()
 
         # Создаем пустой словарь для базы данных
-        self.user_database: dict[int, dict[str, str | list[str]]] = {}
+        bot_id = self.config.tg_bot.id
+        self.user_databases: dict[
+            int, dict[int, dict[str, str | list[str]]]] = {bot_id: dict()}
 
         self.shifts: dict[str, int] = {}
 
+        self.user_database: dict[
+            int, dict[str, str | list[str]]] = self.user_databases[bot_id]
+
     # Функция проверки на наличие пользователя в системе
+
     def is_user_in_system(self, user_id: int) -> bool:
         return True if user_id in self.user_database else False
 
@@ -32,12 +38,6 @@ class DBManager:
                                            'emoticon': emoticon,
                                            'shifts': []}
             logger.info(f"Пользователь {username} добавлен с ID {user_id}")
-
-    # Функция для добавления недостающих ключей
-    async def add_empty_key(self, user_id: int) -> None:
-        self.user_database[user_id].update({
-            'shifts': list()
-        })
 
     # Функция для добавления смены пользователю
     def add_shift(self,
