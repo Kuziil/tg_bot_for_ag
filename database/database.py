@@ -33,12 +33,6 @@ class DBManager:
                                            'shifts': []}
             logger.info(f"Пользователь {username} добавлен с ID {user_id}")
 
-    # Функция для добавления недостающих ключей
-    async def add_empty_key(self, user_id: int) -> None:
-        self.user_database[user_id].update({
-            'shifts': list()
-        })
-
     # Функция для добавления смены пользователю
     def add_shift(self,
                   user_id: int,
