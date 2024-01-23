@@ -6,7 +6,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
 from FSMs.FSMs import FSMFillForm
-from filters.filters import IsEmoji
+from filters.filters import IsEmoji, IsBusyEmoji
 from database.database import db
 from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.kb_single_line_vertically import create_menu_keyboard
@@ -47,6 +47,18 @@ async def warning_not_name(message: Message):
 
 
 @not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon),
+                               IsEmoji(),
+                               IsBusyEmoji())
+async def warning_busy_emoji(message: Message):
+    emojis = ''
+    for emoji in db.get_emojis():
+        emojis += f'{emoji}'
+    await message.answer(
+        text=LEXICON_RU['busy_emoji'] + emojis
+    )
+
+
+@not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon),
                                IsEmoji())
 async def process_emoticon_sent(message: Message, state: FSMContext):
     await state.update_data(emoticon=message.text, shifts=list())
@@ -76,6 +88,3 @@ async def warning_not_emoticon(message: Message):
     await message.answer(
         text=LEXICON_RU['entered_not_emoticon']
     )
-
-# TODO: Добавить проверку в бд, не занят ли стикер +
-# соответсвующий ответ

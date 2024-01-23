@@ -11,6 +11,12 @@ class IsEmoji(BaseFilter):
         return emoji_count(text) == 1 == len(text)
 
 
+class IsBusyEmoji(BaseFilter):
+    async def __call__(self, message: Message) -> bool:
+        emoji: str = message.text
+        return emoji in db.get_emojis()
+
+
 class IsUserInSystem(BaseFilter):
     async def __call__(self, message: Message) -> bool:
         user_id: int = message.from_user.id
