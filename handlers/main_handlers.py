@@ -20,7 +20,7 @@ main_router = Router()
 
 main_router.include_router(in_systeam_router)
 
-
+# TODO: объеденить с упрощенной бд
 user_dict: dict[int, dict[str, str]] = {}
 
 
@@ -33,6 +33,7 @@ async def process_start_command(message: Message):
     Args:
         message (Message): _description_
     """
+    # TODO: убрать если пользователь в системе
     text = LEXICON_COMMANDS_RU[message.text]
     await message.answer(
         text=text,
@@ -90,13 +91,15 @@ async def process_not_in_the_system_press(callback: CallbackQuery,
     )
     await state.set_state(FSMFillForm.fill_username)
 
+# TODO: Переместить в отедельный пакет
+
 
 @main_router.message(StateFilter(FSMFillForm.fill_username), F.text.isalpha())
 async def process_name_sent(message: Message, state: FSMContext):
     # Cохраняем введенное имя в хранилище по ключу "name"
     await state.update_data(username=message.text)
+    # TODO: Предложить посмотреть занятые стикеры
     await message.answer(text=LEXICON_RU['enter_emoticon'])
-    # Устанавливаем состояние ожидания ввода возраста
     await state.set_state(FSMFillForm.fill_emoticon)
 
 
@@ -115,6 +118,7 @@ async def process_emoticon_sent(message: Message, state: FSMContext):
     logger.info(user_dict)
     await state.clear()
     await message.answer(
+        # TODO: Добавить приветствие по имени и стикеру
         text=LEXICON_RU['registration_done'] +
         LEXICON_RU['main_menu_junior'],
         reply_markup=create_menu_keyboard(
@@ -134,3 +138,6 @@ async def warning_not_emoticon(message: Message):
     await message.answer(
         text=LEXICON_RU['entered_not_emoticon']
     )
+
+# TODO: Добавить проверку в бд, не занят ли стикер +
+# соответсвующий ответ
