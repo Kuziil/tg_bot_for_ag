@@ -11,14 +11,16 @@ from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
 from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from handlers.in_system.in_systeam_handlers import in_systeam_router
+from handlers.not_in_system.not_in_system_handlers import not_in_systeam_router
 from FSMs.FSMs import FSMFillForm
-from filters.filters import IsEmoji, IsUserInSystem
-from database.database import db
+from filters.filters import IsUserInSystem
+
 
 logger = logging.getLogger(__name__)
 
 main_router = Router()
 
+main_router.include_router(not_in_systeam_router)
 main_router.include_router(in_systeam_router)
 
 
@@ -76,7 +78,6 @@ async def process_help_command(message: Message):
         message (Message): _description_
     """
     await message.answer(LEXICON_COMMANDS_RU[message.text])
-    await message.answer()
 
 
 @main_router.callback_query(F.data == 'in_the_system',
@@ -111,55 +112,3 @@ async def process_not_in_the_system_press(callback: CallbackQuery,
         text=LEXICON_RU['enter_username']
     )
     await state.set_state(FSMFillForm.fill_username)
-
-# TODO: Переместить в отедельный пакет
-
-
-@main_router.message(StateFilter(FSMFillForm.fill_username), F.text.isalpha())
-async def process_name_sent(message: Message, state: FSMContext):
-    # Cохраняем введенное имя в хранилище по ключу "name"
-    await state.update_data(username=message.text)
-    # TODO: Предложить посмотреть занятые стикеры
-    await message.answer(text=LEXICON_RU['enter_emoticon'])
-    await state.set_state(FSMFillForm.fill_emoticon)
-
-
-@main_router.message(StateFilter(FSMFillForm.fill_username))
-async def warning_not_name(message: Message):
-    await message.answer(
-        text=LEXICON_RU['entered_not_name'] + LEXICON_RU['enter_username']
-    )
-
-
-@main_router.message(StateFilter(FSMFillForm.fill_emoticon),
-                     IsEmoji())
-async def process_emoticon_sent(message: Message, state: FSMContext):
-    await state.update_data(emoticon=message.text)
-    # TODO: объеденить следущие две строчки, что бы тратить меньше ресурсов бд
-    db.user_database[message.from_user.id] = await state.get_data()
-    await db.add_empty_key(message.from_user.id)
-    await state.clear()
-    await message.answer(
-        # TODO: Добавить приветствие по имени и стикеру
-        text=LEXICON_RU['registration_done'] +
-        LEXICON_RU['main_menu_junior'],
-        reply_markup=create_menu_keyboard(
-            'check_in',
-            'clock_out',
-            'write_a_report',
-            'schedule',
-            'my_money',
-            'model_statistics',
-            'training_materials'
-        )
-    )
-
-
-@main_router.message(StateFilter(FSMFillForm.fill_emoticon))
-async def warning_not_emoticon(message: Message):
-    await message.answer(
-        text=LEXICON_RU['entered_not_emoticon']
-    )
-
-# TODO: Добавить проверку в бд, не занят ли стикер +
-# соответсвующий ответ
