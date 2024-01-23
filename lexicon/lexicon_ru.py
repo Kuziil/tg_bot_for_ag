@@ -46,7 +46,8 @@ LEXICON_BUTTON_RU: dict[str, str] = {
     'my_money': 'мои деньги💸',
     'model_statistics': 'статистика модели🎢',
     'training_materials': 'обучающие материалы📖',
-    'user_not_in_system': '‼'
+    'user_not_in_system': '‼',
+    'busy_emojis': 'Посмотреть занятые эмодзи'
 
 }
 
