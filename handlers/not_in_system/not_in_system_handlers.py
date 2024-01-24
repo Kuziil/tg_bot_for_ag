@@ -68,8 +68,8 @@ async def process_emoticon_sent(message: Message, state: FSMContext):
     logger.info(db.user_databases)
     await message.answer(
         text=LEXICON_RU['registration_done'] +
-        f'Приветсвую {db.user_database[message.from_user.id]['username']}'
-        f'{db.user_database[message.from_user.id]['emoticon']}\n\n' +
+        f"Приветсвую {db.user_database[message.from_user.id]['username']}"
+        f"{db.user_database[message.from_user.id]['emoticon']}\n\n" +
         LEXICON_RU['main_menu_junior'],
         reply_markup=create_menu_keyboard(
             'check_in',
