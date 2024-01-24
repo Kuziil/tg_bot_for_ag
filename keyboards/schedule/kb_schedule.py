@@ -22,7 +22,7 @@ from lexicon.lexicon_ru import (
 
 from database.database import db
 
-locale.setlocale(locale.LC_TIME, 'ru_RU')
+locale.setlocale(locale.LC_TIME, 'ru_RU.UTF8')
 
 
 def current_date(d_m_y: str,
