@@ -3,7 +3,7 @@ import logging
 from config_data.config import Config, load_config
 from lexicon.lexicon_ru import LEXICON_BUTTON_RU
 
-logger = logging.getLogger(__name__)
+
 
 
 class DBManager:
@@ -32,12 +32,12 @@ class DBManager:
                  username: str,
                  emoticon: str) -> None:
         if self.is_user_in_system(user_id=user_id):
-            logger.info(f"Пользователь с ID {user_id} уже существует")
+            pass
         else:
             self.user_database[user_id] = {'username': username,
                                            'emoticon': emoticon,
                                            'shifts': []}
-            logger.info(f"Пользователь {username} добавлен с ID {user_id}")
+            
 
     # Функция для добавления смены пользователю
     def add_shift(self,

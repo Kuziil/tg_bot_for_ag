@@ -16,7 +16,6 @@ from FSMs.FSMs import FSMFillForm
 from filters.filters import IsUserInSystem
 
 
-logger = logging.getLogger(__name__)
 
 main_router = Router()
 

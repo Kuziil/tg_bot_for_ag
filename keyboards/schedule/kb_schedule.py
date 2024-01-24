@@ -22,7 +22,6 @@ from lexicon.lexicon_ru import (
 
 from database.database import db
 
-logger = logging.getLogger(__name__)
 locale.setlocale(locale.LC_TIME, 'ru_RU')
 
 
