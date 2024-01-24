@@ -8,14 +8,19 @@ from handlers import main_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
 
 # Инициализируем логгер
-
+logger = logging.getLogger(__name__)
 
 # Функция конфигурирования и запуска бота
 async def main():
     # Конфигурируем логирование
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(filename)s:%(lineno)d #%(levelname)-8s '
+               '[%(asctime)s] - %(name)s - %(message)s')
 
     # Выводим в консоль информацию о начале запуска бота
-
+    logger.info('Starting bot')
+    
     # Инициализируем хранилище
     storage = MemoryStorage()
     # Загружаем конфиг в переменную config
