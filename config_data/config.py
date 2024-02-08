@@ -12,8 +12,18 @@ class TgBot:
 
 
 @dataclass
+class DB:
+    host: str
+    password: str
+    name: str
+    db_name: str
+    port: int
+
+
+@dataclass
 class Config:
     tg_bot: TgBot
+    db: DB
 
 
 # Создаем функцию, которая будет читать файл .env и возвращать
@@ -27,5 +37,12 @@ def load_config(path: str | None = None) -> Config:
             id=env('BOT_ID'),
             admin_ids=list(map(int, env.list('ADMIN_IDS'))),
             operator_ids=list(map(int, env.list('OPERATOR_IDS')))
+        ),
+        db=DB(
+            host=env('HOST'),
+            name=env('USER'),
+            password=env('PASSWORD'),
+            db_name=env('DB_NAME'),
+            port=env('PORT')
         )
     )

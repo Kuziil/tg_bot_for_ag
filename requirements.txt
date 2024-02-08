@@ -13,6 +13,7 @@ dataclasses==0.6
 dill==0.3.7
 emoji==2.10.0
 environs==10.3.0
+flake8==7.0.0
 frozenlist==1.4.1
 idna==3.6
 isort==5.13.2
@@ -23,9 +24,11 @@ multidict==6.0.4
 packaging==23.2
 pep8==1.7.1
 platformdirs==4.1.0
+psycopg2-binary==2.9.9
 pycodestyle==2.11.1
 pydantic==2.5.3
 pydantic_core==2.14.6
+pyflakes==3.2.0
 pylint==3.0.3
 python-dotenv==1.0.0
 tomli==2.0.1
