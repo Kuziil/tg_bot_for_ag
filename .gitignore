@@ -1,4 +1,5 @@
 .env
+config_data/settings.yml
 
 .mypy_cache/
 .vscode/

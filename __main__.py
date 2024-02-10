@@ -6,6 +6,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from config_data.config import Config, load_config
 from handlers import main_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
+from config_data.config_reader import parse_settings, Settings
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from middlewares import DbSessionMiddleware
@@ -29,10 +30,10 @@ async def main():
 
     # Инициализируем хранилище
     storage = MemoryStorage()
-    # Загружаем конфиг в переменную config
-    config: Config = load_config()
+    # Получаем настройки текущего приложения
+    settings: Settings = parse_settings()
 
-    engine = create_async_engine(config.db.host)
+    engine = create_async_engine(url=str(settings.db_url))
     sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
 
     async with sessionmaker() as session:
@@ -47,7 +48,7 @@ async def main():
     dp.include_router(main_handlers.main_router)
     dp.include_router(other_handlers.router)
 
-    bot = Bot(token=config.tg_bot.token,
+    bot = Bot(token=settings.bot_token.get_secret_value(),
               parse_mode='HTML')
 
     await set_main_menu(bot)
