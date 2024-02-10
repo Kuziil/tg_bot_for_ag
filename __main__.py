@@ -3,7 +3,6 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-from config_data.config import Config, load_config
 from handlers import main_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
 from config_data.config_reader import parse_settings, Settings
