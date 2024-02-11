@@ -1,13 +1,21 @@
-from uuid import uuid4
-
-from sqlalchemy.dialects.postgresql import TEXT, UUID, BIGINT
+from sqlalchemy import Identity, ForeignKey
+from sqlalchemy.dialects.postgresql import TEXT, BIGINT, BOOLEAN, NUMERIC, DATE
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import mapped_column, Mapped
-from sqlalchemy.sql import expression
+from sqlalchemy.sql import expression, true
 from sqlalchemy.types import DateTime
+from typing import Annotated
+from datetime import datetime
 
 
 from db.base import Base
+
+intpk = Annotated[int, mapped_column(
+    BIGINT, Identity(always=True), primary_key=True)]
+bigint = Annotated[int, mapped_column(BIGINT)]
+text = Annotated[str, mapped_column(TEXT)]
+created_at = Annotated[datetime, mapped_column(
+    DATE, server_default=text("TIMEZONE('utc', CURRENT_TIMESTAMP)"))]
 
 
 class utcnow(expression.FunctionElement):
@@ -23,18 +31,165 @@ def pg_utcnow(element, compiler, **kw):
 class Agencies(Base):
     __tablename__ = "agencies"
 
-    agency_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid4
-    )
-    title: Mapped[str] = mapped_column(
-        TEXT,
-        nullable=False
-    )
-    tg_bot_id: Mapped[int] = mapped_column(
-        BIGINT
-    )
-    test_tg_bot: Mapped[int] = mapped_column(
-        BIGINT
-    )
+    agency_id: Mapped[intpk]
+    title: Mapped[str] = mapped_column(TEXT, nullable=False)
+    tg_bot_id: Mapped[bigint]
+    test_tg_bot: Mapped[bigint]
+
+
+class AgencyModel(Base):
+    __tablename__ = "agency_model"
+
+    agency_id: Mapped[bigint] = mapped_column(
+        ForeignKey('agencies.agency_id', ondelete='CASCADE'),
+        primary_key=True)
+    model_id: Mapped[bigint] = mapped_column(
+        ForeignKey('models.model_id', ondelete='CASCADE'),
+        primary_key=True)
+
+
+class Earnings(Base):
+    __tablename__ = "earnings"
+
+    earning_id: Mapped[intpk]
+    shift_user_id: Mapped[bigint]
+    confirm: Mapped[bool] = mapped_column(BOOLEAN, server_default=true())
+    dirty: Mapped[float] = mapped_column(NUMERIC)
+
+
+class Fines(Base):
+    __tablename__ = "fines"
+
+    fine_id: Mapped[intpk]
+    date_fine: Mapped[created_at]
+    description: Mapped[text]
+    amount: Mapped[float] = mapped_column(NUMERIC)
+    user_id: Mapped[bigint] = mapped_column(
+        ForeignKey('users.user_id', ondelete='CASCADE'))
+
+
+class Pages(Base):
+    __tablename__ = "pages"
+
+    page_id: Mapped[intpk]
+    model_id: Mapped[bigint] = mapped_column(
+        ForeignKey('models.model_id', ondelete='CASCADE'))
+    vip: Mapped[bool] = mapped_column(BOOLEAN)
+    sales_commision: Mapped[float] = mapped_column(NUMERIC)
+    senior_id: Mapped[bigint] = mapped_column(
+        ForeignKey('users.user_id', ondelete='CASCADE'))
+    number_operator_shift: Mapped[bigint] = mapped_column(
+        server_default=text("0"))
+    page_link: Mapped[text]
+
+    # model = relationship("Models")
+
+
+class PagesTimePeriods(Base):
+    __tablename__ = "pages_time_Dateperiods"
+
+    time_period_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'time_periods.time_period_id', ondelete='CASCADE'))
+    page_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'pages.page_id', ondelete='CASCADE'))
+    page_time_period_id: Mapped[intpk]
+
+
+class Permissions(Base):
+    __tablename__ = "permissions"
+
+    permission_id: Mapped[intpk]
+    title: Mapped[text] = mapped_column(unique=True)
+
+
+class Roles(Base):
+    __tablename__ = "roles"
+
+    role_id: Mapped[intpk]
+    title: Mapped[text] = mapped_column(unique=True)
+
+
+class RolesPermissions(Base):
+    __tablename__ = "roles_permissions"
+
+    role_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'roles.role_id', ondelete='CASCADE'),
+        primary_key=True)
+    permission_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'permissions.permission_id', ondelete='CASCADE'),
+        primary_key=True)
+
+
+class Shifts(Base):
+    __tablename__ = "shifts"
+
+    shift_id: Mapped[intpk]
+    date_shift: Mapped[created_at]
+    page_time_period_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'pages_time_periods.page_time_period_id', ondelete='CASCADE'))
+
+
+class ShiftsUsers(Base):
+    __tablename__ = "shifts_users"
+
+    shift_user_id: Mapped[intpk]
+    operator_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'users.user_id', ondelete='CASCADE'))
+    shift_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'shifts.shift_id', ondelete='CASCADE'))
+
+
+class TimePeriods(Base):
+    __tablename__ = "time_periods"
+
+    time_period_id: Mapped[intpk]
+    title: Mapped[text]
+
+
+class Users(Base):
+    __tablename__ = "users"
+
+    user_id: Mapped[intpk]
+    name: Mapped[text] = mapped_column(nullable=False)
+    emoji: Mapped[text]
+    status: Mapped[text] = mapped_column(default='AppliedWating')
+    work_now: Mapped[bool] = mapped_column(
+        BOOLEAN, default=False, nullable=False)
+    wallet: Mapped[text]
+    time_period_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'time_periods.time_period_id', ondelete='CASCADE'))
+    role_id: Mapped[bigint] = mapped_column(
+        ForeignKey('roles.role_id', ondelete='CASCADE'))
+    manager_id: Mapped[bigint] = mapped_column(
+        ForeignKey('users.user_id', ondelete='CASCADE'))
+
+    # manager = relationship("Users", remote_side=[user_id])
+    # time_period = relationship("TimePeriods")
+    # role = relationship("Roles")
+
+
+class UsersAgencies(Base):
+    __tablename__ = "users_agencies"
+
+    user_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'users.user_id', ondelete='CASCADE'), primary_key=True)
+    agency_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'agencies.agency_id', ondelete='CASCADE'), primary_key=True)
+
+
+class UsersModels(Base):
+    __tablename__ = "users_models"
+
+    user_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'users.user_id', ondelete='CASCADE'), primary_key=True)
+    model_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'models.model_id', ondelete='CASCADE'), primary_key=True)
+
+
+class UserTg(Base):
+    __tablename__ = "user_tg"
+
+    user_tg_id: Mapped[intpk]
+    user_id: Mapped[bigint] = mapped_column(ForeignKey(
+        'users.user_id', ondelete='CASCADE'))
+    tg_id: Mapped[bigint] = mapped_column(unique=True)
