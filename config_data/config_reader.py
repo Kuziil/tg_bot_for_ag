@@ -37,5 +37,6 @@ def parse_settings(local_file_name: str = "settings.yml") -> Settings:
         file_path = settings_file.absolute()
     with open(file_path, "rt") as file:
         config_data = load(file, SafeLoader)
-    # После прочтения файла накладываем его на модель и получаем объект Settings
+    # После прочтения файла накладываем его на
+    # модель и получаем объект Settings
     return Settings.model_validate(config_data)
