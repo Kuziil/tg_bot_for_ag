@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from sqlalchemy.dialects.postgresql import TEXT, UUID, INTEGER
+from sqlalchemy.dialects.postgresql import TEXT, UUID, BIGINT
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy.sql import expression
@@ -28,13 +28,13 @@ class Agencies(Base):
         primary_key=True,
         default=uuid4
     )
-    titel: Mapped[str] = mapped_column(
+    title: Mapped[str] = mapped_column(
         TEXT,
         nullable=False
     )
     tg_bot_id: Mapped[int] = mapped_column(
-        INTEGER
+        BIGINT
     )
     test_tg_bot: Mapped[int] = mapped_column(
-        INTEGER
+        BIGINT
     )

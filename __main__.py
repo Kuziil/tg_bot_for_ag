@@ -31,8 +31,13 @@ async def main():
     storage = MemoryStorage()
     # Получаем настройки текущего приложения
     settings: Settings = parse_settings()
-
-    engine = create_async_engine(url=str(settings.db_url))
+    # echo сыпет в консоль
+    # pool_size количество подключений
+    # max_overflow дополнительные подключения
+    engine = create_async_engine(url=str(settings.db_url),
+                                 echo=True,
+                                 pool_size=5,
+                                 max_overflow=10)
     sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
 
     async with sessionmaker() as session:
