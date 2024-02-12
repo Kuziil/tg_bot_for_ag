@@ -10,7 +10,7 @@ from config_data.config_reader import parse_settings, Settings
 from middlewares import DbSessionMiddleware
 from db.requests import test_connection
 from db.db_helper import DatabaseHelper
-# from db.base import Base
+from db.base import Base
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -39,10 +39,10 @@ async def main():
                                echo=True,
                                pool_size=5,
                                max_overflow=10)
-    # async with db_helper.engine.begin() as conn:
-    #     await conn.run_sync(Base.metadata.create_all)
+    async with db_helper.engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
-    async with db_helper.sessionmaker as session:
+    async with db_helper.sessionmaker() as session:
         await test_connection(session)
 
     # Инициализируем бот и диспетчер
