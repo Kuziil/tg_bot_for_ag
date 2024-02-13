@@ -12,6 +12,8 @@ from handlers.in_system.in_systeam_handlers import in_systeam_router
 from handlers.not_in_system.not_in_system_handlers import not_in_systeam_router
 from FSMs.FSMs import FSMFillForm
 from filters.filters import IsUserInSystem
+from db.requests import add_user
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 main_router = Router()
@@ -46,7 +48,7 @@ async def process_start_command(message: Message):
 
 @main_router.message(Command(commands='start'),
                      StateFilter(default_state))
-async def process_start_command_for_new_id(message: Message):
+async def process_start_command_for_new_id(message: Message, session: AsyncSession):
     """Данный хэндлер отвечает на команду /start
     и возвращает текст с кнопками позволяющие пользователю выбрать
     существует ли у него уже аккаунт
@@ -54,6 +56,7 @@ async def process_start_command_for_new_id(message: Message):
         message (Message): _description_
     """
     text = LEXICON_COMMANDS_RU[message.text]
+    await add_user(session=session, name=message.from_user.username)
     await message.answer(
         text=text,
         reply_markup=create_start_keyboard(

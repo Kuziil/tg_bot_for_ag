@@ -32,9 +32,9 @@ class Agencies(Base):
     __tablename__ = "agencies"
 
     agency_id: Mapped[intpk]
-    title: Mapped[ttext] = mapped_column(nullable=False)
-    tg_bot_id: Mapped[bigint]
-    test_tg_bot: Mapped[bigint]
+    title: Mapped[ttext]
+    tg_bot_id: Mapped[bigint] = mapped_column(nullable=True)
+    test_tg_bot: Mapped[bigint] = mapped_column(nullable=True)
 
 
 class Models(Base):

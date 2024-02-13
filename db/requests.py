@@ -9,6 +9,12 @@ async def get_agency_bot_id(session: AsyncSession, agency_id: int):
     return await session.scalar(stmt)
 
 
+async def add_user(session: AsyncSession, name: str):
+    agency = Agencies(title=name)
+    session.add(agency)
+    await session.commit()
+
+
 async def test_connection(session: AsyncSession):
     """
     Проверка соединения с СУБД
