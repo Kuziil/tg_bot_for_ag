@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "tg-bot-for-ag"
+version = "0.1.0"
+description = ""
+authors = ["Kuziil <Sikuz70@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+aiogram = "^3.3.0"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.26"}
+environs = "^10.3.0"
+types-pyyaml = "^6.0.12.12"
+emoji = "^2.10.1"
+pyyaml = "^6.0.1"
+asyncpg = "^0.29.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
