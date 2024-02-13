@@ -2,7 +2,7 @@ from sqlalchemy import Identity, ForeignKey, text
 from sqlalchemy.dialects.postgresql import TEXT, BIGINT, BOOLEAN, NUMERIC, DATE
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import mapped_column, Mapped
-from sqlalchemy.sql import expression, true
+from sqlalchemy.sql import expression, false
 from sqlalchemy.types import DateTime
 from typing import Annotated
 from datetime import datetime
@@ -33,16 +33,16 @@ class Agencies(Base):
 
     agency_id: Mapped[intpk]
     title: Mapped[ttext]
-    tg_bot_id: Mapped[bigint] = mapped_column(nullable=True)
-    test_tg_bot: Mapped[bigint] = mapped_column(nullable=True)
+    tg_bot_id: Mapped[bigint]
+    test_tg_bot: Mapped[bigint]
 
 
 class Models(Base):
     __tablename__ = "models"
 
     model_id: Mapped[intpk]
-    title: Mapped[ttext] = mapped_column(nullable=False)
-    description: Mapped[ttext]
+    title: Mapped[ttext]
+    description: Mapped[ttext] = mapped_column(nullable=True)
 
 
 class Earnings(Base):
@@ -50,7 +50,7 @@ class Earnings(Base):
 
     earning_id: Mapped[intpk]
     shift_user_id: Mapped[bigint]
-    confirm: Mapped[bool] = mapped_column(BOOLEAN, server_default=true())
+    confirm: Mapped[bool] = mapped_column(BOOLEAN, default=false())
     dirty: Mapped[float] = mapped_column(NUMERIC)
 
 
@@ -70,7 +70,7 @@ class Fines(Base):
 
     fine_id: Mapped[intpk]
     date_fine: Mapped[created_at]
-    description: Mapped[ttext]
+    description: Mapped[ttext] = mapped_column(nullable=True)
     amount: Mapped[float] = mapped_column(NUMERIC)
     user_id: Mapped[bigint] = mapped_column(
         ForeignKey('users.user_id', ondelete='CASCADE'))
@@ -85,9 +85,9 @@ class Pages(Base):
     vip: Mapped[bool] = mapped_column(BOOLEAN)
     sales_commision: Mapped[float] = mapped_column(NUMERIC)
     senior_id: Mapped[bigint] = mapped_column(
-        ForeignKey('users.user_id', ondelete='CASCADE'))
+        ForeignKey('users.user_id', ondelete='CASCADE'), nullable=True)
     number_operator_shift: Mapped[bigint] = mapped_column(
-        server_default=ttext("0"))
+        server_default=text("0"))
     page_link: Mapped[ttext]
 
     # model = relationship("Models")
@@ -148,18 +148,18 @@ class Users(Base):
     __tablename__ = "users"
 
     user_id: Mapped[intpk]
-    name: Mapped[ttext] = mapped_column(nullable=False)
-    emoji: Mapped[ttext]
+    name: Mapped[ttext]
+    emoji: Mapped[ttext] = mapped_column(nullable=True)
     status: Mapped[ttext] = mapped_column(default='AppliedWating')
     work_now: Mapped[bool] = mapped_column(
-        BOOLEAN, default=False, nullable=False)
-    wallet: Mapped[ttext]
+        BOOLEAN, default=False)
+    wallet: Mapped[ttext] = mapped_column(nullable=True)
     time_period_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'time_periods.time_period_id', ondelete='CASCADE'))
+        'time_periods.time_period_id', ondelete='CASCADE'), nullable=True)
     role_id: Mapped[bigint] = mapped_column(
-        ForeignKey('roles.role_id', ondelete='CASCADE'))
+        ForeignKey('roles.role_id', ondelete='CASCADE'), nullable=True)
     manager_id: Mapped[bigint] = mapped_column(
-        ForeignKey('users.user_id', ondelete='CASCADE'))
+        ForeignKey('users.user_id', ondelete='CASCADE'), nullable=True)
 
     # manager = relationship("Users", remote_side=[user_id])
     # time_period = relationship("TimePeriods")
