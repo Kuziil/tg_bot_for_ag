@@ -56,7 +56,7 @@ async def process_start_command_for_new_id(message: Message, session: AsyncSessi
         message (Message): _description_
     """
     text = LEXICON_COMMANDS_RU[message.text]
-    await add_user(session=session, name=message.from_user.username)
+    # await add_user(session=session, name=message.from_user.username)
     await message.answer(
         text=text,
         reply_markup=create_start_keyboard(

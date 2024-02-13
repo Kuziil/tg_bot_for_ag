@@ -1,3 +1,4 @@
+import logging
 from aiogram import Router, F
 from aiogram.filters import StateFilter
 from aiogram.types import Message, CallbackQuery
@@ -8,8 +9,10 @@ from filters.filters import IsEmoji, IsBusyEmoji
 from database.database import db
 from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.kb_single_line_vertically import create_menu_keyboard
+from db.requests import add_user
+from sqlalchemy.ext.asyncio import AsyncSession
 
-
+logger = logging.getLogger(__name__)
 not_in_systeam_router = Router()
 
 
@@ -57,9 +60,12 @@ async def warning_busy_emoji(message: Message):
 
 @not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon),
                                IsEmoji())
-async def process_emoticon_sent(message: Message, state: FSMContext):
-    await state.update_data(emoticon=message.text, shifts=list())
-    db.user_database[message.from_user.id] = await state.get_data()
+async def process_emoticon_sent(message: Message, state: FSMContext, session: AsyncSession):
+    await state.update_data(emoticon=message.text)
+    logger.info(await state.get_data())
+    st: dict[str, str] = await state.get_data()
+    db.user_database[message.from_user.id] = st
+    await add_user(session=session, name=st['username'], emoji=st['emoticon'])
     await state.clear()
     await message.answer(
         text=LEXICON_RU['registration_done'] +
