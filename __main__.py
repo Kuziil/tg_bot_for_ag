@@ -2,8 +2,6 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-from aiogram.types import Message
-from aiogram.filters import Command
 from aiogram.fsm.storage.memory import MemoryStorage
 from handlers import main_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
@@ -13,8 +11,7 @@ from middlewares import DbSessionMiddleware
 from db.requests import test_connection
 from db.db_helper import DatabaseHelper
 from db.base import Base
-from db.models import Agencies
-from sqlalchemy import select
+
 
 
 # Инициализируем логгер
