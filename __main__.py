@@ -5,12 +5,14 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from handlers import main_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
-from config_data.config_reader import parse_settings, Settings
+from config_data.config_reader import settings
 
 from middlewares import DbSessionMiddleware
 from db.requests import test_connection
 from db.db_helper import DatabaseHelper
 from db.base import Base
+
+
 
 
 
@@ -32,8 +34,6 @@ async def main():
 
     # Инициализируем хранилище
     storage = MemoryStorage()
-    # Получаем настройки текущего приложения
-    settings: Settings = parse_settings()
     # echo сыпет в консоль
     # pool_size количество подключений
     # max_overflow дополнительные подключения
@@ -41,11 +41,11 @@ async def main():
                                echo=True,
                                pool_size=5,
                                max_overflow=10)
-    async with db_helper.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+    # async with db_helper.engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.drop_all)
 
-    async with db_helper.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # async with db_helper.engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.create_all)
 
     async with db_helper.sessionmaker() as session:
         await test_connection(session)

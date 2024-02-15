@@ -18,3 +18,5 @@ class Base(DeclarativeBase):
 
         return f"<{self.__class__.__name__} {', '.join(cols)}>"
     pass
+
+from db import models

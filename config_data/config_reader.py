@@ -40,3 +40,5 @@ def parse_settings(local_file_name: str = "settings.yml") -> Settings:
     # После прочтения файла накладываем его на
     # модель и получаем объект Settings
     return Settings.model_validate(config_data)
+
+settings = parse_settings()
