@@ -8,7 +8,7 @@ from typing import Annotated
 from datetime import datetime
 
 
-from db.base import Base
+from db.models.base import Base
 
 created_at = Annotated[datetime, mapped_column(
     DATE, server_default=text("TIMEZONE('utc', CURRENT_TIMESTAMP)"))]

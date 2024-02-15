@@ -19,7 +19,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from db.base import Base
+from db.models.base import Base
 from config_data.config_reader import settings
 target_metadata = Base.metadata
 
