@@ -39,10 +39,10 @@ def load_config(path: str | None = None) -> Config:
             operator_ids=list(map(int, env.list('OPERATOR_IDS')))
         ),
         db=DB(
-            host=env('HOST'),
-            name=env('USER'),
-            password=env('PASSWORD'),
+            host=env('DB_HOST'),
+            name=env('DB_USER'),
+            password=env('DB_PASS'),
             db_name=env('DB_NAME'),
-            port=env('PORT')
+            port=env('DB_PORT')
         )
     )

@@ -3,9 +3,18 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-from config_data.config import Config, load_config
 from handlers import main_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
+from config_data.config_reader import settings
+
+from middlewares import DbSessionMiddleware
+from db.requests import test_connection
+from db.db_helper import DatabaseHelper
+from db.base import Base
+
+
+
+
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -25,24 +34,40 @@ async def main():
 
     # Инициализируем хранилище
     storage = MemoryStorage()
-    # Загружаем конфиг в переменную config
-    config: Config = load_config()
+    # echo сыпет в консоль
+    # pool_size количество подключений
+    # max_overflow дополнительные подключения
+    db_helper = DatabaseHelper(db_url=settings.db_url,
+                               echo=True,
+                               pool_size=5,
+                               max_overflow=10)
+    # async with db_helper.engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.drop_all)
+
+    # async with db_helper.engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.create_all)
+
+    async with db_helper.sessionmaker() as session:
+        await test_connection(session)
 
     # Инициализируем бот и диспетчер
-    bot = Bot(token=config.tg_bot.token,
-              parse_mode='HTML')
     dp = Dispatcher(storage=storage)
 
-    await set_main_menu(bot)
+    dp.update.middleware(DbSessionMiddleware(
+        session_pool=db_helper.sessionmaker))
 
     # Регистриуем роутеры в диспетчере
     dp.include_router(main_handlers.main_router)
     dp.include_router(other_handlers.router)
 
+    bot = Bot(token=settings.bot_token.get_secret_value(),
+              parse_mode='HTML')
+
+    await set_main_menu(bot)
+
     # Пропускаем накопившиеся апдейты и запускаем polling
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
-
 
 if __name__ == '__main__':
     asyncio.run(main())
