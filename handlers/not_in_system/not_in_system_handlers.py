@@ -16,76 +16,73 @@ logger = logging.getLogger(__name__)
 not_in_systeam_router = Router()
 
 
-@not_in_systeam_router.message(StateFilter(FSMFillForm.fill_username),
-                               F.text.isalpha())
+@not_in_systeam_router.message(StateFilter(FSMFillForm.fill_username), F.text.isalpha())
 async def process_name_sent(message: Message, state: FSMContext):
     # Cохраняем введенное имя в хранилище по ключу "name"
     await state.update_data(username=message.text)
-    await message.answer(text=LEXICON_RU['enter_emoticon'],
-                         reply_markup=create_menu_keyboard('busy_emojis'))
+    await message.answer(
+        text=LEXICON_RU["enter_emoticon"],
+        reply_markup=create_menu_keyboard("busy_emojis"),
+    )
     await state.set_state(FSMFillForm.fill_emoticon)
 
 
 @not_in_systeam_router.message(StateFilter(FSMFillForm.fill_username))
 async def warning_not_name(message: Message):
     await message.answer(
-        text=LEXICON_RU['entered_not_username'] + LEXICON_RU['enter_username']
+        text=LEXICON_RU["entered_not_username"] + LEXICON_RU["enter_username"]
     )
 
 
-@not_in_systeam_router.callback_query(StateFilter(FSMFillForm.fill_emoticon),
-                                      F.data == 'busy_emojis')
+@not_in_systeam_router.callback_query(
+    StateFilter(FSMFillForm.fill_emoticon), F.data == "busy_emojis"
+)
 async def process_show_busy_emojis(callback: CallbackQuery, state: FSMContext):
-    emojis = ''
+    emojis = ""
     for emoji in db.get_emojis():
         emojis += f"{emoji}"
-    await callback.message.edit_text(
-        text=emojis
-    )
+    await callback.message.edit_text(text=emojis)
     await callback.answer()
     await state.set_state(FSMFillForm.fill_emoticon)
 
 
-@not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon),
-                               IsEmoji(),
-                               IsBusyEmoji())
+@not_in_systeam_router.message(
+    StateFilter(FSMFillForm.fill_emoticon), IsEmoji(), IsBusyEmoji()
+)
 async def warning_busy_emoji(message: Message):
-    emojis = ''
+    emojis = ""
     for emoji in db.get_emojis():
-        emojis += f'{emoji}'
-    await message.answer(
-        text=LEXICON_RU['busy_emoji'] + emojis
-    )
+        emojis += f"{emoji}"
+    await message.answer(text=LEXICON_RU["busy_emoji"] + emojis)
 
 
-@not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon),
-                               IsEmoji())
-async def process_emoticon_sent(message: Message, state: FSMContext, session: AsyncSession):
+@not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon), IsEmoji())
+async def process_emoticon_sent(
+    message: Message, state: FSMContext, session: AsyncSession
+):
     await state.update_data(emoticon=message.text)
     logger.info(await state.get_data())
     st: dict[str, str] = await state.get_data()
     db.user_database[message.from_user.id] = st
-    await add_user(session=session, name=st['username'], emoji=st['emoticon'])
+    await add_user(session=session, username=st["username"], emoji=st["emoticon"])
     await state.clear()
     await message.answer(
-        text=LEXICON_RU['registration_done'] +
-        f"Приветсвую {db.user_database[message.from_user.id]['username']}"
-        f"{db.user_database[message.from_user.id]['emoticon']}\n\n" +
-        LEXICON_RU['main_menu_junior'],
+        text=LEXICON_RU["registration_done"]
+        + f"Приветсвую {db.user_database[message.from_user.id]['username']}"
+        f"{db.user_database[message.from_user.id]['emoticon']}\n\n"
+        + LEXICON_RU["main_menu_junior"],
         reply_markup=create_menu_keyboard(
-            'check_in',
-            'clock_out',
-            'write_a_report',
-            'schedule',
-            'my_money',
-            'model_statistics',
-            'training_materials'
-        )
+            "check_in",
+            "clock_out",
+            "write_a_report",
+            "schedule",
+            "my_money",
+            "model_statistics",
+            "training_materials",
+        ),
     )
 
 
 @not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon))
 async def warning_not_emoticon(message: Message):
-    await message.answer(
-        text=LEXICON_RU['entered_not_emoticon']
-    )
+    await message.answer(text=LEXICON_RU["entered_not_emoticon"])

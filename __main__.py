@@ -10,7 +10,6 @@ from config_data.config_reader import settings
 from middlewares import DbSessionMiddleware
 from db.requests import test_connection
 from db.db_helper import DatabaseHelper
-from db.base import Base
 
 
 
