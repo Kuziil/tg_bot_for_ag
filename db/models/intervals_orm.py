@@ -7,6 +7,8 @@ from db.models.types import intpk, strtext, dttime
 
 if TYPE_CHECKING:
     from .users_orm import UsersORM
+    from .pages_intervals_orm import PagesIntervalsORM
+    from .pages_orm import PagesORM
 
 
 class IntervalsORM(Base):
@@ -18,5 +20,12 @@ class IntervalsORM(Base):
     end_at: Mapped[dttime]
 
     users: Mapped["UsersORM"] = relationship(
+        back_populates="interval",
+    )
+    pages: Mapped[list["PagesORM"]] = relationship(
+        secondary="pages_intervals",
+        back_populates="intervals",
+    )
+    pages_details: Mapped[list["PagesIntervalsORM"]] = relationship(
         back_populates="interval",
     )
