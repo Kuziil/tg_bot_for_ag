@@ -4,7 +4,7 @@ from db.models.base import Base
 from db.models.types import intpk, ttext, bigint
 
 
-class Agencies(Base):
+class AgenciesORM(Base):
     __tablename__ = "agencies"
 
     id: Mapped[intpk]

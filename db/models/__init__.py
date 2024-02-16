@@ -1,9 +1,5 @@
-__all__ = (
-    "Base",
-    "Agencies",
-    "Models"
-)
+__all__ = ("Base", "AgenciesORM", "ModelsORM")
 
 from .base import Base
-from .agencies import Agencies
-from .models import Models
+from .agencies import AgenciesORM
+from .models import ModelsORM
