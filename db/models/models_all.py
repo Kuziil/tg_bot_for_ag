@@ -10,32 +10,14 @@ from db.models.types import bigint, intpk, ttext, created_at
 from db.models.base import Base
 
 
-
 class utcnow(expression.FunctionElement):
     type = DateTime()
     inherit_cache = True
 
 
-@compiles(utcnow, 'postgresql')
+@compiles(utcnow, "postgresql")
 def pg_utcnow(element, compiler, **kw):
     return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
-
-
-class Agencies(Base):
-    __tablename__ = "agencies"
-
-    agency_id: Mapped[intpk]
-    title: Mapped[ttext]
-    tg_bot_id: Mapped[bigint]
-    test_tg_bot: Mapped[bigint]
-
-
-class Models(Base):
-    __tablename__ = "models"
-
-    model_id: Mapped[intpk]
-    title: Mapped[ttext]
-    description: Mapped[ttext] = mapped_column(nullable=True)
 
 
 class Earnings(Base):
@@ -51,11 +33,11 @@ class AgencyModel(Base):
     __tablename__ = "agency_model"
 
     agency_id: Mapped[bigint] = mapped_column(
-        ForeignKey('agencies.agency_id', ondelete='CASCADE'),
-        primary_key=True)
+        ForeignKey("agencies.agency_id", ondelete="CASCADE"), primary_key=True
+    )
     model_id: Mapped[bigint] = mapped_column(
-        ForeignKey('models.model_id', ondelete='CASCADE'),
-        primary_key=True)
+        ForeignKey("models.model_id", ondelete="CASCADE"), primary_key=True
+    )
 
 
 class Fines(Base):
@@ -66,7 +48,8 @@ class Fines(Base):
     description: Mapped[ttext] = mapped_column(nullable=True)
     amount: Mapped[float] = mapped_column(NUMERIC)
     user_id: Mapped[bigint] = mapped_column(
-        ForeignKey('users.user_id', ondelete='CASCADE'))
+        ForeignKey("users.user_id", ondelete="CASCADE")
+    )
 
 
 class Pages(Base):
@@ -74,13 +57,14 @@ class Pages(Base):
 
     page_id: Mapped[intpk]
     model_id: Mapped[bigint] = mapped_column(
-        ForeignKey('models.model_id', ondelete='CASCADE'))
+        ForeignKey("models.model_id", ondelete="CASCADE")
+    )
     vip: Mapped[bool] = mapped_column(BOOLEAN)
     sales_commision: Mapped[float] = mapped_column(NUMERIC)
     senior_id: Mapped[bigint] = mapped_column(
-        ForeignKey('users.user_id', ondelete='CASCADE'), nullable=True)
-    number_operator_shift: Mapped[bigint] = mapped_column(
-        server_default=text("0"))
+        ForeignKey("users.user_id", ondelete="CASCADE"), nullable=True
+    )
+    number_operator_shift: Mapped[bigint] = mapped_column(server_default=text("0"))
     page_link: Mapped[ttext]
 
     # model = relationship("Models")
@@ -103,12 +87,12 @@ class Roles(Base):
 class RolesPermissions(Base):
     __tablename__ = "roles_permissions"
 
-    role_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'roles.role_id', ondelete='CASCADE'),
-        primary_key=True)
-    permission_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'permissions.permission_id', ondelete='CASCADE'),
-        primary_key=True)
+    role_id: Mapped[bigint] = mapped_column(
+        ForeignKey("roles.role_id", ondelete="CASCADE"), primary_key=True
+    )
+    permission_id: Mapped[bigint] = mapped_column(
+        ForeignKey("permissions.permission_id", ondelete="CASCADE"), primary_key=True
+    )
 
 
 class Shifts(Base):
@@ -116,18 +100,21 @@ class Shifts(Base):
 
     shift_id: Mapped[intpk]
     date_shift: Mapped[created_at]
-    page_time_period_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'pages_time_periods.page_time_period_id', ondelete='CASCADE'))
+    page_time_period_id: Mapped[bigint] = mapped_column(
+        ForeignKey("pages_time_periods.page_time_period_id", ondelete="CASCADE")
+    )
 
 
 class ShiftsUsers(Base):
     __tablename__ = "shifts_users"
 
     shift_user_id: Mapped[intpk]
-    operator_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'users.user_id', ondelete='CASCADE'))
-    shift_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'shifts.shift_id', ondelete='CASCADE'))
+    operator_id: Mapped[bigint] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE")
+    )
+    shift_id: Mapped[bigint] = mapped_column(
+        ForeignKey("shifts.shift_id", ondelete="CASCADE")
+    )
 
 
 class TimePeriods(Base):
@@ -143,16 +130,18 @@ class Users(Base):
     user_id: Mapped[intpk]
     name: Mapped[ttext]
     emoji: Mapped[ttext] = mapped_column(nullable=True)
-    status: Mapped[ttext] = mapped_column(default='AppliedWating')
-    work_now: Mapped[bool] = mapped_column(
-        BOOLEAN, default=False)
+    status: Mapped[ttext] = mapped_column(default="AppliedWating")
+    work_now: Mapped[bool] = mapped_column(BOOLEAN, default=False)
     wallet: Mapped[ttext] = mapped_column(nullable=True)
-    time_period_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'time_periods.time_period_id', ondelete='CASCADE'), nullable=True)
+    time_period_id: Mapped[bigint] = mapped_column(
+        ForeignKey("time_periods.time_period_id", ondelete="CASCADE"), nullable=True
+    )
     role_id: Mapped[bigint] = mapped_column(
-        ForeignKey('roles.role_id', ondelete='CASCADE'), nullable=True)
+        ForeignKey("roles.role_id", ondelete="CASCADE"), nullable=True
+    )
     manager_id: Mapped[bigint] = mapped_column(
-        ForeignKey('users.user_id', ondelete='CASCADE'), nullable=True)
+        ForeignKey("users.user_id", ondelete="CASCADE"), nullable=True
+    )
 
     # manager = relationship("Users", remote_side=[user_id])
     # time_period = relationship("TimePeriods")
@@ -162,35 +151,42 @@ class Users(Base):
 class UsersAgencies(Base):
     __tablename__ = "users_agencies"
 
-    user_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'users.user_id', ondelete='CASCADE'), primary_key=True)
-    agency_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'agencies.agency_id', ondelete='CASCADE'), primary_key=True)
+    user_id: Mapped[bigint] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True
+    )
+    agency_id: Mapped[bigint] = mapped_column(
+        ForeignKey("agencies.agency_id", ondelete="CASCADE"), primary_key=True
+    )
 
 
 class UsersModels(Base):
     __tablename__ = "users_models"
 
-    user_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'users.user_id', ondelete='CASCADE'), primary_key=True)
-    model_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'models.model_id', ondelete='CASCADE'), primary_key=True)
+    user_id: Mapped[bigint] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True
+    )
+    model_id: Mapped[bigint] = mapped_column(
+        ForeignKey("models.model_id", ondelete="CASCADE"), primary_key=True
+    )
 
 
 class UserTg(Base):
     __tablename__ = "user_tg"
 
     user_tg_id: Mapped[intpk]
-    user_id: Mapped[bigint] = mapped_column(ForeignKey(
-        'users.user_id', ondelete='CASCADE'))
+    user_id: Mapped[bigint] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE")
+    )
     tg_id: Mapped[bigint] = mapped_column(unique=True)
 
 
-class PagesTimePeriod (Base):
+class PagesTimePeriod(Base):
     __tablename__ = "pages_time_periods"
 
     page_time_period_id: Mapped[intpk]
     time_period_id: Mapped[bigint] = mapped_column(
-        ForeignKey('time_periods.time_period_id', ondelete="CASCADE"))
+        ForeignKey("time_periods.time_period_id", ondelete="CASCADE")
+    )
     page_id: Mapped[bigint] = mapped_column(
-        ForeignKey('pages.page_id', ondelete="CASCADE"))
+        ForeignKey("pages.page_id", ondelete="CASCADE")
+    )
