@@ -8,8 +8,9 @@ from sqlalchemy import ForeignKey
 
 if TYPE_CHECKING:
     from .pages_intervals_orm import PagesIntervalsORM
-
-    pass
+    from .shifts_users_orm import ShiftsUsersORM
+    from .users_orm import UsersORM
+    from .shifts_users_orm import ShiftsUsersORM
 
 
 class ShiftsORM(Base):
@@ -23,6 +24,14 @@ class ShiftsORM(Base):
             ondelete="CASCADE",
         ),
     )
+
     page_interval: Mapped["PagesIntervalsORM"] = relationship(
         back_populates="shifts",
+    )
+    users: Mapped[list["UsersORM"]] = relationship(
+        secondary="shifts_users",
+        back_populates="shifts",
+    )
+    users_details: Mapped[list["ShiftsUsersORM"]] = relationship(
+        back_populates="shift",
     )

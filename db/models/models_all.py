@@ -59,14 +59,14 @@ class Fines(Base):
 #     # model = relationship("Models")
 
 
-class Shifts(Base):
-    __tablename__ = "shifts"
+# class Shifts(Base):
+#     __tablename__ = "shifts"
 
-    shift_id: Mapped[intpk]
-    date_shift: Mapped[created_at]
-    page_time_period_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("pages_time_periods.page_time_period_id", ondelete="CASCADE")
-    )
+#     shift_id: Mapped[intpk]
+#     date_shift: Mapped[created_at]
+#     page_time_period_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("pages_time_periods.page_time_period_id", ondelete="CASCADE")
+#     )
 
 
 class ShiftsUsers(Base):

@@ -8,10 +8,12 @@ from db.models.base import Base
 from db.models.types import intpk, strtext, boolbool, intbigint
 
 if TYPE_CHECKING:
-    from db.models.intervals_orm import IntervalsORM
-    from db.models.roles_orm import RolesORM
-    from db.models.tgs_orm import TgsORM
-    from db.models.pages_orm import PagesORM
+    from .intervals_orm import IntervalsORM
+    from .roles_orm import RolesORM
+    from .tgs_orm import TgsORM
+    from .pages_orm import PagesORM
+    from .shifts_users_orm import ShiftsUsersORM
+    from .shifts_orm import ShiftsORM
 
 
 class UsersORM(Base):
@@ -47,6 +49,7 @@ class UsersORM(Base):
             ondelete="CASCADE",
         ),
     )
+
     # relationship between Users -> Intervals
     interval: Mapped["IntervalsORM"] = relationship(
         back_populates="users",
@@ -71,4 +74,11 @@ class UsersORM(Base):
     # relationship between Users -> Pages
     pages: Mapped["PagesORM"] = relationship(
         back_populates="seniors",
+    )
+    shifts: Mapped[list["ShiftsORM"]] = relationship(
+        secondary="shifts_users",
+        back_populates="users",
+    )
+    shifts_details: Mapped[list["ShiftsUsersORM"]] = relationship(
+        back_populates="user",
     )
