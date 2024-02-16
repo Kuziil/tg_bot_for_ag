@@ -14,11 +14,13 @@ if TYPE_CHECKING:
 class IntervalsORM(Base):
     __tablename__ = "intervals"
 
+    # columns
     id: Mapped[intpk]
     title: Mapped[strtext]
     start_at: Mapped[dttime]
     end_at: Mapped[dttime]
 
+    # relationships
     users: Mapped["UsersORM"] = relationship(
         back_populates="interval",
     )

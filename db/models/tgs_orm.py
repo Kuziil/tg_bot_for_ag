@@ -15,11 +15,14 @@ if TYPE_CHECKING:
 class TgsORM(Base):
     __tablename__ = "tgs"
 
+    # columns
     id: Mapped[intpk]
     tg: Mapped[intbigint]
     user_id: Mapped[intbigint] = mapped_column(
         ForeignKey(column="users.id", ondelete="CASCADE"),
     )
+
+    # relationships
     user: Mapped["UsersORM"] = relationship(
         back_populates="tgs",
     )

@@ -22,6 +22,7 @@ class ShiftsUsersORM(Base):
         ),
     )
 
+    # columns
     id: Mapped[intpk]
     shift_id: Mapped[intbigint] = mapped_column(
         ForeignKey(
@@ -36,6 +37,7 @@ class ShiftsUsersORM(Base):
         ),
     )
 
+    # relationships
     shift: Mapped["ShiftsORM"] = relationship(
         back_populates="users_details",
     )

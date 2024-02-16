@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 class UsersORM(Base):
     __tablename__ = "users"
 
+    # columns
     id: Mapped[intpk]
     username: Mapped[strtext | None]
     emoji: Mapped[strtext | None]
@@ -55,28 +56,23 @@ class UsersORM(Base):
         ),
     )
 
-    # relationship between Users -> Intervals
+    # relationships
     interval: Mapped["IntervalsORM"] = relationship(
         back_populates="users",
     )
-    # relationship between Users -> Roles
     role: Mapped["RolesORM"] = relationship(
         back_populates="users",
     )
-    # relationship between Users.manager_id -> Users.id
     user: Mapped["UsersORM"] = relationship(
         back_populates="manager",
     )
-    # relationship between Users.id -> Users.manager_id
     manager: Mapped["UsersORM"] = relationship(
         back_populates="user",
         remote_side="UsersORM.id",
     )
-    # relationship between Users -> Tgs
     tgs: Mapped[list["TgsORM"]] = relationship(
         back_populates="user",
     )
-    # relationship between Users -> Pages
     pages: Mapped["PagesORM"] = relationship(
         back_populates="seniors",
     )

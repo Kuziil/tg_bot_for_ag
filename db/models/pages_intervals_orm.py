@@ -23,6 +23,8 @@ class PagesIntervalsORM(Base):
             name="idx_unique_page_interval",
         ),
     )
+
+    # columns
     id: Mapped[intpk]
     page_id: Mapped[intbigint] = mapped_column(
         ForeignKey(
@@ -37,6 +39,7 @@ class PagesIntervalsORM(Base):
         ),
     )
 
+    # relationships
     page: Mapped["PagesORM"] = relationship(
         back_populates="intervals_details",
     )

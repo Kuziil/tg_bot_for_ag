@@ -21,6 +21,7 @@ class AgenciesModelsORM(Base):
         ),
     )
 
+    # columns
     id: Mapped[intpk]
     agency_id: Mapped[int] = mapped_column(
         ForeignKey(
@@ -35,11 +36,10 @@ class AgenciesModelsORM(Base):
         ),
     )
 
-    # association between Assocation -> Agencies
+    # relationships
     agency: Mapped["AgenciesORM"] = relationship(
         back_populates="models_details",
     )
-    # association between Assocation -> Models
     model: Mapped["ModelsORM"] = relationship(
         back_populates="agencies_details",
     )

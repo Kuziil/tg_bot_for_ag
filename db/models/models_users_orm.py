@@ -25,6 +25,8 @@ class ModelsUsersORM(Base):
             name="idx_unique_models_users",
         ),
     )
+
+    # columns
     id: Mapped[intpk]
     user_id: Mapped[intbigint] = mapped_column(
         ForeignKey(
@@ -38,6 +40,8 @@ class ModelsUsersORM(Base):
             ondelete="CASCADE",
         ),
     )
+
+    # relationships
     user: Mapped["UsersORM"] = relationship(
         back_populates="models_details",
     )

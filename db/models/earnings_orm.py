@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 class EarningsORM(Base):
     __tablename__ = "earnings"
 
+    # columns
     id: Mapped[intpk]
     confirm: Mapped[boolbool] = mapped_column(
         server_default=false(),
@@ -28,6 +29,8 @@ class EarningsORM(Base):
             ondelete="CASCADE",
         )
     )
+
+    # relationships
     shifts_users: Mapped[list["ShiftsUsersORM"]] = relationship(
         back_populates="earning",
     )

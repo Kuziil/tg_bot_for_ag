@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 class FinesORM(Base):
     __tablename__ = "fines"
 
+    # columns
     id: Mapped[intpk]
     date_fine: Mapped[dtdate] = mapped_column(
         server_default=func.now(),
@@ -32,6 +33,8 @@ class FinesORM(Base):
             ondelete="CASCADE",
         ),
     )
+
+    # relationships
     user: Mapped["UsersORM"] = relationship(
         back_populates="fines",
     )

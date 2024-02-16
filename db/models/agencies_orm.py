@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import Mapped, relationship
 
 from db.models.base import Base
@@ -14,11 +15,21 @@ if TYPE_CHECKING:
 
 class AgenciesORM(Base):
     __tablename__ = "agencies"
+    __table_args__ = (
+        UniqueConstraint(
+            "id",
+            "tg_bot_id",
+            name="idx_unique_id_tg_bot_id",
+        ),
+    )
 
+    # columns
     id: Mapped[intpk]
     title: Mapped[strtext]
     tg_bot_id: Mapped[intbigint]
     test_tg_bot: Mapped[intbigint]
+
+    # relationships
     models: Mapped[list["ModelsORM"]] = relationship(
         secondary="agencies_models",
         back_populates="agencies",

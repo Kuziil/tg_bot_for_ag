@@ -14,8 +14,11 @@ if TYPE_CHECKING:
 class RolesORM(Base):
     __tablename__ = "roles"
 
+    # columns
     id: Mapped[intpk]
     title: Mapped[strtext] = mapped_column(unique=True)
+
+    # relationships
     permissions: Mapped[list["PermissionsORM"]] = relationship(
         secondary="roles_permissions",
         back_populates="roles",

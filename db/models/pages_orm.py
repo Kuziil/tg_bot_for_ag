@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 class PagesORM(Base):
     __tablename__ = "pages"
 
+    # columns
     id: Mapped[intpk]
     vip: Mapped[boolbool]
     sales_commision: Mapped[floatnum]
@@ -37,6 +38,8 @@ class PagesORM(Base):
             ondelete="CASCADE",
         ),
     )
+
+    # relationships
     seniors: Mapped["UsersORM"] = relationship(
         back_populates="pages",
     )

@@ -16,9 +16,12 @@ if TYPE_CHECKING:
 class ModelsORM(Base):
     __tablename__ = "models"
 
+    # columns
     id: Mapped[intpk]
     title: Mapped[strtext]
     description: Mapped[strtext | None]
+
+    # relationships
     agencies: Mapped[list["AgenciesORM"]] = relationship(
         secondary="agencies_models",
         back_populates="models",

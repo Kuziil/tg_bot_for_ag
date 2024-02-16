@@ -27,6 +27,7 @@ class AgenciesUsersORM(Base):
         ),
     )
 
+    # columns
     id: Mapped[intpk]
     user_id: Mapped[intbigint] = mapped_column(
         ForeignKey(
@@ -41,6 +42,7 @@ class AgenciesUsersORM(Base):
         ),
     )
 
+    # relationships
     user: Mapped["UsersORM"] = relationship(
         back_populates="agencies_details",
     )

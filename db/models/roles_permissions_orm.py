@@ -21,6 +21,7 @@ class RolesPermissionsORM(Base):
         ),
     )
 
+    # columns
     id: Mapped[intpk]
     role_id: Mapped[intbigint] = mapped_column(
         ForeignKey(
@@ -34,11 +35,11 @@ class RolesPermissionsORM(Base):
             ondelete="CASCADE",
         ),
     )
-    # association between Assocation -> Roles
+
+    # relationships
     role: Mapped["RolesORM"] = relationship(
         back_populates="permissions_details",
     )
-    # association between Assocation -> Permissions
     permission: Mapped["PermissionsORM"] = relationship(
         back_populates="roles_details",
     )

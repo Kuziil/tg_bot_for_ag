@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 class ShiftsORM(Base):
     __tablename__ = "shifts"
 
+    # columns
     id: Mapped[intpk]
     date_shift: Mapped[dtdate]
     page_interval_id: Mapped[intbigint] = mapped_column(
@@ -25,6 +26,7 @@ class ShiftsORM(Base):
         ),
     )
 
+    # relationships
     page_interval: Mapped["PagesIntervalsORM"] = relationship(
         back_populates="shifts",
     )
