@@ -29,16 +29,16 @@ def pg_utcnow(element, compiler, **kw):
 #     dirty: Mapped[float] = mapped_column(NUMERIC)
 
 
-class Fines(Base):
-    __tablename__ = "fines"
+# class Fines(Base):
+#     __tablename__ = "fines"
 
-    fine_id: Mapped[intpk]
-    date_fine: Mapped[created_at]
-    description: Mapped[strtext] = mapped_column(nullable=True)
-    amount: Mapped[float] = mapped_column(NUMERIC)
-    user_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("users.user_id", ondelete="CASCADE")
-    )
+#     fine_id: Mapped[intpk]
+#     date_fine: Mapped[created_at]
+#     description: Mapped[strtext] = mapped_column(nullable=True)
+#     amount: Mapped[float] = mapped_column(NUMERIC)
+#     user_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("users.user_id", ondelete="CASCADE")
+#     )
 
 
 # class Pages(Base):

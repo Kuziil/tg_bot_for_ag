@@ -6,8 +6,10 @@ from db.models.base import Base
 from db.models.types import intpk, strtext, intbigint
 
 if TYPE_CHECKING:
-    from db.models.models_orm import ModelsORM
-    from db.models.agencies_models_orm import AgenciesModelsORM
+    from .models_orm import ModelsORM
+    from .agencies_models_orm import AgenciesModelsORM
+    from .agencies_users_orm import AgenciesUsersORM
+    from .users_orm import UsersORM
 
 
 class AgenciesORM(Base):
@@ -23,4 +25,11 @@ class AgenciesORM(Base):
     )
     models_details: Mapped[list["AgenciesModelsORM"]] = relationship(
         back_populates="agency",
+    )
+    users_details: Mapped[list["AgenciesUsersORM"]] = relationship(
+        back_populates="agency",
+    )
+    users: Mapped[list["UsersORM"]] = relationship(
+        secondary="agencies_users",
+        back_populates="agencies",
     )
