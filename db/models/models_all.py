@@ -112,26 +112,26 @@ def pg_utcnow(element, compiler, **kw):
 #     # role = relationship("Roles")
 
 
-class UsersAgencies(Base):
-    __tablename__ = "users_agencies"
+# class UsersAgencies(Base):
+#     __tablename__ = "users_agencies"
 
-    user_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True
-    )
-    agency_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("agencies.agency_id", ondelete="CASCADE"), primary_key=True
-    )
+#     user_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True
+#     )
+#     agency_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("agencies.agency_id", ondelete="CASCADE"), primary_key=True
+#     )
 
 
-class UsersModels(Base):
-    __tablename__ = "users_models"
+# class UsersModels(Base):
+#     __tablename__ = "users_models"
 
-    user_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True
-    )
-    model_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("models.model_id", ondelete="CASCADE"), primary_key=True
-    )
+#     user_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True
+#     )
+#     model_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("models.model_id", ondelete="CASCADE"), primary_key=True
+#     )
 
 
 # class UserTg(Base):

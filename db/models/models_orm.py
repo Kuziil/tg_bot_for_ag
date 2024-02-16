@@ -9,6 +9,8 @@ if TYPE_CHECKING:
     from db.models.agencies_orm import AgenciesORM
     from db.models.agencies_models_orm import AgenciesModelsORM
     from db.models.pages_orm import PagesORM
+    from .models_users_orm import ModelsUsersORM
+    from .users_orm import UsersORM
 
 
 class ModelsORM(Base):
@@ -26,4 +28,11 @@ class ModelsORM(Base):
     )
     pages: Mapped["PagesORM"] = relationship(
         back_populates="model",
+    )
+    users_details: Mapped[list["ModelsUsersORM"]] = relationship(
+        back_populates="model",
+    )
+    users: Mapped[list["UsersORM"]] = relationship(
+        secondary="models_users",
+        back_populates="models",
     )

@@ -17,6 +17,8 @@ if TYPE_CHECKING:
     from .fines_orm import FinesORM
     from .agencies_users_orm import AgenciesUsersORM
     from .agencies_orm import AgenciesORM
+    from .models_orm import ModelsORM
+    from .models_users_orm import ModelsUsersORM
 
 
 class UsersORM(Base):
@@ -93,5 +95,12 @@ class UsersORM(Base):
     )
     agencies: Mapped[list["AgenciesORM"]] = relationship(
         secondary="agencies_users",
+        back_populates="users",
+    )
+    models_details: Mapped[list["ModelsUsersORM"]] = relationship(
+        back_populates="user",
+    )
+    models: Mapped[list["ModelsORM"]] = relationship(
+        secondary="models_users",
         back_populates="users",
     )
