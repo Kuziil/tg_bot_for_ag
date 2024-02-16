@@ -29,17 +29,6 @@ class Earnings(Base):
     dirty: Mapped[float] = mapped_column(NUMERIC)
 
 
-class AgencyModel(Base):
-    __tablename__ = "agency_model"
-
-    agency_id: Mapped[bigint] = mapped_column(
-        ForeignKey("agencies.agency_id", ondelete="CASCADE"), primary_key=True
-    )
-    model_id: Mapped[bigint] = mapped_column(
-        ForeignKey("models.model_id", ondelete="CASCADE"), primary_key=True
-    )
-
-
 class Fines(Base):
     __tablename__ = "fines"
 
@@ -68,20 +57,6 @@ class Pages(Base):
     page_link: Mapped[ttext]
 
     # model = relationship("Models")
-
-
-class Permissions(Base):
-    __tablename__ = "permissions"
-
-    permission_id: Mapped[intpk]
-    title: Mapped[ttext] = mapped_column(unique=True)
-
-
-class Roles(Base):
-    __tablename__ = "roles"
-
-    role_id: Mapped[intpk]
-    title: Mapped[ttext] = mapped_column(unique=True)
 
 
 class RolesPermissions(Base):
