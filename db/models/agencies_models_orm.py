@@ -7,8 +7,8 @@ from db.models.base import Base
 from db.models.types import intpk
 
 if TYPE_CHECKING:
-    from db.models.agencies_orm import AgenciesORM
-    from db.models.models_orm import ModelsORM
+    from .agencies_orm import AgenciesORM
+    from .models_orm import ModelsORM
 
 
 class AgenciesModelsORM(Base):

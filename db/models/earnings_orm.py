@@ -1,16 +1,14 @@
 from typing import TYPE_CHECKING
 
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 from sqlalchemy.sql import false
 
 from db.models.base import Base
-from db.models.types import intpk, dtdate, intbigint, boolbool, floatnum
-from sqlalchemy import ForeignKey
+from db.models.types import intpk, intbigint, boolbool, floatnum
 
 if TYPE_CHECKING:
     from .shifts_users_orm import ShiftsUsersORM
-
-    pass
 
 
 class EarningsORM(Base):

@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from db.models.base import Base
 from db.models.types import intpk, intbigint
-from sqlalchemy import ForeignKey, UniqueConstraint
 
 if TYPE_CHECKING:
     from .intervals_orm import IntervalsORM

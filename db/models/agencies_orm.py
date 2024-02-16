@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import Mapped, relationship
 
 from db.models.base import Base

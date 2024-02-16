@@ -1,5 +1,3 @@
-# base.py
-
 from sqlalchemy.orm import DeclarativeBase
 
 
@@ -17,4 +15,5 @@ class Base(DeclarativeBase):
                 cols.append(f"{col}={getattr(self, col)}")
 
         return f"<{self.__class__.__name__} {', '.join(cols)}>"
+
     pass
