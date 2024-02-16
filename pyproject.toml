@@ -19,6 +19,7 @@ alembic = "^1.13.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
+black = "^24.2.0"
 
 [build-system]
 requires = ["poetry-core"]
