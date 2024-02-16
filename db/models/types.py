@@ -1,5 +1,5 @@
 from typing import Annotated
-from datetime import datetime, time
+from datetime import datetime, time, date
 
 from sqlalchemy import Identity, func
 from sqlalchemy.orm import mapped_column
@@ -10,6 +10,7 @@ from sqlalchemy.dialects.postgresql import (
     NUMERIC,
     TIME,
     TIMESTAMP,
+    DATE,
 )
 
 created_at = Annotated[
@@ -18,6 +19,12 @@ created_at = Annotated[
         TIMESTAMP,
         server_default=func.now(),
         default=datetime.utcnow,
+    ),
+]
+dtdate = Annotated[
+    date,
+    mapped_column(
+        DATE,
     ),
 ]
 dttime = Annotated[
@@ -36,17 +43,25 @@ intpk = Annotated[
 ]
 intbigint = Annotated[
     int,
-    mapped_column(BIGINT),
+    mapped_column(
+        BIGINT,
+    ),
 ]
 strtext = Annotated[
     str,
-    mapped_column(TEXT),
+    mapped_column(
+        TEXT,
+    ),
 ]
 boolbool = Annotated[
     bool,
-    mapped_column(BOOLEAN),
+    mapped_column(
+        BOOLEAN,
+    ),
 ]
 floatnum = Annotated[
     float,
-    mapped_column(NUMERIC),
+    mapped_column(
+        NUMERIC,
+    ),
 ]

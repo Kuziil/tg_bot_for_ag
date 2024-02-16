@@ -9,6 +9,7 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 if TYPE_CHECKING:
     from .intervals_orm import IntervalsORM
     from .pages_orm import PagesORM
+    from .shifts_orm import ShiftsORM
 
     pass
 
@@ -41,4 +42,7 @@ class PagesIntervalsORM(Base):
     )
     interval: Mapped["IntervalsORM"] = relationship(
         back_populates="pages_details",
+    )
+    shifts: Mapped[list["ShiftsORM"]] = relationship(
+        back_populates="page_interval",
     )

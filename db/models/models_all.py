@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, text
+from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import BOOLEAN, NUMERIC
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import mapped_column, Mapped
@@ -41,22 +41,22 @@ class Fines(Base):
     )
 
 
-class Pages(Base):
-    __tablename__ = "pages"
+# class Pages(Base):
+#     __tablename__ = "pages"
 
-    page_id: Mapped[intpk]
-    model_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("models.model_id", ondelete="CASCADE")
-    )
-    vip: Mapped[bool] = mapped_column(BOOLEAN)
-    sales_commision: Mapped[float] = mapped_column(NUMERIC)
-    senior_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("users.user_id", ondelete="CASCADE"), nullable=True
-    )
-    number_operator_shift: Mapped[intbigint] = mapped_column(server_default=text("0"))
-    page_link: Mapped[strtext]
+#     page_id: Mapped[intpk]
+#     model_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("models.model_id", ondelete="CASCADE")
+#     )
+#     vip: Mapped[bool] = mapped_column(BOOLEAN)
+#     sales_commision: Mapped[float] = mapped_column(NUMERIC)
+#     senior_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("users.user_id", ondelete="CASCADE"), nullable=True
+#     )
+#     number_operator_shift: Mapped[intbigint] = mapped_column(server_default=text("0"))
+#     page_link: Mapped[strtext]
 
-    # model = relationship("Models")
+#     # model = relationship("Models")
 
 
 class Shifts(Base):
@@ -144,13 +144,13 @@ class UsersModels(Base):
 #     tg_id: Mapped[intbigint] = mapped_column(unique=True)
 
 
-class PagesTimePeriod(Base):
-    __tablename__ = "pages_time_periods"
+# class PagesTimePeriod(Base):
+#     __tablename__ = "pages_time_periods"
 
-    page_time_period_id: Mapped[intpk]
-    time_period_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("time_periods.time_period_id", ondelete="CASCADE")
-    )
-    page_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("pages.page_id", ondelete="CASCADE")
-    )
+#     page_time_period_id: Mapped[intpk]
+#     time_period_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("time_periods.time_period_id", ondelete="CASCADE")
+#     )
+#     page_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("pages.page_id", ondelete="CASCADE")
+#     )
