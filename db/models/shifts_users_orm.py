@@ -9,6 +9,7 @@ from db.models.types import intpk, intbigint
 if TYPE_CHECKING:
     from .shifts_orm import ShiftsORM
     from .users_orm import UsersORM
+    from .earnings_orm import EarningsORM
 
 
 class ShiftsUsersORM(Base):
@@ -40,4 +41,7 @@ class ShiftsUsersORM(Base):
     )
     user: Mapped["UsersORM"] = relationship(
         back_populates="shifts_details",
+    )
+    earning: Mapped["EarningsORM"] = relationship(
+        back_populates="shifts_users",
     )

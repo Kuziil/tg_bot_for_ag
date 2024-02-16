@@ -69,16 +69,16 @@ class Fines(Base):
 #     )
 
 
-class ShiftsUsers(Base):
-    __tablename__ = "shifts_users"
+# class ShiftsUsers(Base):
+#     __tablename__ = "shifts_users"
 
-    shift_user_id: Mapped[intpk]
-    operator_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("users.user_id", ondelete="CASCADE")
-    )
-    shift_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("shifts.shift_id", ondelete="CASCADE")
-    )
+#     shift_user_id: Mapped[intpk]
+#     operator_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("users.user_id", ondelete="CASCADE")
+#     )
+#     shift_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("shifts.shift_id", ondelete="CASCADE")
+#     )
 
 
 # class TimePeriods(Base):
