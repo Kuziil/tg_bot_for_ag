@@ -26,7 +26,7 @@ class AgenciesModelsORM(Base):
         ForeignKey(
             "agencies.id",
             ondelete="CASCADE",
-        )
+        ),
     )
     model_id: Mapped[int] = mapped_column(
         ForeignKey("models.id", ondelete="CASCADE"),

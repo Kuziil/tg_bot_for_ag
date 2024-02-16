@@ -6,7 +6,7 @@ from db.models.base import Base
 from db.models.types import intpk, ttext
 
 if TYPE_CHECKING:
-    from db.models.models_orm import ModelsORM
+    from db.models.agencies_orm import AgenciesORM
     from db.models.agencies_models_orm import AgenciesModelsORM
 
 
@@ -16,7 +16,7 @@ class ModelsORM(Base):
     id: Mapped[intpk]
     title: Mapped[ttext]
     description: Mapped[ttext | None]
-    agencies: Mapped[list["ModelsORM"]] = relationship(
+    agencies: Mapped[list["AgenciesORM"]] = relationship(
         secondary="models_agencies",
         back_populates="models",
     )
