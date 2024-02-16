@@ -15,13 +15,6 @@ if TYPE_CHECKING:
 
 class AgenciesORM(Base):
     __tablename__ = "agencies"
-    __table_args__ = (
-        UniqueConstraint(
-            "id",
-            "tg_bot_id",
-            name="idx_unique_id_tg_bot_id",
-        ),
-    )
 
     # columns
     id: Mapped[intpk]
