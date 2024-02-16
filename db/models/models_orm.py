@@ -18,7 +18,7 @@ class ModelsORM(Base):
     title: Mapped[strtext]
     description: Mapped[strtext | None]
     agencies: Mapped[list["AgenciesORM"]] = relationship(
-        secondary="models_agencies",
+        secondary="agencies_models",
         back_populates="models",
     )
     agencies_details: Mapped[list["AgenciesModelsORM"]] = relationship(

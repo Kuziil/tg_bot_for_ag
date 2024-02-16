@@ -29,14 +29,17 @@ class AgenciesModelsORM(Base):
         ),
     )
     model_id: Mapped[int] = mapped_column(
-        ForeignKey("models.id", ondelete="CASCADE"),
+        ForeignKey(
+            "models.id",
+            ondelete="CASCADE",
+        ),
     )
 
     # association between Assocation -> Agencies
     agency: Mapped["AgenciesORM"] = relationship(
-        back_populates="models",
+        back_populates="models_details",
     )
     # association between Assocation -> Models
     model: Mapped["ModelsORM"] = relationship(
-        back_populates="agencies",
+        back_populates="agencies_details",
     )

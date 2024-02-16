@@ -18,7 +18,7 @@ class AgenciesORM(Base):
     tg_bot_id: Mapped[intbigint]
     test_tg_bot: Mapped[intbigint]
     models: Mapped[list["ModelsORM"]] = relationship(
-        secondary="models_agencies",
+        secondary="agencies_models",
         back_populates="agencies",
     )
     models_details: Mapped[list["AgenciesModelsORM"]] = relationship(

@@ -23,6 +23,6 @@ class RolesORM(Base):
     permissions_details: Mapped[list["RolesPermissionsORM"]] = relationship(
         back_populates="role",
     )
-    user: Mapped["UsersORM"] = relationship(
-        back_populates="roles",
+    users: Mapped["UsersORM"] = relationship(
+        back_populates="role",
     )

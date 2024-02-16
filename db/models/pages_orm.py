@@ -35,7 +35,7 @@ class PagesORM(Base):
             ondelete="CASCADE",
         ),
     )
-    senior: Mapped["UsersORM"] = relationship(
+    seniors: Mapped["UsersORM"] = relationship(
         back_populates="pages",
     )
     model: Mapped["ModelsORM"] = relationship(

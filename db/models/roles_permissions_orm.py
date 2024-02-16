@@ -36,9 +36,9 @@ class RolesPermissionsORM(Base):
     )
     # association between Assocation -> Roles
     role: Mapped["RolesORM"] = relationship(
-        back_populates="permissions",
+        back_populates="permissions_details",
     )
     # association between Assocation -> Permissions
     permission: Mapped["PermissionsORM"] = relationship(
-        back_populates="roles",
+        back_populates="roles_details",
     )
