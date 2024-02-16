@@ -1,21 +1,14 @@
-from sqlalchemy import Identity, ForeignKey, text
-from sqlalchemy.dialects.postgresql import TEXT, BIGINT, BOOLEAN, NUMERIC, DATE
+from sqlalchemy import ForeignKey, text
+from sqlalchemy.dialects.postgresql import BOOLEAN, NUMERIC
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy.sql import expression, false
 from sqlalchemy.types import DateTime
-from typing import Annotated
-from datetime import datetime
 
 
+from db.models.types import bigint, intpk, ttext, created_at
 from db.models.base import Base
 
-created_at = Annotated[datetime, mapped_column(
-    DATE, server_default=text("TIMEZONE('utc', CURRENT_TIMESTAMP)"))]
-intpk = Annotated[int, mapped_column(
-    BIGINT, Identity(always=True), primary_key=True)]
-bigint = Annotated[int, mapped_column(BIGINT)]
-ttext = Annotated[str, mapped_column(TEXT)]
 
 
 class utcnow(expression.FunctionElement):
