@@ -24,7 +24,7 @@ class Earnings(Base):
     __tablename__ = "earnings"
 
     earning_id: Mapped[intpk]
-    shift_user_id: Mapped[bigint]
+    shift_user_id: Mapped[bigint]  # FK
     confirm: Mapped[bool] = mapped_column(BOOLEAN, default=false())
     dirty: Mapped[float] = mapped_column(NUMERIC)
 
@@ -59,17 +59,6 @@ class Pages(Base):
     # model = relationship("Models")
 
 
-class RolesPermissions(Base):
-    __tablename__ = "roles_permissions"
-
-    role_id: Mapped[bigint] = mapped_column(
-        ForeignKey("roles.role_id", ondelete="CASCADE"), primary_key=True
-    )
-    permission_id: Mapped[bigint] = mapped_column(
-        ForeignKey("permissions.permission_id", ondelete="CASCADE"), primary_key=True
-    )
-
-
 class Shifts(Base):
     __tablename__ = "shifts"
 
@@ -92,11 +81,11 @@ class ShiftsUsers(Base):
     )
 
 
-class TimePeriods(Base):
-    __tablename__ = "time_periods"
+# class TimePeriods(Base):
+#     __tablename__ = "time_periods"
 
-    time_period_id: Mapped[intpk]
-    title: Mapped[ttext]
+#     time_period_id: Mapped[intpk]
+#     title: Mapped[ttext]
 
 
 class Users(Base):

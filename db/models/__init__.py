@@ -6,6 +6,7 @@ __all__ = (
     "RolesORM",
     "PermissionsORM",
     "RolesPermissionsORM",
+    "IntervalsORM",
 )
 
 from .base import Base
@@ -15,3 +16,4 @@ from .agencies_models_orm import AgenciesModelsORM
 from .roles_orm import RolesORM
 from .permissions_orm import PermissionsORM
 from .roles_permissions_orm import RolesPermissionsORM
+from .intervals_orm import IntervalsORM
