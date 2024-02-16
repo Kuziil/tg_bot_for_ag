@@ -14,6 +14,7 @@ __all__ = (
     "ShiftsORM",
     "ShiftsUsersORM",
     "EarningsORM",
+    "FinesORM",
 )
 
 from .base import Base
@@ -31,3 +32,4 @@ from .pages_intervals_orm import PagesIntervalsORM
 from .shifts_orm import ShiftsORM
 from .shifts_users_orm import ShiftsUsersORM
 from .earnings_orm import EarningsORM
+from .fines_orm import FinesORM

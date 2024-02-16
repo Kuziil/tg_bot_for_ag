@@ -20,13 +20,13 @@ def pg_utcnow(element, compiler, **kw):
     return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
 
 
-class Earnings(Base):
-    __tablename__ = "earnings"
+# class Earnings(Base):
+#     __tablename__ = "earnings"
 
-    earning_id: Mapped[intpk]
-    shift_user_id: Mapped[intbigint]  # FK
-    confirm: Mapped[bool] = mapped_column(BOOLEAN, default=false())
-    dirty: Mapped[float] = mapped_column(NUMERIC)
+#     earning_id: Mapped[intpk]
+#     shift_user_id: Mapped[intbigint]  # FK
+#     confirm: Mapped[bool] = mapped_column(BOOLEAN, default=false())
+#     dirty: Mapped[float] = mapped_column(NUMERIC)
 
 
 class Fines(Base):

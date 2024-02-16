@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from .pages_orm import PagesORM
     from .shifts_users_orm import ShiftsUsersORM
     from .shifts_orm import ShiftsORM
+    from .fines_orm import FinesORM
 
 
 class UsersORM(Base):
@@ -80,5 +81,8 @@ class UsersORM(Base):
         back_populates="users",
     )
     shifts_details: Mapped[list["ShiftsUsersORM"]] = relationship(
+        back_populates="user",
+    )
+    fines: Mapped[list["FinesORM"]] = relationship(
         back_populates="user",
     )
