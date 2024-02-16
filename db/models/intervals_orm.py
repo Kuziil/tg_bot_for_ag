@@ -1,11 +1,13 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, relationship
 
 from db.models.base import Base
-from db.models.types import intpk, ttext, ddate
+from db.models.types import intpk, strtext, dtdate
 
 if TYPE_CHECKING:
+    from .users_orm import UsersORM
+
     pass
 
 
@@ -13,6 +15,10 @@ class IntervalsORM(Base):
     __tablename__ = "intervals"
 
     id: Mapped[intpk]
-    title: Mapped[ttext]
-    start_at: Mapped[ddate]
-    end_at: Mapped[ddate]
+    title: Mapped[strtext]
+    start_at: Mapped[dtdate]
+    end_at: Mapped[dtdate]
+
+    user: Mapped["UsersORM"] = relationship(
+        back_populates="intervals",
+    )

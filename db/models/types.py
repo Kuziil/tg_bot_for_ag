@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import Identity, text, func
 from sqlalchemy.orm import mapped_column
-from sqlalchemy.dialects.postgresql import TEXT, BIGINT, DATE
+from sqlalchemy.dialects.postgresql import TEXT, BIGINT, DATE, BOOLEAN
 
 created_at = Annotated[
     datetime,
@@ -13,7 +13,8 @@ created_at = Annotated[
         default=datetime.utcnow,
     ),
 ]
-ddate = Annotated[datetime, mapped_column(DATE)]
+dtdate = Annotated[datetime, mapped_column(DATE)]
 intpk = Annotated[int, mapped_column(BIGINT, Identity(always=True), primary_key=True)]
-bigint = Annotated[int, mapped_column(BIGINT)]
-ttext = Annotated[str, mapped_column(TEXT)]
+intbigint = Annotated[int, mapped_column(BIGINT)]
+strtext = Annotated[str, mapped_column(TEXT)]
+boolbool = Annotated[bool, mapped_column(BOOLEAN)]

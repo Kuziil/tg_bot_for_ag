@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, relationship
 
 from db.models.base import Base
-from db.models.types import intpk, ttext, bigint
+from db.models.types import intpk, strtext, intbigint
 
 if TYPE_CHECKING:
     from db.models.models_orm import ModelsORM
@@ -14,9 +14,9 @@ class AgenciesORM(Base):
     __tablename__ = "agencies"
 
     id: Mapped[intpk]
-    title: Mapped[ttext]
-    tg_bot_id: Mapped[bigint]
-    test_tg_bot: Mapped[bigint]
+    title: Mapped[strtext]
+    tg_bot_id: Mapped[intbigint]
+    test_tg_bot: Mapped[intbigint]
     models: Mapped[list["ModelsORM"]] = relationship(
         secondary="models_agencies",
         back_populates="agencies",

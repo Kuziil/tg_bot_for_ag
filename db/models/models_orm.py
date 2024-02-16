@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, relationship
 
 from db.models.base import Base
-from db.models.types import intpk, ttext
+from db.models.types import intpk, strtext
 
 if TYPE_CHECKING:
     from db.models.agencies_orm import AgenciesORM
@@ -14,8 +14,8 @@ class ModelsORM(Base):
     __tablename__ = "models"
 
     id: Mapped[intpk]
-    title: Mapped[ttext]
-    description: Mapped[ttext | None]
+    title: Mapped[strtext]
+    description: Mapped[strtext | None]
     agencies: Mapped[list["AgenciesORM"]] = relationship(
         secondary="models_agencies",
         back_populates="models",

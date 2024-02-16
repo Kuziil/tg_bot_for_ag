@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.models.base import Base
-from db.models.types import intpk, ttext
+from db.models.types import intpk, strtext
 
 if TYPE_CHECKING:
     from db.models.roles_orm import RolesORM
@@ -16,7 +16,7 @@ class PermissionsORM(Base):
     __tablename__ = "permissions"
 
     id: Mapped[intpk]
-    title: Mapped[ttext] = mapped_column(unique=True)
+    title: Mapped[strtext] = mapped_column(unique=True)
     roles: Mapped[list["RolesORM"]] = relationship(
         secondary="roles_permissions",
         back_populates="permissions",
