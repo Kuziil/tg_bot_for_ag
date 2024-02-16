@@ -8,6 +8,7 @@ from db.models.types import intpk, strtext
 if TYPE_CHECKING:
     from db.models.agencies_orm import AgenciesORM
     from db.models.agencies_models_orm import AgenciesModelsORM
+    from db.models.pages_orm import PagesORM
 
 
 class ModelsORM(Base):
@@ -21,5 +22,8 @@ class ModelsORM(Base):
         back_populates="models",
     )
     agencies_details: Mapped[list["AgenciesModelsORM"]] = relationship(
+        back_populates="model",
+    )
+    pages: Mapped["PagesORM"] = relationship(
         back_populates="model",
     )

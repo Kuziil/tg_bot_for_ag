@@ -11,7 +11,8 @@ if TYPE_CHECKING:
     from db.models.intervals_orm import IntervalsORM
     from db.models.roles_orm import RolesORM
     from db.models.users_orm import UsersORM
-    from .tgs_orm import TgsORM
+    from db.models.tgs_orm import TgsORM
+    from db.models.pages_orm import PagesORM
 
 
 class UsersORM(Base):
@@ -57,5 +58,8 @@ class UsersORM(Base):
         back_populates="users",
     )
     tgs: Mapped[list["TgsORM"]] = relationship(
+        back_populates="user",
+    )
+    pages: Mapped["PagesORM"] = relationship(
         back_populates="user",
     )

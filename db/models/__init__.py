@@ -9,6 +9,7 @@ __all__ = (
     "IntervalsORM",
     "UsersORM",
     "TgsORM",
+    "PagesORM",
 )
 
 from .base import Base
@@ -21,3 +22,4 @@ from .roles_permissions_orm import RolesPermissionsORM
 from .intervals_orm import IntervalsORM
 from .users_orm import UsersORM
 from .tgs_orm import TgsORM
+from .pages_orm import PagesORM

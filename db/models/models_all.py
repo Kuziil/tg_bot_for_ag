@@ -134,14 +134,14 @@ class UsersModels(Base):
     )
 
 
-class UserTg(Base):
-    __tablename__ = "user_tg"
+# class UserTg(Base):
+#     __tablename__ = "user_tg"
 
-    user_tg_id: Mapped[intpk]
-    user_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("users.user_id", ondelete="CASCADE")
-    )
-    tg_id: Mapped[intbigint] = mapped_column(unique=True)
+#     user_tg_id: Mapped[intpk]
+#     user_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("users.user_id", ondelete="CASCADE")
+#     )
+#     tg_id: Mapped[intbigint] = mapped_column(unique=True)
 
 
 class PagesTimePeriod(Base):
