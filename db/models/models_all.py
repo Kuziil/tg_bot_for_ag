@@ -88,28 +88,28 @@ class ShiftsUsers(Base):
 #     title: Mapped[ttext]
 
 
-class Users(Base):
-    __tablename__ = "users"
+# class Users(Base):
+#     __tablename__ = "users"
 
-    user_id: Mapped[intpk]
-    name: Mapped[strtext]
-    emoji: Mapped[strtext] = mapped_column(nullable=True)
-    status: Mapped[strtext] = mapped_column(default="AppliedWating")
-    work_now: Mapped[bool] = mapped_column(BOOLEAN, default=False)
-    wallet: Mapped[strtext] = mapped_column(nullable=True)
-    time_period_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("time_periods.time_period_id", ondelete="CASCADE"), nullable=True
-    )
-    role_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("roles.role_id", ondelete="CASCADE"), nullable=True
-    )
-    manager_id: Mapped[intbigint] = mapped_column(
-        ForeignKey("users.user_id", ondelete="CASCADE"), nullable=True
-    )
+#     user_id: Mapped[intpk]
+#     name: Mapped[strtext]
+#     emoji: Mapped[strtext] = mapped_column(nullable=True)
+#     status: Mapped[strtext] = mapped_column(default="AppliedWating")
+#     work_now: Mapped[bool] = mapped_column(BOOLEAN, default=False)
+#     wallet: Mapped[strtext] = mapped_column(nullable=True)
+#     time_period_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("time_periods.time_period_id", ondelete="CASCADE"), nullable=True
+#     )
+#     role_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("roles.role_id", ondelete="CASCADE"), nullable=True
+#     )
+#     manager_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey("users.user_id", ondelete="CASCADE"), nullable=True
+#     )
 
-    # manager = relationship("Users", remote_side=[user_id])
-    # time_period = relationship("TimePeriods")
-    # role = relationship("Roles")
+#     # manager = relationship("Users", remote_side=[user_id])
+#     # time_period = relationship("TimePeriods")
+#     # role = relationship("Roles")
 
 
 class UsersAgencies(Base):
