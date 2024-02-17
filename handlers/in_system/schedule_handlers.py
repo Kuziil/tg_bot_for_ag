@@ -2,6 +2,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from keyboards.schedule.classes_callback_data import (
     DayCallbackData,
@@ -13,6 +14,7 @@ from keyboards.schedule.classes_callback_data import (
 from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.schedule.kb_schedule import create_schedule
 from database.database import db
+from db.requests import is_user_in_agency
 
 
 schedule_router = Router()
@@ -25,6 +27,8 @@ schedule_router = Router()
 async def process_day_press(
     callback: CallbackQuery,
     callback_data: DayCallbackData,
+    session: AsyncSession,
+    agency_id: int,
 ):
     """Данный хэндлер срабатывает при нажатие на любую дату
     Args:
@@ -34,7 +38,11 @@ async def process_day_press(
     await callback.message.edit_text(
         text=(
             LEXICON_RU["schedule"]
-            if db.is_user_in_system(user_id=user_id)
+            if is_user_in_agency(
+                session=session,
+                agency_id=agency_id,
+                user_tg_id=user_id,
+            )
             else LEXICON_RU["user_not_in_system"]
         ),
         reply_markup=create_schedule(

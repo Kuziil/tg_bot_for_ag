@@ -12,7 +12,11 @@ router = Router()
 
 
 @router.message(StateFilter(default_state))
-async def send_echo(message: Message, session: AsyncSession, agency_id):
+async def send_echo(
+    message: Message,
+    session: AsyncSession,
+    agency_id: int,
+):
     # Получаем айди бота с помощью функции get_agency_bot_id
     user_tg_id = message.from_user.id
     agency_bot_id = await is_user_in_agency(
