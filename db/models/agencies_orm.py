@@ -18,7 +18,7 @@ class AgenciesORM(Base):
     # columns
     id: Mapped[intpk]
     title: Mapped[strtext]
-    tg_bot_id: Mapped[intbigint]
+    tg_bot: Mapped[intbigint]
     test_tg_bot: Mapped[intbigint]
 
     # relationships
