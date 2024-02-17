@@ -65,7 +65,6 @@ async def main():
     dp.update.middleware(
         DbSessionMiddleware(
             session_pool=db_helper.sessionmaker,
-            agenсy_id=agenсy[0],
         ),
     )
     await set_main_menu(bot)
