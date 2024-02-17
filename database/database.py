@@ -13,20 +13,18 @@ class DBManager:
 
         # Создаем пустой словарь для базы данных
         bot_id = self.config.tg_bot.id
-        self.user_databases: dict[
-            int, dict[int, dict[str, str | list[str]]]] = {
+        self.user_databases: dict[int, dict[int, dict[str, str | list[str]]]] = {
             bot_id: dict()
         }
 
         self.shifts: dict[str, int] = {}
 
-        self.user_database: dict[
-            int, dict[str, str | list[str]]] = self.user_databases[
+        self.user_database: dict[int, dict[str, str | list[str]]] = self.user_databases[
             bot_id
         ]
 
     # Функция проверки на наличие пользователя в системе
-
+    # Заменил
     def is_user_in_system(self, user_id: int) -> bool:
         return True if user_id in self.user_database else False
 
@@ -75,6 +73,4 @@ db = DBManager()
 #     username="Mic",
 #     emoticon="😏")
 
-db.add_user(user_id=db.config.tg_bot.operator_ids[0],
-            username="Dac",
-            emoticon="🤔")
+db.add_user(user_id=db.config.tg_bot.operator_ids[0], username="Dac", emoticon="🤔")

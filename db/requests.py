@@ -1,11 +1,13 @@
 import logging
 
 from sqlalchemy import select, or_
-from sqlalchemy.engine import Result
+from sqlalchemy.engine import Result, ScalarResult
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import NoResultFound, MultipleResultsFound
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm import selectinload
 
 from db.models import AgenciesORM, UsersORM, TgsORM, AgenciesUsersORM
+from sqlalchemy.orm import joinedload
 
 
 # Инициализируем логгер
@@ -103,3 +105,26 @@ async def is_user_in_agency(session: AsyncSession, user_tg_id: int, agency_id: i
     )
     result: Result = await session.execute(stmt)
     return bool(result.scalars().first())
+
+
+async def get_all_users_in_agency(session: AsyncSession, agency_id: int):
+    stmt = (
+        select(UsersORM)
+        .options(
+            selectinload(UsersORM.agencies_details).joinedload(AgenciesUsersORM.agency)
+        )
+        .where(AgenciesORM.id == agency_id)
+    )
+    result: Result = await session.execute(stmt)
+    users: list[UsersORM] = result.scalars().all()
+    return users
+
+
+async def get_all_emojis_in_agency(
+    session: AsyncSession, agency_id: int
+) -> set[str] | None:
+    users = await get_all_users_in_agency(session=session, agency_id=agency_id)
+    emojis: set[str] = set()
+    for user in users:
+        emojis.add(user.emoji)
+    return emojis
