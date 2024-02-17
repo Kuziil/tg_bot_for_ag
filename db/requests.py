@@ -24,16 +24,31 @@ async def get_agency_bot_id(session: AsyncSession, agency_id: int):
 
 
 async def add_user(session: AsyncSession, username: str, emoji: str):
-    user = UsersORM(username=username, emoji=emoji)
+    user = UsersORM(
+        username=username,
+        emoji=emoji,
+    )
     session.add(user)
     await session.commit()
 
 
-async def check_for_bot_id_in_db(session: AsyncSession, bot_id: int):
+async def check_for_bot_id_in_db(
+    session: AsyncSession,
+    bot_id: int,
+    agency_id: int | None = None,
+):
     try:
-        stmt = select(AgenciesORM).where(
-            or_(AgenciesORM.main_tg_bot == bot_id, AgenciesORM.test_tg_bot == bot_id)
-        )
+        if agency_id:
+            stmt = select(AgenciesORM).where(
+                AgenciesORM.id == agency_id,
+            )
+        else:
+            stmt = select(AgenciesORM).where(
+                or_(
+                    AgenciesORM.main_tg_bot == bot_id,
+                    AgenciesORM.test_tg_bot == bot_id,
+                )
+            )
         result: Result = await session.execute(stmt)
         agency: AgenciesORM = result.scalar_one()
         if agency.main_tg_bot == bot_id:
