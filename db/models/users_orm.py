@@ -76,10 +76,10 @@ class UsersORM(Base):
     pages: Mapped["PagesORM"] = relationship(
         back_populates="seniors",
     )
-    shifts: Mapped[list["ShiftsORM"]] = relationship(
-        secondary="shifts_users",
-        back_populates="users",
-    )
+    # shifts: Mapped[list["ShiftsORM"]] = relationship(
+    #     secondary="shifts_users",
+    #     back_populates="users",
+    # )
     shifts_details: Mapped[list["ShiftsUsersORM"]] = relationship(
         back_populates="user",
     )
@@ -89,14 +89,14 @@ class UsersORM(Base):
     agencies_details: Mapped[list["AgenciesUsersORM"]] = relationship(
         back_populates="user",
     )
-    agencies: Mapped[list["AgenciesORM"]] = relationship(
-        secondary="agencies_users",
-        back_populates="users",
-    )
+    # agencies: Mapped[list["AgenciesORM"]] = relationship(
+    #     secondary="agencies_users",
+    #     back_populates="users",
+    # )
     models_details: Mapped[list["ModelsUsersORM"]] = relationship(
         back_populates="user",
     )
-    models: Mapped[list["ModelsORM"]] = relationship(
-        secondary="models_users",
-        back_populates="users",
-    )
+    # models: Mapped[list["ModelsORM"]] = relationship(
+    #     secondary="models_users",
+    #     back_populates="users",
+    # )

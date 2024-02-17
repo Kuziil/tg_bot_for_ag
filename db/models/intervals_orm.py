@@ -24,10 +24,10 @@ class IntervalsORM(Base):
     users: Mapped["UsersORM"] = relationship(
         back_populates="interval",
     )
-    pages: Mapped[list["PagesORM"]] = relationship(
-        secondary="pages_intervals",
-        back_populates="intervals",
-    )
+    # pages: Mapped[list["PagesORM"]] = relationship(
+    #     secondary="pages_intervals",
+    #     back_populates="intervals",
+    # )
     pages_details: Mapped[list["PagesIntervalsORM"]] = relationship(
         back_populates="interval",
     )

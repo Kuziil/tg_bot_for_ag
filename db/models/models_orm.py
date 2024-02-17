@@ -22,10 +22,10 @@ class ModelsORM(Base):
     description: Mapped[strtext | None]
 
     # relationships
-    agencies: Mapped[list["AgenciesORM"]] = relationship(
-        secondary="agencies_models",
-        back_populates="models",
-    )
+    # agencies: Mapped[list["AgenciesORM"]] = relationship(
+    #     secondary="agencies_models",
+    #     back_populates="models",
+    # )
     agencies_details: Mapped[list["AgenciesModelsORM"]] = relationship(
         back_populates="model",
     )
@@ -35,7 +35,7 @@ class ModelsORM(Base):
     users_details: Mapped[list["ModelsUsersORM"]] = relationship(
         back_populates="model",
     )
-    users: Mapped[list["UsersORM"]] = relationship(
-        secondary="models_users",
-        back_populates="models",
-    )
+    # users: Mapped[list["UsersORM"]] = relationship(
+    #     secondary="models_users",
+    #     back_populates="models",
+    # )

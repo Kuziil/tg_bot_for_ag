@@ -19,10 +19,10 @@ class RolesORM(Base):
     title: Mapped[strtext] = mapped_column(unique=True)
 
     # relationships
-    permissions: Mapped[list["PermissionsORM"]] = relationship(
-        secondary="roles_permissions",
-        back_populates="roles",
-    )
+    # permissions: Mapped[list["PermissionsORM"]] = relationship(
+    #     secondary="roles_permissions",
+    #     back_populates="roles",
+    # )
     permissions_details: Mapped[list["RolesPermissionsORM"]] = relationship(
         back_populates="role",
     )
