@@ -32,11 +32,11 @@ async def add_user(session: AsyncSession, username: str, emoji: str):
 async def check_for_bot_id_in_db(session: AsyncSession, bot_id: int):
     try:
         stmt = select(AgenciesORM).where(
-            or_(AgenciesORM.tg_bot == bot_id, AgenciesORM.test_tg_bot == bot_id)
+            or_(AgenciesORM.main_tg_bot == bot_id, AgenciesORM.test_tg_bot == bot_id)
         )
         result: Result = await session.execute(stmt)
         agency: AgenciesORM = result.scalar_one()
-        if agency.tg_bot == bot_id:
+        if agency.main_tg_bot == bot_id:
             logger.info("The MAIN bot has been started")
         logger.info("The TEST bot has been started")
         return agency.id, agency.title
