@@ -47,7 +47,11 @@ async def main():
 
     # Инициализируем бот и диспетчер
     dp = Dispatcher(storage=storage)
-
+    dp.update.middleware(
+        DbSessionMiddleware(
+            session_pool=db_helper.sessionmaker,
+        ),
+    )
     # Регистриуем роутеры в диспетчере
     dp.include_router(main_handlers.main_router)
     dp.include_router(other_handlers.router)
@@ -62,16 +66,15 @@ async def main():
         agenсy: tuple[int, str] = await check_for_bot_id_in_db(
             session=session, bot_id=info.id
         )
-    dp.update.middleware(
-        DbSessionMiddleware(
-            session_pool=db_helper.sessionmaker,
-        ),
-    )
     await set_main_menu(bot)
 
     # Пропускаем накопившиеся апдейты и запускаем polling
     await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot)
+    await dp.start_polling(
+        bot,
+        agenсy_id=agenсy[0],
+        agency_title=agenсy[1],
+    )
 
 
 if __name__ == "__main__":

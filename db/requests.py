@@ -23,8 +23,12 @@ async def get_agency_bot_id(session: AsyncSession, agency_id: int):
 #     await session.commit()
 
 
-async def add_user(session: AsyncSession, username: str, emoji: str):
-    user = UsersORM(
+async def add_user(
+    session: AsyncSession,
+    username: str,
+    emoji: str,
+):
+    user: UsersORM = UsersORM(
         username=username,
         emoji=emoji,
     )
@@ -49,13 +53,18 @@ async def check_for_bot_id_in_db(
                     AgenciesORM.test_tg_bot == bot_id,
                 )
             )
+
         result: Result = await session.execute(stmt)
+
         agency: AgenciesORM = result.scalar_one()
+
         if agency.main_tg_bot == bot_id:
             logger.info("The MAIN bot has been started")
             return agency.id, agency.title
-        logger.info("The TEST bot has been started")
-        return agency.id, agency.title
+        elif agency.test_tg_bot == bot_id:
+            logger.info("The TEST bot has been started")
+            return agency.id, agency.title
+
     except NoResultFound:
         raise ValueError("Bot ID not found in the database")
 
