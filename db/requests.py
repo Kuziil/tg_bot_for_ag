@@ -26,7 +26,7 @@ async def add_user(
     session: AsyncSession,
     username: str,
     emoji: str,
-    tg: int,
+    user_tg_id: int,
     agency_id: int,
 ):
     user = UsersORM(
@@ -36,11 +36,11 @@ async def add_user(
     session.add(user)
     await session.commit()
 
-    tg = TgsORM(
-        tg=tg,
+    user_tg_id = TgsORM(
+        user_tg_id=user_tg_id,
         user_id=user.id,
     )
-    session.add(tg)
+    session.add(user_tg_id)
     await session.commit()
 
     agency_user = AgenciesUsersORM(
@@ -93,8 +93,13 @@ async def test_connection(session: AsyncSession):
     return await session.scalar(stmt)
 
 
-# async def is_user_in_agecy(session: AsyncSession, user_id: int, agency_id: int):
-#     stmt = select(UsersORM).where(
-#         UsersORM.id == user_id, UsersORM.agency_id == agency_id
-#     )
-#     return await session.scalar(stmt)
+async def is_user_in_agency(session: AsyncSession, user_tg_id: int, agency_id: int):
+    stmt = (
+        select(AgenciesUsersORM)
+        .join(TgsORM, AgenciesUsersORM.user_id == TgsORM.user_id)
+        .filter(
+            TgsORM.user_tg_id == user_tg_id, AgenciesUsersORM.agency_id == agency_id
+        )
+    )
+    result: Result = await session.execute(stmt)
+    return bool(result.scalars().first())

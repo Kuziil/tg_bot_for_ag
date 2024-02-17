@@ -71,7 +71,7 @@ async def process_emoticon_sent(
         session=session,
         username=st["username"],
         emoji=st["emoticon"],
-        tg=message.from_user.id,
+        user_tg_id=message.from_user.id,
         agency_id=agency_id,
     )
     await state.clear()

@@ -6,15 +6,20 @@ from aiogram.fsm.state import default_state
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # from lexicon.lexicon_ru import LEXICON_RU
-from db.requests import get_agency_bot_id
+from db.requests import get_agency_bot_id, is_user_in_agency
 
 router = Router()
 
 
 @router.message(StateFilter(default_state))
-async def send_echo(message: Message, session: AsyncSession):
+async def send_echo(message: Message, session: AsyncSession, agency_id):
     # Получаем айди бота с помощью функции get_agency_bot_id
-    agency_bot_id = await get_agency_bot_id(session, 1)
+    user_tg_id = message.from_user.id
+    agency_bot_id = await is_user_in_agency(
+        session=session,
+        user_tg_id=user_tg_id,
+        agency_id=agency_id,
+    )
 
     # Отправляем сообщение с айди бота пользователю
     await message.answer(f"Айди бота: {agency_bot_id}")
