@@ -61,7 +61,7 @@ async def process_emoticon_sent(
     message: Message,
     state: FSMContext,
     session: AsyncSession,
-    agenсy_id,
+    agency_id,
 ):
     await state.update_data(emoticon=message.text)
     logger.info(await state.get_data())
@@ -72,7 +72,7 @@ async def process_emoticon_sent(
         username=st["username"],
         emoji=st["emoticon"],
         tg=message.from_user.id,
-        agency_id=agenсy_id,
+        agency_id=agency_id,
     )
     await state.clear()
     await message.answer(

@@ -72,7 +72,7 @@ async def main():
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(
         bot,
-        agenсy_id=agenсy[0],
+        agency_id=agenсy[0],
         agency_title=agenсy[1],
     )
 
