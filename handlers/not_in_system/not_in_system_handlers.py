@@ -58,13 +58,22 @@ async def warning_busy_emoji(message: Message):
 
 @not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon), IsEmoji())
 async def process_emoticon_sent(
-    message: Message, state: FSMContext, session: AsyncSession
+    message: Message,
+    state: FSMContext,
+    session: AsyncSession,
+    agenсy_id,
 ):
     await state.update_data(emoticon=message.text)
     logger.info(await state.get_data())
     st: dict[str, str] = await state.get_data()
     db.user_database[message.from_user.id] = st
-    await add_user(session=session, username=st["username"], emoji=st["emoticon"])
+    await add_user(
+        session=session,
+        username=st["username"],
+        emoji=st["emoticon"],
+        tg=message.from_user.id,
+        agency_id=agenсy_id,
+    )
     await state.clear()
     await message.answer(
         text=LEXICON_RU["registration_done"]

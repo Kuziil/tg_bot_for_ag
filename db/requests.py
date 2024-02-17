@@ -5,7 +5,7 @@ from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import NoResultFound, MultipleResultsFound
 
-from db.models import AgenciesORM, UsersORM
+from db.models import AgenciesORM, UsersORM, TgsORM, AgenciesUsersORM
 
 
 # Инициализируем логгер
@@ -17,22 +17,37 @@ async def get_agency_bot_id(session: AsyncSession, agency_id: int):
     return await session.scalar(stmt)
 
 
-# async def add_user(session: AsyncSession, name: str):
-#     agency = Agencies(title=name)
-#     session.add(agency)
-#     await session.commit()
+async def get_agency(session: AsyncSession, agency_id: int):
+    stm = select(AgenciesORM).where(AgenciesORM.id == agency_id)
+    return await session.scalar(stm)
 
 
 async def add_user(
     session: AsyncSession,
     username: str,
     emoji: str,
+    tg: int,
+    agency_id: int,
 ):
-    user: UsersORM = UsersORM(
+    user = UsersORM(
         username=username,
         emoji=emoji,
     )
     session.add(user)
+    await session.commit()
+
+    tg = TgsORM(
+        tg=tg,
+        user_id=user.id,
+    )
+    session.add(tg)
+    await session.commit()
+
+    agency_user = AgenciesUsersORM(
+        agency_id=agency_id,
+        user_id=user.id,
+    )
+    session.add(agency_user)
     await session.commit()
 
 
@@ -76,3 +91,10 @@ async def test_connection(session: AsyncSession):
     """
     stmt = select()
     return await session.scalar(stmt)
+
+
+# async def is_user_in_agecy(session: AsyncSession, user_id: int, agency_id: int):
+#     stmt = select(UsersORM).where(
+#         UsersORM.id == user_id, UsersORM.agency_id == agency_id
+#     )
+#     return await session.scalar(stmt)

@@ -12,7 +12,6 @@ from handlers.in_system.in_systeam_handlers import in_systeam_router
 from handlers.not_in_system.not_in_system_handlers import not_in_systeam_router
 from FSMs.FSMs import FSMFillForm
 from filters.filters import IsUserInSystem
-from db.requests import add_user
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -22,9 +21,9 @@ main_router.include_router(not_in_systeam_router)
 main_router.include_router(in_systeam_router)
 
 
-@main_router.message(Command(commands='start'),
-                     StateFilter(default_state),
-                     IsUserInSystem())
+@main_router.message(
+    Command(commands="start"), StateFilter(default_state), IsUserInSystem()
+)
 async def process_start_command(message: Message):
     """Данный хэндлер реагирует на команду /start
     выдает список кнопок ориентации в главном меню для Junior
@@ -33,21 +32,20 @@ async def process_start_command(message: Message):
         callback (CallbackQuery): _description_
     """
     await message.answer(
-        text=LEXICON_RU['main_menu_junior'],
+        text=LEXICON_RU["main_menu_junior"],
         reply_markup=create_menu_keyboard(
-            'check_in',
-            'clock_out',
-            'write_a_report',
-            'schedule',
-            'my_money',
-            'model_statistics',
-            'training_materials'
-        )
+            "check_in",
+            "clock_out",
+            "write_a_report",
+            "schedule",
+            "my_money",
+            "model_statistics",
+            "training_materials",
+        ),
     )
 
 
-@main_router.message(Command(commands='start'),
-                     StateFilter(default_state))
+@main_router.message(Command(commands="start"), StateFilter(default_state))
 async def process_start_command_for_new_id(message: Message, session: AsyncSession):
     """Данный хэндлер отвечает на команду /start
     и возвращает текст с кнопками позволяющие пользователю выбрать
@@ -59,15 +57,11 @@ async def process_start_command_for_new_id(message: Message, session: AsyncSessi
     # await add_user(session=session, name=message.from_user.username)
     await message.answer(
         text=text,
-        reply_markup=create_start_keyboard(
-            'not_in_the_system',
-            'in_the_system'
-        )
+        reply_markup=create_start_keyboard("not_in_the_system", "in_the_system"),
     )
 
 
-@main_router.message(Command(commands='help'),
-                     StateFilter(default_state))
+@main_router.message(Command(commands="help"), StateFilter(default_state))
 async def process_help_command(message: Message):
     """Данный хэндлер служит для предоставления списка команд и
     справки по работе с ботом
@@ -79,8 +73,7 @@ async def process_help_command(message: Message):
     await message.answer(LEXICON_COMMANDS_RU[message.text])
 
 
-@main_router.callback_query(F.data == 'in_the_system',
-                            StateFilter(default_state))
+@main_router.callback_query(F.data == "in_the_system", StateFilter(default_state))
 async def process_in_the_system_press(callback: CallbackQuery):
     """Данный хэндлер реагирует на нажатие кнопки в системе
     выдает список кнопок ориентации в главном меню для Junior
@@ -89,25 +82,21 @@ async def process_in_the_system_press(callback: CallbackQuery):
         callback (CallbackQuery): _description_
     """
     await callback.message.edit_text(
-        text=LEXICON_RU['main_menu_junior'],
+        text=LEXICON_RU["main_menu_junior"],
         reply_markup=create_menu_keyboard(
-            'check_in',
-            'clock_out',
-            'write_a_report',
-            'schedule',
-            'my_money',
-            'model_statistics',
-            'training_materials'
-        )
+            "check_in",
+            "clock_out",
+            "write_a_report",
+            "schedule",
+            "my_money",
+            "model_statistics",
+            "training_materials",
+        ),
     )
     await callback.answer()
 
 
-@main_router.callback_query(F.data == 'not_in_the_system',
-                            StateFilter(default_state))
-async def process_not_in_the_system_press(callback: CallbackQuery,
-                                          state: FSMContext):
-    await callback.message.edit_text(
-        text=LEXICON_RU['enter_username']
-    )
+@main_router.callback_query(F.data == "not_in_the_system", StateFilter(default_state))
+async def process_not_in_the_system_press(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(text=LEXICON_RU["enter_username"])
     await state.set_state(FSMFillForm.fill_username)
