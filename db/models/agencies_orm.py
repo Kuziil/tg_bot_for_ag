@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from db.models.base import Base
 from db.models.types import intpk, strtext, intbigint
@@ -18,7 +18,7 @@ class AgenciesORM(Base):
     # columns
     id: Mapped[intpk]
     title: Mapped[strtext]
-    main_tg_bot: Mapped[intbigint]
+    main_tg_bot: Mapped[intbigint] = mapped_column(unique=True)
     test_tg_bot: Mapped[intbigint]
 
     # relationships
