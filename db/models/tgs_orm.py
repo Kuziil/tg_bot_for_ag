@@ -17,7 +17,7 @@ class TgsORM(Base):
 
     # columns
     id: Mapped[intpk]
-    tg: Mapped[intbigint]
+    user_tg_id: Mapped[intbigint]
     user_id: Mapped[intbigint] = mapped_column(
         ForeignKey(column="users.id", ondelete="CASCADE"),
     )
