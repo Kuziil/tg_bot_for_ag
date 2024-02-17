@@ -38,6 +38,7 @@ async def check_for_bot_id_in_db(session: AsyncSession, bot_id: int):
         agency: AgenciesORM = result.scalar_one()
         if agency.main_tg_bot == bot_id:
             logger.info("The MAIN bot has been started")
+            return agency.id, agency.title
         logger.info("The TEST bot has been started")
         return agency.id, agency.title
     except NoResultFound:
