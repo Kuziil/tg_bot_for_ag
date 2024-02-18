@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, relationship, mapped_column
 from sqlalchemy.sql import false
 
 from db.models.base import Base
-from db.models.types import intpk, intbigint, boolbool, floatnum
+from db.models.types import intpk, intbigint, boolbool
 
 if TYPE_CHECKING:
     from .shifts_users_orm import ShiftsUsersORM
@@ -20,7 +20,7 @@ class EarningsORM(Base):
         server_default=false(),
         default=False,
     )
-    dirty: Mapped[floatnum]
+    dirty: Mapped[intbigint]
     shift_user_id: Mapped[intbigint] = mapped_column(
         ForeignKey(
             "shifts_users.id",

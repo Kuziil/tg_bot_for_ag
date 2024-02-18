@@ -59,9 +59,3 @@ boolbool = Annotated[
         BOOLEAN,
     ),
 ]
-floatnum = Annotated[
-    float,
-    mapped_column(
-        NUMERIC,
-    ),
-]
