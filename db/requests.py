@@ -111,13 +111,14 @@ async def is_user_in_agency(session: AsyncSession, user_tg_id: int, agency_id: i
 async def get_all_users_in_agency(session: AsyncSession, agency_id: int):
     stmt = (
         select(UsersORM)
-        .options(
-            selectinload(UsersORM.agencies_details).joinedload(AgenciesUsersORM.agency)
-        )
-        .where(AgenciesORM.id == agency_id)
+        .join(UsersORM.agencies_details)
+        .options(selectinload(UsersORM.agencies_details))
+        .filter(AgenciesUsersORM.agency_id == agency_id)
+        .order_by(UsersORM.id)
     )
     result: Result = await session.execute(stmt)
     users: list[UsersORM] = result.scalars().all()
+    logger.debug(users)
     return users
 
 
