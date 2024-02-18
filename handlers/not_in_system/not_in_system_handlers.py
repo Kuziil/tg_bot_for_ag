@@ -3,14 +3,14 @@ from aiogram import Router, F
 from aiogram.filters import StateFilter
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMFillForm
 from filters.filters import IsEmoji, IsBusyEmoji
 from database.database import db
 from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.kb_single_line_vertically import create_menu_keyboard
-from db.requests import add_user
-from sqlalchemy.ext.asyncio import AsyncSession
+from db.requests import add_user, get_all_emojis_in_agency
 
 logger = logging.getLogger(__name__)
 not_in_systeam_router = Router()
@@ -35,13 +35,18 @@ async def warning_not_name(message: Message):
 
 
 @not_in_systeam_router.callback_query(
-    StateFilter(FSMFillForm.fill_emoticon), F.data == "busy_emojis"
+    StateFilter(FSMFillForm.fill_emoticon),
+    F.data == "busy_emojis",
 )
-async def process_show_busy_emojis(callback: CallbackQuery, state: FSMContext):
-    emojis = ""
-    for emoji in db.get_emojis():
-        emojis += f"{emoji}"
-    await callback.message.edit_text(text=emojis)
+async def process_show_busy_emojis(
+    callback: CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession,
+    agency_id: int,
+):
+    emojis = await get_all_emojis_in_agency(session=session, agency_id=agency_id)
+    emojis = "".join(emojis)
+    await callback.message.answer(text=emojis)
     await callback.answer()
     await state.set_state(FSMFillForm.fill_emoticon)
 
