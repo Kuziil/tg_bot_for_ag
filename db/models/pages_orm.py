@@ -5,7 +5,12 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import text
 
 from db.models.base import Base
-from db.models.types import intpk, strtext, boolbool, intbigint, floatnum
+from db.models.types import (
+    intpk,
+    strtext,
+    boolbool,
+    intbigint,
+)
 
 if TYPE_CHECKING:
     from .models_orm import ModelsORM
@@ -20,7 +25,7 @@ class PagesORM(Base):
     # columns
     id: Mapped[intpk]
     vip: Mapped[boolbool]
-    sales_commision: Mapped[floatnum]
+    sales_commission: Mapped[intbigint]
     work_same_time: Mapped[intbigint] = mapped_column(
         server_default=text(f"{1}"),
         default=text(f"{1}"),
