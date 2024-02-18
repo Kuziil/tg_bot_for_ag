@@ -4,7 +4,7 @@ from emoji import emoji_count
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.database import db
-from db.requests import is_user_in_agency
+from db.requests import is_user_in_agency, get_all_emojis_in_agency
 
 
 class IsEmoji(BaseFilter):
@@ -14,9 +14,13 @@ class IsEmoji(BaseFilter):
 
 
 class IsBusyEmoji(BaseFilter):
-    async def __call__(self, message: Message) -> bool:
+    async def __call__(
+        self, message: Message, session: AsyncSession, agency_id: int
+    ) -> bool:
         emoji: str = message.text
-        return emoji in db.get_emojis()
+        return emoji in await get_all_emojis_in_agency(
+            session=session, agency_id=agency_id
+        )
 
 
 class IsUserInSystem(BaseFilter):
