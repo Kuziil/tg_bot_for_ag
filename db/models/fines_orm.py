@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from db.models.base import Base
-from db.models.types import intpk, strtext, dtdate, floatnum, intbigint
+from db.models.types import intpk, strtext, dtdate, intbigint
 
 
 if TYPE_CHECKING:
@@ -24,7 +24,7 @@ class FinesORM(Base):
         default=datetime.utcnow,
     )
     description: Mapped[strtext | None]
-    amount: Mapped[floatnum]
+    amount: Mapped[intbigint]
     user_id: Mapped[intbigint] = mapped_column(
         ForeignKey(
             "users.id",

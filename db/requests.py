@@ -169,3 +169,13 @@ async def add_model(
     )
     session.add(agency_model)
     await session.commit()
+
+async def add_page(
+    session: AsyncSession,
+    agency_id: int,
+    model_id: int,
+    vip: bool,
+    sales_commissison: float,
+    work_same_time: int = 1,
+
+)
