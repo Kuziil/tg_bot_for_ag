@@ -170,12 +170,23 @@ async def add_model(
     session.add(agency_model)
     await session.commit()
 
+
 async def add_page(
     session: AsyncSession,
-    agency_id: int,
     model_id: int,
     vip: bool,
-    sales_commissison: float,
+    sales_commission: int,
     work_same_time: int = 1,
-
-)
+    page_link: str | None = None,
+    senior_id: int | None = None,
+) -> None:
+    page = PagesORM(
+        model_id=model_id,
+        vip=vip,
+        sales_commission=sales_commission,
+        work_same_time=work_same_time,
+        page_link=page_link,
+        senior_id=senior_id,
+    )
+    session.add(page)
+    await session.commit()

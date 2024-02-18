@@ -6,12 +6,38 @@ from aiogram.fsm.state import default_state
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # from lexicon.lexicon_ru import LEXICON_RU
-# from db.requests import add_model
+from db.requests import add_model, add_page
 
 router = Router()
 
+# add_page
+
+
+@router.message(StateFilter(default_state))
+async def send_echo(
+    message: Message,
+    session: AsyncSession,
+):
+    match message.text:
+        case "vip":
+            vip = True
+        case "free":
+            vip = False
+        case _:
+            vip = None
+    await add_page(
+        session=session,
+        model_id=1,
+        vip=vip,
+        sales_commission=20,
+    )
+    await message.answer(
+        text=f"Страница {message.text} добавлена",
+    )
+
 
 # add_model
+
 
 # @router.message(StateFilter(default_state))
 # async def send_echo(
