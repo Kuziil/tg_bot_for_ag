@@ -28,6 +28,7 @@ class DBManager:
     def is_user_in_system(self, user_id: int) -> bool:
         return True if user_id in self.user_database else False
 
+    # заменил
     # Функция для добавления пользователя
     def add_user(self, user_id: int, username: str, emoticon: str) -> None:
         if self.is_user_in_system(user_id=user_id):
