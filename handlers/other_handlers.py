@@ -6,7 +6,7 @@ from aiogram.fsm.state import default_state
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # from lexicon.lexicon_ru import LEXICON_RU
-from db.requests import get_all_emojis_in_agency
+from db.requests import add_model
 
 router = Router()
 
@@ -17,15 +17,14 @@ async def send_echo(
     session: AsyncSession,
     agency_id: int,
 ):
-    # Получаем айди бота с помощью функции get_agency_bot_id
-    # user_tg_id = message.from_user.id
-    agency_bot_id = await get_all_emojis_in_agency(
+    await add_model(
         session=session,
         agency_id=agency_id,
+        model_title=message.text,
     )
-
-    # Отправляем сообщение с айди бота пользователю
-    await message.answer(f"Результат: {agency_bot_id}")
+    await message.answer(
+        text=f"Модель {message.text} добавлена",
+    )
 
 
 # Этот хэндлер будет реагировать на любые сообщения пользователя,

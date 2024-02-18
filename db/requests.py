@@ -1,12 +1,20 @@
 import logging
 
 from sqlalchemy import select, or_
-from sqlalchemy.engine import Result, ScalarResult
+from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import selectinload
 
-from db.models import AgenciesORM, UsersORM, TgsORM, AgenciesUsersORM
+from db.models import (
+    AgenciesORM,
+    UsersORM,
+    TgsORM,
+    AgenciesUsersORM,
+    ModelsORM,
+    AgenciesModelsORM,
+    PagesORM,
+)
 from sqlalchemy.orm import joinedload
 
 
@@ -140,3 +148,24 @@ async def is_busy_emoji_in_agency(session: AsyncSession, emoji: str, agency_id: 
 async def get_str_emojis_in_agency(session: AsyncSession, agency_id: int) -> str:
     emojis = await get_all_emojis_in_agency(session=session, agency_id=agency_id)
     return " ".join(emojis)
+
+
+async def add_model(
+    session: AsyncSession,
+    agency_id: int,
+    model_title: str,
+    model_description: str | None = None,
+):
+    model = ModelsORM(
+        title=model_title,
+        description=model_description,
+    )
+    session.add(model)
+    await session.commit()
+
+    agency_model = AgenciesModelsORM(
+        agency_id=agency_id,
+        model_id=model.id,
+    )
+    session.add(agency_model)
+    await session.commit()
