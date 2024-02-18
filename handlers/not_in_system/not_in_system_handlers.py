@@ -10,7 +10,7 @@ from filters.filters import IsEmoji, IsBusyEmoji
 from database.database import db
 from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.kb_single_line_vertically import create_menu_keyboard
-from db.requests import add_user, get_all_emojis_in_agency
+from db.requests import add_user, get_str_emojis_in_agency
 
 logger = logging.getLogger(__name__)
 not_in_systeam_router = Router()
@@ -44,21 +44,28 @@ async def process_show_busy_emojis(
     session: AsyncSession,
     agency_id: int,
 ):
-    emojis = await get_all_emojis_in_agency(session=session, agency_id=agency_id)
-    emojis = "".join(emojis)
+    emojis = await get_str_emojis_in_agency(session=session, agency_id=agency_id)
     await callback.message.answer(text=emojis)
     await callback.answer()
     await state.set_state(FSMFillForm.fill_emoticon)
 
 
 @not_in_systeam_router.message(
-    StateFilter(FSMFillForm.fill_emoticon), IsEmoji(), IsBusyEmoji()
+    StateFilter(FSMFillForm.fill_emoticon),
+    IsEmoji(),
+    IsBusyEmoji(),
 )
-async def warning_busy_emoji(message: Message):
-    emojis = ""
-    for emoji in db.get_emojis():
-        emojis += f"{emoji}"
-    await message.answer(text=LEXICON_RU["busy_emoji"] + emojis)
+async def warning_busy_emoji(
+    message: Message,
+    session: AsyncSession,
+    agency_id: int,
+):
+    emojis = await get_str_emojis_in_agency(
+        session=session,
+        agency_id=agency_id,
+    )
+    await message.answer(text=LEXICON_RU["busy_emoji"])
+    await message.answer(emojis)
 
 
 @not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon), IsEmoji())

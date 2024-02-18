@@ -57,12 +57,6 @@ class DBManager:
     def get_emot_by_day_call_back(self, shift) -> str:
         return self.user_database[self.shifts[shift]]["emoticon"]
 
-    def get_emojis(self) -> list[str]:
-        emojis: list[str] = list()
-        for user_id in self.user_database:
-            emojis.append(self.user_database[user_id]["emoticon"])
-        return emojis
-
 
 # Создаем экземпляр класса
 db = DBManager()

@@ -135,3 +135,8 @@ async def get_all_emojis_in_agency(
 async def is_busy_emoji_in_agency(session: AsyncSession, emoji: str, agency_id: int):
     emojis = await get_all_emojis_in_agency(session=session, agency_id=agency_id)
     return emoji in emojis
+
+
+async def get_str_emojis_in_agency(session: AsyncSession, agency_id: int) -> str:
+    emojis = await get_all_emojis_in_agency(session=session, agency_id=agency_id)
+    return " ".join(emojis)
