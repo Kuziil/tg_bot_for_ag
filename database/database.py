@@ -66,11 +66,3 @@ class DBManager:
 
 # Создаем экземпляр класса
 db = DBManager()
-
-# Пример использования методов класса
-# db.add_user(
-#     user_id=db.config.tg_bot.admin_ids[0],
-#     username="Mic",
-#     emoticon="😏")
-
-db.add_user(user_id=db.config.tg_bot.operator_ids[0], username="Dac", emoticon="🤔")

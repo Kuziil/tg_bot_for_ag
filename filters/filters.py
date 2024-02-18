@@ -27,7 +27,7 @@ class IsUserInSystem(BaseFilter):
         agency_id: int,
     ) -> bool:
         user_tg_id: int = message.from_user.id
-        return is_user_in_agency(
+        return await is_user_in_agency(
             session=session,
             user_tg_id=user_tg_id,
             agency_id=agency_id,

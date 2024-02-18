@@ -38,7 +38,7 @@ async def process_day_press(
     await callback.message.edit_text(
         text=(
             LEXICON_RU["schedule"]
-            if is_user_in_agency(
+            if await is_user_in_agency(
                 session=session,
                 agency_id=agency_id,
                 user_tg_id=user_id,

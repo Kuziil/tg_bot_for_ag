@@ -104,7 +104,8 @@ async def is_user_in_agency(session: AsyncSession, user_tg_id: int, agency_id: i
         )
     )
     result: Result = await session.execute(stmt)
-    return bool(result.scalars().first())
+    agency_user: AgenciesUsersORM = result.scalar_one_or_none()
+    return bool(agency_user)
 
 
 async def get_all_users_in_agency(session: AsyncSession, agency_id: int):
