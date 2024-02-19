@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 # Инициализируем локализатор для перевода текста
 translations = {
-    "defult": "ru",
+    "default": "ru",
     "en": {
         "lexicon": LEXICON_EN,
         "commands": LEXICON_COMMANDS_EN,
