@@ -1,5 +1,7 @@
-from .db import DbSessionMiddleware
-
 __all__ = [
-    "DbSessionMiddleware"
+    "DbSessionMiddleware",
+    "TranslatorMiddleware",
 ]
+
+from .db import DbSessionMiddleware
+from .i18n import TranslatorMiddleware
