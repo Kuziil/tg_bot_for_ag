@@ -30,6 +30,7 @@ from lexicon.lexicon_en import (
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
 
+# Инициализируем локализатор для перевода текста
 translations = {
     "defult": "ru",
     "en": {
@@ -63,41 +64,50 @@ async def main():
 
     # Инициализируем хранилище
     storage = MemoryStorage()
-    # echo сыпет в консоль
-    # pool_size количество подключений
-    # max_overflow дополнительные подключения
+
+    # Инициализируем хелпер для базы данных
     db_helper = DatabaseHelper(
         db_url=settings.db_url,
-        echo=False,
-        pool_size=5,
-        max_overflow=10,
+        echo=False,  # Режим отладки
+        pool_size=5,  # Количество подключений
+        max_overflow=10,  # Максимальное количество подключений
     )
 
+    # проверяем соединение с базой данных
     async with db_helper.sessionmaker() as session:
         await test_connection(session)
 
-    # Инициализируем бот и диспетчер
+    # Инициализируем диспетчер
     dp = Dispatcher(storage=storage)
+
+    # Регистрируем мидлвары в диспетчере
     dp.update.middleware(
         DbSessionMiddleware(
             session_pool=db_helper.sessionmaker,
         ),
     )
-    dp.update.middleware(TranslatorMiddleware())
+    dp.update.middleware(
+        TranslatorMiddleware(),
+    )
+
     # Регистриуем роутеры в диспетчере
     dp.include_router(main_handlers.main_router)
     dp.include_router(other_handlers.router)
 
+    # Инициализируем бота и получаем информацию о нем от API Telegram.
     bot = Bot(
         token=settings.bot_token.get_secret_value(),
         parse_mode="HTML",
     )
+
+    # Проверяем действительный ли бот
     info: User = await bot.get_me()
-    logger.info(info.id)
     async with db_helper.sessionmaker() as session:
         agenсy: tuple[int, str] = await check_for_bot_id_in_db(
             session=session, bot_id=info.id
         )
+
+    # устанавливаем меню для бота
     await set_main_menu(bot)
 
     # Пропускаем накопившиеся апдейты и запускаем polling
