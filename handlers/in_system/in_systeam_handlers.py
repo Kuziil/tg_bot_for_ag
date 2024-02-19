@@ -28,7 +28,6 @@ async def process_schedule_press(
     Args:
         callback (CallbackQuery): _description_
     """
-    buttons: dict[str, str] = i18n["button"]
     await callback.message.edit_text(
         text=i18n["lexicon"]["schedule_type"],
         reply_markup=create_menu_keyboard(
@@ -50,5 +49,20 @@ async def process_mounth_schedule_press(
     await callback.message.edit_text(
         text=i18n["lexicon"]["schedule"],
         reply_markup=create_schedule(),
+    )
+    await callback.answer()
+
+
+@in_systeam_router.callback_query(
+    F.data == "week_schedule",
+    StateFilter(default_state),
+)
+async def process_mounth_schedule_press(
+    callback: CallbackQuery,
+    i18n: dict[str, dict[str, str]],
+):
+    await callback.message.edit_text(
+        text=i18n["lexicon"]["week_schedule"],
+        # reply_markup=,
     )
     await callback.answer()
