@@ -4,7 +4,7 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from keyboards.schedule.mounth.classes_callback_data import (
+from keyboards.schedule.mounth.classes_callback_data_mounth_schedule import (
     DayCallbackData,
     ModelCallbackData,
     MonthCallbackData,
@@ -12,7 +12,7 @@ from keyboards.schedule.mounth.classes_callback_data import (
     YearCallbackData,
 )
 from lexicon.lexicon_ru import LEXICON_RU
-from keyboards.schedule.mounth.kb import create_schedule
+from keyboards.schedule.mounth.kb_mounth_schedule import create_schedule
 from database.database import db
 from db.requests import is_user_in_agency
 
