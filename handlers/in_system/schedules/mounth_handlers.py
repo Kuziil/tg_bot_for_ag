@@ -12,7 +12,7 @@ from keyboards.schedule.mounth.classes_callback_data import (
     YearCallbackData,
 )
 from lexicon.lexicon_ru import LEXICON_RU
-from keyboards.schedule.mounth.kb_schedule import create_schedule
+from keyboards.schedule.mounth.kb import create_schedule
 from database.database import db
 from db.requests import is_user_in_agency
 

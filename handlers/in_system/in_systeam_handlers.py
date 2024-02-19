@@ -4,7 +4,7 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
 
 from lexicon.lexicon_ru import LEXICON_RU
-from keyboards.schedule.mounth.kb_schedule import create_schedule
+from keyboards.schedule.mounth.kb import create_schedule
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from handlers.in_system.schedules.mounth_handlers import schedule_router
 
