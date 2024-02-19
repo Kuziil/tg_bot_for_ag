@@ -22,7 +22,7 @@ class TranslatorMiddleware(BaseMiddleware):
         translations: dict[str, dict[str, str]] = data.get("_translations")
         # вернуть эту строчку если понадобиться локализация
         # i18n = translations.get(user_lang)
-        i18n = translations.get("default")
+        i18n = None
         if i18n is None:
             data["i18n"] = translations[translations["default"]]
         else:
