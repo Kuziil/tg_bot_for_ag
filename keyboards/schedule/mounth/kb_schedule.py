@@ -5,30 +5,32 @@ import logging
 import locale
 from datetime import datetime
 import calendar
-from keyboards.schedule.classes_callback_data import (
+from keyboards.schedule.mounth.classes_callback_data import (
     DayCallbackData,
     ModelCallbackData,
     MonthCallbackData,
     ShiftCallbackData,
-    YearCallbackData
+    YearCallbackData,
 )
 
 from lexicon.lexicon_ru import (
     LEXICON_SCHEDULE_RU,
     LEXICON_MODELS_RU,
     LEXICON_SHIFTS_RU,
-    LEXICON_BUTTON_RU
+    LEXICON_BUTTON_RU,
 )
 
 from database.database import db
 
-locale.setlocale(locale.LC_TIME, 'ru_RU.UTF8')
+locale.setlocale(locale.LC_TIME, "ru_RU.UTF8")
 
 
-def current_date(d_m_y: str,
-                 year: int,
-                 month: int = datetime.now().month,
-                 day: int = datetime.now().day) -> str:
+def current_date(
+    d_m_y: str,
+    year: int,
+    month: int = datetime.now().month,
+    day: int = datetime.now().day,
+) -> str:
     """Данная функция проверяет текущая ли дата
 
     Args:
@@ -48,18 +50,18 @@ def current_date(d_m_y: str,
     if day == now.day and month == now.month and year == now.year:
         match d_m_y:
             case "day":
-                return f'[{day}]'
+                return f"[{day}]"
             case "month":
-                return f'[{month}]'
+                return f"[{month}]"
             case "year":
-                return f'[{year}]'
+                return f"[{year}]"
     match d_m_y:
         case "day":
-            return f'{day}'
+            return f"{day}"
         case "month":
-            return f'{month}'
+            return f"{month}"
         case "year":
-            return f'{year}'
+            return f"{year}"
 
 
 def create_schedule(
@@ -70,7 +72,7 @@ def create_schedule(
     # TODO : Добавить модель дефолт от юзера
     number: int = 0,
     # TODO : добавить текущую смену
-    shift: int = 0
+    shift: int = 0,
 ) -> InlineKeyboardMarkup:
     """Данная функция служит для создания клавиатуры для рассписания
     Args:
@@ -112,165 +114,109 @@ def create_schedule(
     # год
     kb_builder.row(
         InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['pre_year'],
+            text=LEXICON_SCHEDULE_RU["pre_year"],
             callback_data=YearCallbackData(
-                shift=shift,
-                number=number,
-                month=month,
-                year=year,
-                napr=1
-            ).pack()
+                shift=shift, number=number, month=month, year=year, napr=1
+            ).pack(),
         ),
         InlineKeyboardButton(
             text=current_date(d_m_y="year", year=year),
             callback_data=YearCallbackData(
-                shift=shift,
-                number=number,
-                month=month,
-                year=year,
-                napr=0
-            ).pack()
+                shift=shift, number=number, month=month, year=year, napr=0
+            ).pack(),
         ),
         InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['next_year'],
+            text=LEXICON_SCHEDULE_RU["next_year"],
             callback_data=YearCallbackData(
-                shift=shift,
-                number=number,
-                month=month,
-                year=year,
-                napr=2
-            ).pack()
-        )
+                shift=shift, number=number, month=month, year=year, napr=2
+            ).pack(),
+        ),
     )
     # месяц
-    month_t: str = datetime(year=year, month=month, day=1).strftime('%B')
+    month_t: str = datetime(year=year, month=month, day=1).strftime("%B")
     kb_builder.row(
         InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['pre_month'],
+            text=LEXICON_SCHEDULE_RU["pre_month"],
             callback_data=MonthCallbackData(
-                shift=shift,
-                number=number,
-                month=month,
-                year=year,
-                napr=1
-            ).pack()
+                shift=shift, number=number, month=month, year=year, napr=1
+            ).pack(),
         ),
         InlineKeyboardButton(
-            text=f'[{month_t}]' if current_date(
-                d_m_y='month',
-                year=year,
-                month=month).startswith('[') else month_t,
+            text=(
+                f"[{month_t}]"
+                if current_date(d_m_y="month", year=year, month=month).startswith("[")
+                else month_t
+            ),
             callback_data=MonthCallbackData(
-                shift=shift,
-                number=number,
-                month=month,
-                year=year,
-                napr=0
-            ).pack()
+                shift=shift, number=number, month=month, year=year, napr=0
+            ).pack(),
         ),
         InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['next_month'],
+            text=LEXICON_SCHEDULE_RU["next_month"],
             callback_data=MonthCallbackData(
-                shift=shift,
-                number=number,
-                month=month,
-                year=year,
-                napr=2
-            ).pack()
-        )
+                shift=shift, number=number, month=month, year=year, napr=2
+            ).pack(),
+        ),
     )
 
     # дни недели
     kb_builder.row(
-        *[InlineKeyboardButton(
-            text=weekday,
-            callback_data=f'weekday-{weekday}')
-          for weekday in list(calendar.day_abbr)
-          ]
+        *[
+            InlineKeyboardButton(text=weekday, callback_data=f"weekday-{weekday}")
+            for weekday in list(calendar.day_abbr)
+        ]
     )
     # дни
     for week in cal:
         week_arg: list[InlineKeyboardButton] = list()
         for day_cal in week:
-            day_t: str = current_date(day=day_cal,
-                                      month=month,
-                                      year=year,
-                                      d_m_y="day")
+            day_t: str = current_date(day=day_cal, month=month, year=year, d_m_y="day")
             day_call_back_t: str = DayCallbackData(
-                shift=shift,
-                number=number,
-                day=day_cal,
-                month=month,
-                year=year
+                shift=shift, number=number, day=day_cal, month=month, year=year
             ).pack()
             if day_cal == 0:
                 day_t = " "
             elif day_cal == day:
-                day_t = db.add_shift(
-                    user_id=user_id, day_call_back_t=day_call_back_t)
+                day_t = db.add_shift(user_id=user_id, day_call_back_t=day_call_back_t)
             elif day_call_back_t in db.shifts:
                 day_t = db.get_emot_by_day_call_back(day_call_back_t)
 
-            week_arg.append(InlineKeyboardButton(
-                text=day_t,
-                callback_data=day_call_back_t
-            ))
-        kb_builder.row(
-            *week_arg
-        )
+            week_arg.append(
+                InlineKeyboardButton(text=day_t, callback_data=day_call_back_t)
+            )
+        kb_builder.row(*week_arg)
 
     # модель
     kb_builder.row(
         InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['pre_model'],
+            text=LEXICON_SCHEDULE_RU["pre_model"],
             callback_data=ModelCallbackData(
-                shift=shift,
-                number=number,
-                month=month,
-                year=year,
-                napr=1
-            ).pack()
+                shift=shift, number=number, month=month, year=year, napr=1
+            ).pack(),
         ),
         InlineKeyboardButton(
             text=LEXICON_MODELS_RU[model],
             callback_data=ModelCallbackData(
-                shift=shift,
-                number=number,
-                month=month,
-                year=year,
-                napr=0
-            ).pack()
+                shift=shift, number=number, month=month, year=year, napr=0
+            ).pack(),
         ),
         InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['next_model'],
+            text=LEXICON_SCHEDULE_RU["next_model"],
             callback_data=ModelCallbackData(
-                shift=shift,
-                number=number,
-                month=month,
-                year=year,
-                napr=2
-            ).pack()
-        )
+                shift=shift, number=number, month=month, year=year, napr=2
+            ).pack(),
+        ),
     )
     # последняя строка
     kb_builder.row(
-        InlineKeyboardButton(
-            text=LEXICON_BUTTON_RU['back'],
-            callback_data='back'
-        ),
+        InlineKeyboardButton(text=LEXICON_BUTTON_RU["back"], callback_data="back"),
         InlineKeyboardButton(
             text=LEXICON_SHIFTS_RU[shifts[shift]],
             callback_data=ShiftCallbackData(
-                shift=shift,
-                number=number,
-                month=month,
-                year=year
-            ).pack()
+                shift=shift, number=number, month=month, year=year
+            ).pack(),
         ),
-        InlineKeyboardButton(
-            text=LEXICON_SCHEDULE_RU['today'],
-            callback_data='today'
-        )
+        InlineKeyboardButton(text=LEXICON_SCHEDULE_RU["today"], callback_data="today"),
     )
 
     return kb_builder.as_markup()
