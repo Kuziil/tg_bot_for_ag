@@ -13,6 +13,7 @@ async def create_week_shudle(
     kb_builder = InlineKeyboardBuilder()
 
     kb_builder.row(
+        # TODO: добавить сеньера
         InlineKeyboardButton(
             text=await get_emoji_by_user_tg_id(
                 session=session,
