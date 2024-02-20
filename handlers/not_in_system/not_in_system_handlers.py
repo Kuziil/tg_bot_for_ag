@@ -6,11 +6,12 @@ from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMFillForm
+from db.requests.with_emoji import get_str_emojis_in_agency
 from filters.filters import IsEmoji, IsBusyEmoji
 from database.database import db
 from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.kb_single_line_vertically import create_menu_keyboard
-from db.requests.requests import add_user, get_str_emojis_in_agency
+from db.requests.with_add import add_user
 
 logger = logging.getLogger(__name__)
 not_in_systeam_router = Router()

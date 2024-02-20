@@ -6,13 +6,10 @@ from aiogram.fsm.state import default_state
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # from lexicon.lexicon_ru import LEXICON_RU
-from db.requests.requests import (
-    add_model,
-    add_page,
-    add_interval,
-    add_page_interval,
+from db.requests.with_add import (
     add_page_user,
 )
+from db.requests.with_add import add_interval, add_model, add_page, add_page_interval
 
 router = Router()
 

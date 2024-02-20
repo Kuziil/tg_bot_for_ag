@@ -4,7 +4,8 @@ from emoji import emoji_count
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.database import db
-from db.requests.requests import is_user_in_agency, is_busy_emoji_in_agency
+from db.requests.with_user import is_user_in_agency
+from db.requests.with_emoji import is_busy_emoji_in_agency
 
 
 class IsEmoji(BaseFilter):

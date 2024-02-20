@@ -4,12 +4,13 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types.user import User
+from db.requests.with_test import test_connection
 
 from handlers import main_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
 from config_data.config_reader import settings
 from middlewares import DbSessionMiddleware, TranslatorMiddleware
-from db.requests.requests import test_connection, check_for_bot_id_in_db
+from db.requests.with_test import check_for_bot_id_in_db
 from db.db_helper import DatabaseHelper
 from lexicon.lexicon_ru import (
     LEXICON_RU,
