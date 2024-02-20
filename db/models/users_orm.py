@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from .fines_orm import FinesORM
     from .agencies_users_orm import AgenciesUsersORM
     from .pages_users_orm import PagesUsersORM
+    from .pages_intervals_orm import PagesIntervalsORM
 
 
 class UsersORM(Base):
@@ -97,3 +98,6 @@ class UsersORM(Base):
     #     secondary="models_users",
     #     back_populates="users",
     # )
+    page_interval: Mapped[list["PagesIntervalsORM"]] = relationship(
+        back_populates="user",
+    )

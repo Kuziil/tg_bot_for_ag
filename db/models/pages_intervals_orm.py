@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .intervals_orm import IntervalsORM
     from .pages_orm import PagesORM
     from .shifts_orm import ShiftsORM
+    from .users_orm import UsersORM
 
     pass
 
@@ -38,6 +39,12 @@ class PagesIntervalsORM(Base):
             ondelete="CASCADE",
         ),
     )
+    user_id: Mapped[intbigint | None] = mapped_column(
+        ForeignKey(
+            column="users.id",
+            ondelete="CASCADE",
+        ),
+    )
 
     # relationships
     page: Mapped["PagesORM"] = relationship(
@@ -47,5 +54,8 @@ class PagesIntervalsORM(Base):
         back_populates="pages_details",
     )
     shifts: Mapped["ShiftsORM"] = relationship(
+        back_populates="page_interval",
+    )
+    user: Mapped["UsersORM"] = relationship(
         back_populates="page_interval",
     )
