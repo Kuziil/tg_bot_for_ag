@@ -13,12 +13,9 @@ if TYPE_CHECKING:
     from .tgs_orm import TgsORM
     from .pages_orm import PagesORM
     from .shifts_users_orm import ShiftsUsersORM
-    from .shifts_orm import ShiftsORM
     from .fines_orm import FinesORM
     from .agencies_users_orm import AgenciesUsersORM
-    from .agencies_orm import AgenciesORM
-    from .models_orm import ModelsORM
-    from .models_users_orm import ModelsUsersORM
+    from .pages_users_orm import PagesUsersORM
 
 
 class UsersORM(Base):
@@ -93,7 +90,7 @@ class UsersORM(Base):
     #     secondary="agencies_users",
     #     back_populates="users",
     # )
-    models_details: Mapped[list["ModelsUsersORM"]] = relationship(
+    pages_details: Mapped[list["PagesUsersORM"]] = relationship(
         back_populates="user",
     )
     # models: Mapped[list["ModelsORM"]] = relationship(
