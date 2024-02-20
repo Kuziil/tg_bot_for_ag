@@ -11,11 +11,12 @@ from db.requests.with_add import (
 )
 from db.requests.with_add import add_interval, add_model, add_page, add_page_interval
 from db.requests.with_page import get_all_pages_with_intervals_and_with_users_tgs
-from db.models import PagesIntervalsORM
+from db.requests.with_user import get_user_and_availible_pages_intervals
+from db.models import PagesIntervalsORM, TgsORM
 
 router = Router()
 
-# get_pages_available_to_user
+# get_user_and_availible_pages_intervals
 
 
 @router.message(StateFilter(default_state))
@@ -23,26 +24,60 @@ async def send_echo(
     message: Message,
     session: AsyncSession,
 ):
-    pages = await get_all_pages_with_intervals_and_with_users_tgs(
+    users = await get_user_and_availible_pages_intervals(
         session=session,
-        user_id=message.from_user.id,
+        user_tg_id=message.from_user.id,
     )
-    for page in pages:
+    for user in users:
         await message.answer(
-            text=f"{page.id} - {page.vip}",
+            text=f"{user.id} - {user.username}",
         )
-        for page_interval_details in page.intervals_details:
+        for tg in user.tgs:
             await message.answer(
-                text=f"{page_interval_details.interval.start_at}",
-            ),
-        for page_user_details in page.users_details:
-            await message.answer(
-                text=f"{page_user_details.user.id}",
+                text=f"{tg.id}",
             )
-            for user_tgs in page_user_details.user.tgs:
-                await message.answer(
-                    text=f"{user_tgs.id}",
-                )
+        for page_interval in user.pages_intervals:
+            await message.answer(
+                text=f"{page_interval.page_id} - {page_interval.interval_id}",
+            )
+            page = page_interval.page
+            interval = page_interval.interval
+            await message.answer(
+                text=f"{page.id} - {page.vip}",
+            )
+            await message.answer(
+                text=f"{interval.id} - {interval.start_at} - {interval.end_at}",
+            )
+
+
+# # get_pages_available_to_user
+
+
+# @router.message(StateFilter(default_state))
+# async def send_echo(
+#     message: Message,
+#     session: AsyncSession,
+# ):
+#     pages = await get_all_pages_with_intervals_and_with_users_tgs(
+#         session=session,
+#         user_id=message.from_user.id,
+#     )
+#     for page in pages:
+#         await message.answer(
+#             text=f"{page.id} - {page.vip}",
+#         )
+#         for page_interval_details in page.intervals_details:
+#             await message.answer(
+#                 text=f"{page_interval_details.interval.start_at}",
+#             ),
+#         for page_user_details in page.users_details:
+#             await message.answer(
+#                 text=f"{page_user_details.user.id}",
+#             )
+#             for user_tgs in page_user_details.user.tgs:
+#                 await message.answer(
+#                     text=f"{user_tgs.id}",
+#                 )
 
 
 # # add_page_user

@@ -57,5 +57,5 @@ class PagesIntervalsORM(Base):
         back_populates="page_interval",
     )
     user: Mapped["UsersORM"] = relationship(
-        back_populates="page_interval",
+        back_populates="pages_intervals",
     )

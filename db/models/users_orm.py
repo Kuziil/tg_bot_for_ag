@@ -98,6 +98,6 @@ class UsersORM(Base):
     #     secondary="models_users",
     #     back_populates="users",
     # )
-    page_interval: Mapped[list["PagesIntervalsORM"]] = relationship(
+    pages_intervals: Mapped[list["PagesIntervalsORM"]] = relationship(
         back_populates="user",
     )

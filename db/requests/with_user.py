@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.models import AgenciesUsersORM, TgsORM, UsersORM
+from db.models import AgenciesUsersORM, TgsORM, UsersORM, PagesIntervalsORM
 
 logger = logging.getLogger(__name__)
 
@@ -46,3 +46,24 @@ async def get_all_users_in_agency(
     users: list[UsersORM] = result.scalars().all()
     logger.debug(users)
     return users
+
+
+async def get_user_and_availible_pages_intervals(
+    session: AsyncSession,
+    user_tg_id: int,
+) -> UsersORM:
+    # нужна проврка на скорость и поиграться с размешением
+    result: Result = await session.execute(
+        select(UsersORM)
+        .join(UsersORM.tgs)
+        .options(
+            selectinload(UsersORM.tgs),
+            selectinload(UsersORM.pages_intervals).joinedload(
+                PagesIntervalsORM.interval
+            ),
+            selectinload(UsersORM.pages_intervals).joinedload(PagesIntervalsORM.page),
+        )
+        .where(TgsORM.user_tg_id == user_tg_id)
+    )
+    user: UsersORM = result.scalars().all()
+    return user
