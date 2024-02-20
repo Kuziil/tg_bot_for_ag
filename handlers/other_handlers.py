@@ -10,23 +10,23 @@ from db.requests import add_model, add_page, add_interval, add_page_interval
 
 router = Router()
 
-# add_page_interval
+# # add_page_interval
 
 
-@router.message(StateFilter(default_state))
-async def send_echo(
-    message: Message,
-    session: AsyncSession,
-):
-    page_interval = message.text.split("=")
-    await add_page_interval(
-        session=session,
-        page_id=int(page_interval[0]),
-        interval_id=int(page_interval[1]),
-    )
-    await message.answer(
-        text=f"Связь {message.text} добавлена",
-    )
+# @router.message(StateFilter(default_state))
+# async def send_echo(
+#     message: Message,
+#     session: AsyncSession,
+# ):
+#     page_interval = message.text.split("=")
+#     await add_page_interval(
+#         session=session,
+#         page_id=int(page_interval[0]),
+#         interval_id=int(page_interval[1]),
+#     )
+#     await message.answer(
+#         text=f"Связь {message.text} добавлена",
+#     )
 
 
 # # add_interval

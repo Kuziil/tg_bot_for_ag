@@ -222,3 +222,17 @@ async def add_page_interval(
     )
     session.add(page_interval)
     await session.commit()
+
+
+async def get_emoji_by_user_tg_id(
+    session: AsyncSession,
+    user_tg_id: int,
+) -> str:
+    stmt = (
+        select(UsersORM)
+        .options(selectinload(UsersORM.tgs))
+        .filter(TgsORM.user_tg_id == user_tg_id)
+    )
+    result: Result = await session.execute(stmt)
+    user: UsersORM = result.scalar_one()
+    return user.emoji

@@ -1,11 +1,25 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from db.requests import get_emoji_by_user_tg_id
 
 
-async def create_week_shudle() -> InlineKeyboardMarkup:
+async def create_week_shudle(
+    user_tg_id: int,
+    session: AsyncSession,
+) -> InlineKeyboardMarkup:
 
     kb_builder = InlineKeyboardBuilder()
 
-    kb_builder.row()
+    kb_builder.row(
+        InlineKeyboardButton(
+            text=await get_emoji_by_user_tg_id(
+                session=session,
+                user_tg_id=user_tg_id,
+            ),
+            callback_data="emoji_for_left_up",
+        ),
+    )
 
-    pass
+    return kb_builder.as_markup()

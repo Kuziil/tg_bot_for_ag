@@ -7,6 +7,8 @@ from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.schedule.mounth.kb_mounth_schedule import create_schedule
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from handlers.in_system.schedules.mounth_handlers import schedule_router
+from keyboards.schedule.week.kb_week_schedule import create_week_shudle
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 in_systeam_router = Router()
@@ -59,10 +61,14 @@ async def process_mounth_schedule_press(
 )
 async def process_mounth_schedule_press(
     callback: CallbackQuery,
+    session: AsyncSession,
     i18n: dict[str, dict[str, str]],
 ):
     await callback.message.edit_text(
         text=i18n["lexicon"]["week_schedule"],
-        # reply_markup=,
+        reply_markup=await create_week_shudle(
+            session=session,
+            user_tg_id=callback.from_user.id,
+        ),
     )
     await callback.answer()
