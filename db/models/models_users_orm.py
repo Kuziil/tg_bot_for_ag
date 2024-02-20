@@ -13,35 +13,35 @@ if TYPE_CHECKING:
     pass
 
 
-class ModelsUsersORM(Base):
-    __tablename__ = "models_users"
-    __table_args__ = (
-        UniqueConstraint(
-            "user_id",
-            "model_id",
-            name="idx_unique_models_users",
-        ),
-    )
+# class ModelsUsersORM(Base):
+#     __tablename__ = "models_users"
+#     __table_args__ = (
+#         UniqueConstraint(
+#             "user_id",
+#             "model_id",
+#             name="idx_unique_models_users",
+#         ),
+#     )
 
-    # columns
-    id: Mapped[intpk]
-    user_id: Mapped[intbigint] = mapped_column(
-        ForeignKey(
-            "users.id",
-            ondelete="CASCADE",
-        ),
-    )
-    model_id: Mapped[intbigint] = mapped_column(
-        ForeignKey(
-            "models.id",
-            ondelete="CASCADE",
-        ),
-    )
+#     # columns
+#     id: Mapped[intpk]
+#     user_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey(
+#             "users.id",
+#             ondelete="CASCADE",
+#         ),
+#     )
+#     model_id: Mapped[intbigint] = mapped_column(
+#         ForeignKey(
+#             "models.id",
+#             ondelete="CASCADE",
+#         ),
+#     )
 
-    # relationships
-    user: Mapped["UsersORM"] = relationship(
-        back_populates="models_details",
-    )
-    model: Mapped["ModelsORM"] = relationship(
-        back_populates="users_details",
-    )
+#     # relationships
+#     user: Mapped["UsersORM"] = relationship(
+#         back_populates="models_details",
+#     )
+#     model: Mapped["ModelsORM"] = relationship(
+#         back_populates="users_details",
+#     )
