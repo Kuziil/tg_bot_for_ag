@@ -16,7 +16,6 @@ class IntervalsORM(Base):
 
     # columns
     id: Mapped[intpk]
-    title: Mapped[strtext]
     start_at: Mapped[dttime]
     end_at: Mapped[dttime]
 
