@@ -3,22 +3,27 @@ from sqlalchemy.engine import Result
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.models import PagesORM, PagesIntervalsORM, PagesUsersORM, UsersORM
+from db.models import PagesORM, PagesIntervalsORM, PagesUsersORM, UsersORM, TgsORM
 
 
 async def get_all_pages_with_intervals_and_with_users_tgs(
     session: AsyncSession,
-    user_id: int,
+    user_tg_id: int,
 ):
     result: Result = await session.execute(
-        select(PagesORM).options(
+        select(PagesORM)
+        .join(PagesIntervalsORM, PagesORM.id == PagesIntervalsORM.page_id)
+        .join(UsersORM, PagesIntervalsORM.user_id == UsersORM.id)
+        .join(TgsORM, UsersORM.id == TgsORM.user_id)
+        .options(
             selectinload(PagesORM.intervals_details).joinedload(
                 PagesIntervalsORM.interval
             ),
-            selectinload(PagesORM.users_details)
-            .joinedload(PagesUsersORM.user)
+            selectinload(PagesORM.intervals_details)
+            .joinedload(PagesIntervalsORM.user)
             .selectinload(UsersORM.tgs),
         )
+        .where(TgsORM.user_tg_id == user_tg_id)
     )
     pages: list[PagesORM] = result.scalars().all()
     return pages
