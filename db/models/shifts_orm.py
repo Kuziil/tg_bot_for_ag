@@ -9,7 +9,6 @@ from sqlalchemy import ForeignKey
 if TYPE_CHECKING:
     from .pages_intervals_orm import PagesIntervalsORM
     from .shifts_users_orm import ShiftsUsersORM
-    from .users_orm import UsersORM
     from .shifts_users_orm import ShiftsUsersORM
 
 

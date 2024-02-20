@@ -24,7 +24,9 @@ main_router.include_router(in_systeam_router)
 @main_router.message(
     Command(commands="start"), StateFilter(default_state), IsUserInSystem()
 )
-async def process_start_command(message: Message):
+async def process_start_command(
+    message: Message,
+):
     """Данный хэндлер реагирует на команду /start
     выдает список кнопок ориентации в главном меню для Junior
 
@@ -45,8 +47,14 @@ async def process_start_command(message: Message):
     )
 
 
-@main_router.message(Command(commands="start"), StateFilter(default_state))
-async def process_start_command_for_new_id(message: Message, session: AsyncSession):
+@main_router.message(
+    Command(commands="start"),
+    StateFilter(default_state),
+)
+async def process_start_command_for_new_id(
+    message: Message,
+    session: AsyncSession,
+):
     """Данный хэндлер отвечает на команду /start
     и возвращает текст с кнопками позволяющие пользователю выбрать
     существует ли у него уже аккаунт
@@ -61,8 +69,13 @@ async def process_start_command_for_new_id(message: Message, session: AsyncSessi
     )
 
 
-@main_router.message(Command(commands="help"), StateFilter(default_state))
-async def process_help_command(message: Message):
+@main_router.message(
+    Command(commands="help"),
+    StateFilter(default_state),
+)
+async def process_help_command(
+    message: Message,
+):
     """Данный хэндлер служит для предоставления списка команд и
     справки по работе с ботом
     реагирует на /help
@@ -73,8 +86,13 @@ async def process_help_command(message: Message):
     await message.answer(LEXICON_COMMANDS_RU[message.text])
 
 
-@main_router.callback_query(F.data == "in_the_system", StateFilter(default_state))
-async def process_in_the_system_press(callback: CallbackQuery):
+@main_router.callback_query(
+    F.data == "in_the_system",
+    StateFilter(default_state),
+)
+async def process_in_the_system_press(
+    callback: CallbackQuery,
+):
     """Данный хэндлер реагирует на нажатие кнопки в системе
     выдает список кнопок ориентации в главном меню для Junior
 
@@ -96,7 +114,13 @@ async def process_in_the_system_press(callback: CallbackQuery):
     await callback.answer()
 
 
-@main_router.callback_query(F.data == "not_in_the_system", StateFilter(default_state))
-async def process_not_in_the_system_press(callback: CallbackQuery, state: FSMContext):
+@main_router.callback_query(
+    F.data == "not_in_the_system",
+    StateFilter(default_state),
+)
+async def process_not_in_the_system_press(
+    callback: CallbackQuery,
+    state: FSMContext,
+):
     await callback.message.edit_text(text=LEXICON_RU["enter_username"])
     await state.set_state(FSMFillForm.fill_username)

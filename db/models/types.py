@@ -7,7 +7,6 @@ from sqlalchemy.dialects.postgresql import (
     TEXT,
     BIGINT,
     BOOLEAN,
-    NUMERIC,
     TIME,
     TIMESTAMP,
     DATE,

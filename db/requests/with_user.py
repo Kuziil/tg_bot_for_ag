@@ -10,12 +10,20 @@ from db.models import AgenciesUsersORM, TgsORM, UsersORM
 logger = logging.getLogger(__name__)
 
 
-async def is_user_in_agency(session: AsyncSession, user_tg_id: int, agency_id: int):
+async def is_user_in_agency(
+    session: AsyncSession,
+    user_tg_id: int,
+    agency_id: int,
+) -> bool:
     stmt = (
         select(AgenciesUsersORM)
-        .join(TgsORM, AgenciesUsersORM.user_id == TgsORM.user_id)
+        .join(
+            TgsORM,
+            AgenciesUsersORM.user_id == TgsORM.user_id,
+        )
         .filter(
-            TgsORM.user_tg_id == user_tg_id, AgenciesUsersORM.agency_id == agency_id
+            TgsORM.user_tg_id == user_tg_id,
+            AgenciesUsersORM.agency_id == agency_id,
         )
     )
     result: Result = await session.execute(stmt)
@@ -23,7 +31,10 @@ async def is_user_in_agency(session: AsyncSession, user_tg_id: int, agency_id: i
     return bool(agency_user)
 
 
-async def get_all_users_in_agency(session: AsyncSession, agency_id: int):
+async def get_all_users_in_agency(
+    session: AsyncSession,
+    agency_id: int,
+) -> list[UsersORM]:
     stmt = (
         select(UsersORM)
         .join(UsersORM.agencies_details)

@@ -6,11 +6,8 @@ from db.models.base import Base
 from db.models.types import intpk, strtext
 
 if TYPE_CHECKING:
-    from db.models.agencies_orm import AgenciesORM
     from db.models.agencies_models_orm import AgenciesModelsORM
     from db.models.pages_orm import PagesORM
-    from .pages_users_orm import ModelsUsersORM
-    from .users_orm import UsersORM
 
 
 class ModelsORM(Base):

@@ -3,13 +3,15 @@ from aiogram.types import Message
 from emoji import emoji_count
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.database import db
 from db.requests.with_user import is_user_in_agency
 from db.requests.with_emoji import is_busy_emoji_in_agency
 
 
 class IsEmoji(BaseFilter):
-    async def __call__(self, message: Message) -> bool:
+    async def __call__(
+        self,
+        message: Message,
+    ) -> bool:
         text: str = message.text
         return emoji_count(text) == 1 == len(text)
 

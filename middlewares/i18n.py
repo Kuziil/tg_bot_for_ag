@@ -1,7 +1,6 @@
 from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
-from aiogram.fsm.context import FSMContext
 from aiogram.types import TelegramObject, User
 
 

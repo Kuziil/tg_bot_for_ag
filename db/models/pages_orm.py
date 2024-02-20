@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from .models_orm import ModelsORM
     from .users_orm import UsersORM
     from .pages_intervals_orm import PagesIntervalsORM
-    from .intervals_orm import IntervalsORM
     from .pages_users_orm import PagesUsersORM
 
 

@@ -3,12 +3,11 @@ from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, relationship
 
 from db.models.base import Base
-from db.models.types import intpk, strtext, dttime
+from db.models.types import intpk, dttime
 
 if TYPE_CHECKING:
     from .users_orm import UsersORM
     from .pages_intervals_orm import PagesIntervalsORM
-    from .pages_orm import PagesORM
 
 
 class IntervalsORM(Base):

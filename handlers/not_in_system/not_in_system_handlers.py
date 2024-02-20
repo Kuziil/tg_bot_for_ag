@@ -17,8 +17,14 @@ logger = logging.getLogger(__name__)
 not_in_systeam_router = Router()
 
 
-@not_in_systeam_router.message(StateFilter(FSMFillForm.fill_username), F.text.isalpha())
-async def process_name_sent(message: Message, state: FSMContext):
+@not_in_systeam_router.message(
+    StateFilter(FSMFillForm.fill_username),
+    F.text.isalpha(),
+)
+async def process_name_sent(
+    message: Message,
+    state: FSMContext,
+):
     # Cохраняем введенное имя в хранилище по ключу "name"
     await state.update_data(username=message.text)
     await message.answer(
@@ -28,8 +34,12 @@ async def process_name_sent(message: Message, state: FSMContext):
     await state.set_state(FSMFillForm.fill_emoticon)
 
 
-@not_in_systeam_router.message(StateFilter(FSMFillForm.fill_username))
-async def warning_not_name(message: Message):
+@not_in_systeam_router.message(
+    StateFilter(FSMFillForm.fill_username),
+)
+async def warning_not_name(
+    message: Message,
+):
     await message.answer(
         text=LEXICON_RU["entered_not_username"] + LEXICON_RU["enter_username"]
     )
@@ -45,7 +55,10 @@ async def process_show_busy_emojis(
     session: AsyncSession,
     agency_id: int,
 ):
-    emojis = await get_str_emojis_in_agency(session=session, agency_id=agency_id)
+    emojis = await get_str_emojis_in_agency(
+        session=session,
+        agency_id=agency_id,
+    )
     await callback.message.answer(text=emojis)
     await callback.answer()
     await state.set_state(FSMFillForm.fill_emoticon)
@@ -105,6 +118,10 @@ async def process_emoticon_sent(
     )
 
 
-@not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon))
-async def warning_not_emoticon(message: Message):
+@not_in_systeam_router.message(
+    StateFilter(FSMFillForm.fill_emoticon),
+)
+async def warning_not_emoticon(
+    message: Message,
+):
     await message.answer(text=LEXICON_RU["entered_not_emoticon"])
