@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.models import PagesORM, PagesIntervalsORM, PagesUsersORM, UsersORM
 
 
-async def get_pages_available_to_user(
+async def get_all_pages_with_intervals_and_with_users_tgs(
     session: AsyncSession,
     user_id: int,
 ):
