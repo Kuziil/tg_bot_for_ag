@@ -10,7 +10,6 @@ from db.models import (
     ModelsORM,
     PagesIntervalsORM,
     PagesORM,
-    PagesUsersORM,
     TgsORM,
     UsersORM,
 )
@@ -115,17 +114,4 @@ async def add_page_interval(
         interval_id=interval_id,
     )
     session.add(page_interval)
-    await session.commit()
-
-
-async def add_page_user(
-    session: AsyncSession,
-    page_id: int,
-    user_id: int,
-) -> None:
-    page_user = PagesUsersORM(
-        page_id=page_id,
-        user_id=user_id,
-    )
-    session.add(page_user)
     await session.commit()

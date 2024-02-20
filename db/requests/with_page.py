@@ -3,7 +3,7 @@ from sqlalchemy.engine import Result
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.models import PagesORM, PagesIntervalsORM, PagesUsersORM, UsersORM, TgsORM
+from db.models import PagesORM, PagesIntervalsORM, UsersORM, TgsORM
 
 
 async def get_all_pages_with_intervals_and_with_users_tgs(

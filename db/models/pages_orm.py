@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from .models_orm import ModelsORM
     from .users_orm import UsersORM
     from .pages_intervals_orm import PagesIntervalsORM
-    from .pages_users_orm import PagesUsersORM
 
 
 class PagesORM(Base):
@@ -56,8 +55,5 @@ class PagesORM(Base):
     #     back_populates="pages",
     # )
     intervals_details: Mapped[list["PagesIntervalsORM"]] = relationship(
-        back_populates="page",
-    )
-    users_details: Mapped[list["PagesUsersORM"]] = relationship(
         back_populates="page",
     )

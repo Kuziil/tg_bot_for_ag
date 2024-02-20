@@ -16,7 +16,6 @@ __all__ = (
     "EarningsORM",
     "FinesORM",
     "AgenciesUsersORM",
-    "PagesUsersORM",
 )
 
 from .base import Base
@@ -36,4 +35,3 @@ from .shifts_users_orm import ShiftsUsersORM
 from .earnings_orm import EarningsORM
 from .fines_orm import FinesORM
 from .agencies_users_orm import AgenciesUsersORM
-from .pages_users_orm import PagesUsersORM
