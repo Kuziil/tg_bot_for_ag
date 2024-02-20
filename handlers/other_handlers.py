@@ -11,7 +11,7 @@ from db.requests.with_add import (
 )
 from db.requests.with_add import add_interval, add_model, add_page, add_page_interval
 from db.requests.with_page import get_all_pages_with_intervals_and_with_users_tgs
-from db.requests.with_user import get_user_and_availible_pages_intervals
+from db.requests.with_user import get_user_and_availible_pages_intervals_by_tg_id
 from db.models import PagesIntervalsORM, TgsORM
 
 router = Router()
@@ -24,7 +24,7 @@ async def send_echo(
     message: Message,
     session: AsyncSession,
 ):
-    users = await get_user_and_availible_pages_intervals(
+    users = await get_user_and_availible_pages_intervals_by_tg_id(
         session=session,
         user_tg_id=message.from_user.id,
     )

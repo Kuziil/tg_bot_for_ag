@@ -48,7 +48,7 @@ async def get_all_users_in_agency(
     return users
 
 
-async def get_user_and_availible_pages_intervals(
+async def get_user_and_availible_pages_intervals_by_tg_id(
     session: AsyncSession,
     user_tg_id: int,
 ) -> UsersORM:
