@@ -17,6 +17,7 @@ from db.models import (
     PagesORM,
     IntervalsORM,
     PagesIntervalsORM,
+    PagesUsersORM,
 )
 from sqlalchemy.orm import joinedload
 
@@ -236,3 +237,16 @@ async def get_emoji_by_user_tg_id(
     result: Result = await session.execute(stmt)
     user: UsersORM = result.scalar_one()
     return user.emoji
+
+
+async def add_page_user(
+    session: AsyncSession,
+    page_id: int,
+    user_id: int,
+) -> None:
+    page_user = PagesUsersORM(
+        page_id=page_id,
+        user_id=user_id,
+    )
+    session.add(page_user)
+    await session.commit()
