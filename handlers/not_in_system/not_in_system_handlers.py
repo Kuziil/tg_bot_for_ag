@@ -10,7 +10,7 @@ from filters.filters import IsEmoji, IsBusyEmoji
 from database.database import db
 from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.kb_single_line_vertically import create_menu_keyboard
-from db.requests import add_user, get_str_emojis_in_agency
+from db.requests.requests import add_user, get_str_emojis_in_agency
 
 logger = logging.getLogger(__name__)
 not_in_systeam_router = Router()

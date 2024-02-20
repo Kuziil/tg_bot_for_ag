@@ -14,7 +14,7 @@ from keyboards.schedule.mounth.classes_callback_data_mounth_schedule import (
 from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.schedule.mounth.kb_mounth_schedule import create_schedule
 from database.database import db
-from db.requests import is_user_in_agency
+from db.requests.requests import is_user_in_agency
 
 
 schedule_router = Router()

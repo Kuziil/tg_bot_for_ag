@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.requests import get_emoji_by_user_tg_id
+from db.requests.requests import get_emoji_by_user_tg_id
 
 
 async def create_week_shudle(

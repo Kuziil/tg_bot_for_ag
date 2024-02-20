@@ -6,7 +6,7 @@ from aiogram.fsm.state import default_state
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # from lexicon.lexicon_ru import LEXICON_RU
-from db.requests import (
+from db.requests.requests import (
     add_model,
     add_page,
     add_interval,
