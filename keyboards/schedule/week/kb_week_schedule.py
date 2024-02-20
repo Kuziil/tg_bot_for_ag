@@ -12,15 +12,15 @@ async def create_week_shudle(
 
     kb_builder = InlineKeyboardBuilder()
 
-    kb_builder.row(
-        # TODO: добавить сеньера
-        InlineKeyboardButton(
-            text=await get_emoji_by_user_tg_id(
-                session=session,
-                user_tg_id=user_tg_id,
-            ),
-            callback_data="emoji_for_left_up",
-        ),
-    )
+    # kb_builder.row(
+    #     # TODO: добавить сеньера
+    #     InlineKeyboardButton(
+    #         text=await get_emoji_by_user_tg_id(
+    #             session=session,
+    #             user_tg_id=user_tg_id,
+    #         ),
+    #         callback_data="emoji_for_left_up",
+    #     ),
+    # )
 
     return kb_builder.as_markup()

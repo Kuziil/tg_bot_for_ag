@@ -46,6 +46,6 @@ class PagesIntervalsORM(Base):
     interval: Mapped["IntervalsORM"] = relationship(
         back_populates="pages_details",
     )
-    shifts: Mapped[list["ShiftsORM"]] = relationship(
+    shifts: Mapped["ShiftsORM"] = relationship(
         back_populates="page_interval",
     )

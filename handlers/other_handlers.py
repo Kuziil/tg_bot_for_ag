@@ -10,10 +10,12 @@ from db.requests.with_add import (
     add_page_user,
 )
 from db.requests.with_add import add_interval, add_model, add_page, add_page_interval
+from db.requests.with_page import get_pages_available_to_user
+from db.models import PagesIntervalsORM
 
 router = Router()
 
-# add_page_user
+# get_pages_available_to_user
 
 
 @router.message(StateFilter(default_state))
@@ -21,15 +23,45 @@ async def send_echo(
     message: Message,
     session: AsyncSession,
 ):
-    page_user = message.text.split("-")
-    await add_page_user(
+    pages = await get_pages_available_to_user(
         session=session,
-        page_id=int(page_user[0]),
-        user_id=int(page_user[1]),
+        user_id=message.from_user.id,
     )
-    await message.answer(
-        text=f"Связь {message.text} добавлена",
-    )
+    for page in pages:
+        await message.answer(
+            text=f"{page.id} - {page.vip}",
+        )
+        for page_interval_details in page.intervals_details:
+            await message.answer(
+                text=f"{page_interval_details.interval.start_at}",
+            ),
+        for page_user_details in page.users_details:
+            await message.answer(
+                text=f"{page_user_details.user.id}",
+            )
+            for user_tgs in page_user_details.user.tgs:
+                await message.answer(
+                    text=f"{user_tgs.id}",
+                )
+
+
+# # add_page_user
+
+
+# @router.message(StateFilter(default_state))
+# async def send_echo(
+#     message: Message,
+#     session: AsyncSession,
+# ):
+#     page_user = message.text.split("-")
+#     await add_page_user(
+#         session=session,
+#         page_id=int(page_user[0]),
+#         user_id=int(page_user[1]),
+#     )
+#     await message.answer(
+#         text=f"Связь {message.text} добавлена",
+#     )
 
 
 # # add_page_interval
