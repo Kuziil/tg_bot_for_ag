@@ -16,6 +16,7 @@ from db.models import (
     AgenciesModelsORM,
     PagesORM,
     IntervalsORM,
+    PagesIntervalsORM,
 )
 from sqlalchemy.orm import joinedload
 
@@ -207,4 +208,17 @@ async def add_interval(
         end_at=end_at,
     )
     session.add(interval)
+    await session.commit()
+
+
+async def add_page_interval(
+    session: AsyncSession,
+    page_id: int,
+    interval_id: int,
+) -> None:
+    page_interval = PagesIntervalsORM(
+        page_id=page_id,
+        interval_id=interval_id,
+    )
+    session.add(page_interval)
     await session.commit()
