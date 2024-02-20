@@ -24,7 +24,7 @@ class IsBusyEmoji(BaseFilter):
         agency_id: int,
     ) -> bool:
         emoji: str = message.text
-        return is_busy_emoji_in_agency(
+        return await is_busy_emoji_in_agency(
             session=session,
             agency_id=agency_id,
             emoji=emoji,
