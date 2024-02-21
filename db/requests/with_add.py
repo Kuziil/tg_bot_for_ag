@@ -88,22 +88,6 @@ async def add_user(
     await session.commit()
 
 
-async def add_interval(
-    session: AsyncSession,
-    start_at: str,
-    end_at: str,
-) -> None:
-    start_at = datetime.strptime(start_at, "%H:%M").time().replace(tzinfo=timezone.utc)
-    end_at = datetime.strptime(end_at, "%H:%M").time().replace(tzinfo=timezone.utc)
-    logger.debug(f"start_at: {start_at}, end_at: {end_at}")
-    interval = IntervalsORM(
-        start_at=start_at,
-        end_at=end_at,
-    )
-    session.add(interval)
-    await session.commit()
-
-
 async def add_page_interval(
     session: AsyncSession,
     page_id: int,

@@ -1,4 +1,4 @@
-from datetime import datetime, time
+import datetime as dt
 from calendar import monthcalendar
 from zoneinfo import ZoneInfo
 from random import randint
@@ -25,9 +25,18 @@ async def create_mounth_shudle_v2(
     kb_builder = InlineKeyboardBuilder()
 
     # row test
+    time_1 = dt.datetime(
+        year=1,
+        month=1,
+        day=1,
+        hour=23,
+        minute=59,
+        second=59,
+    )
+    u = dt.timedelta(hours=3)
     kb_builder.row(
         InlineKeyboardButton(
-            text=f"test",
+            text=f"{time_1+u}",
             callback_data="test",
         )
     )

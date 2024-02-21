@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 # from lexicon.lexicon_ru import LEXICON_RU
 
-from db.requests.with_add import add_interval, add_model, add_page, add_page_interval
+from db.requests.with_add import add_model, add_page, add_page_interval
 from db.requests.with_page import (
     get_pages_with_inter_users_tgs_by_user_tg_id,
 )
@@ -114,25 +114,6 @@ async def send_echo(
 #     )
 #     await message.answer(
 #         text=f"Связь {message.text} добавлена",
-#     )
-
-
-# # add_interval
-
-
-# @router.message(StateFilter(default_state))
-# async def send_echo(
-#     message: Message,
-#     session: AsyncSession,
-# ):
-#     interval = message.text.split("-")
-#     await add_interval(
-#         session=session,
-#         start_at=interval[0],
-#         end_at=interval[1],
-#     )
-#     await message.answer(
-#         text=f"Интервал {message.text} добавлен",
 #     )
 
 
