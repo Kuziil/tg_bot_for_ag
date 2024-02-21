@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, relationship
 
 from db.models.base import Base
-from db.models.types import intpk, dttime
+from db.models.types import intpk, dtdatetime
 
 if TYPE_CHECKING:
     from .users_orm import UsersORM
@@ -15,8 +15,8 @@ class IntervalsORM(Base):
 
     # columns
     id: Mapped[intpk]
-    start_at: Mapped[dttime]
-    end_at: Mapped[dttime]
+    start_at: Mapped[dtdatetime]
+    end_at: Mapped[dtdatetime]
 
     # relationships
     users: Mapped["UsersORM"] = relationship(

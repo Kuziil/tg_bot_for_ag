@@ -26,10 +26,10 @@ dtdate = Annotated[
         DATE,
     ),
 ]
-dttime = Annotated[
-    time,
+dtdatetime = Annotated[
+    datetime,
     mapped_column(
-        TIME(timezone=True),
+        TIMESTAMP(timezone=True),
     ),
 ]
 intpk = Annotated[
