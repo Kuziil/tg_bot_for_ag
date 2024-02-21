@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import StateFilter
@@ -6,9 +8,7 @@ from aiogram.fsm.state import default_state
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # from lexicon.lexicon_ru import LEXICON_RU
-from db.requests.with_add import (
-    add_page_user,
-)
+
 from db.requests.with_add import add_interval, add_model, add_page, add_page_interval
 from db.requests.with_page import (
     get_pages_with_inter_users_tgs_by_user_tg_id,
@@ -18,6 +18,7 @@ from db.models import PagesIntervalsORM, TgsORM
 
 router = Router()
 
+logger = logging.getLogger(__name__)
 # # get_user_and_availible_pages_intervals
 
 

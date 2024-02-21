@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from zoneinfo import ZoneInfo
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -118,6 +119,8 @@ async def main():
         agency_id=agenсy[0],
         agency_title=agenсy[1],
         _translations=translations,
+        # TODO: подтянуть из бд
+        deafult_tz=ZoneInfo("Europe/Moscow"),
     )
 
 

@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.filters import StateFilter
@@ -63,12 +65,15 @@ async def process_mounth_schedule_press(
     callback: CallbackQuery,
     session: AsyncSession,
     i18n: dict[str, dict[str, str]],
+    deafult_tz: ZoneInfo,
 ):
     await callback.message.edit_text(
         text=i18n["lexicon"]["week_schedule"],
         reply_markup=await create_week_shudle(
             session=session,
             user_tg_id=callback.from_user.id,
+            i18n=i18n,
+            deafult_tz=deafult_tz,
         ),
     )
     await callback.answer()
