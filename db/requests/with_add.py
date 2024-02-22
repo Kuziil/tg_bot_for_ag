@@ -1,6 +1,6 @@
 import logging
-from datetime import datetime, timezone, timedelta
-import zoneinfo
+from datetime import datetime, timezone, timedelta, time
+from zoneinfo import ZoneInfo
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -104,36 +104,29 @@ async def add_page_interval(
 
 async def add_interval(
     session: AsyncSession,
+    defult_tz: ZoneInfo,
+    start_at: time,
+    end_at: time,
 ):
-    start_at = datetime(
+    start_at_1 = datetime(
         year=1970,
         month=1,
         day=1,
-        hour=1,
-        minute=1,
-        second=1,
-        microsecond=1,
-        tzinfo=zoneinfo.ZoneInfo("Asia/Novosibirsk"),
+        hour=start_at.hour,
+        minute=start_at.minute,
+        tzinfo=defult_tz,
     )
-    logger.debug(start_at)
-
-    start_at = start_at.astimezone(tz=zoneinfo.ZoneInfo("America/Los_Angeles"))
-
-    logger.debug(start_at)
-    end_at = datetime(
+    end_at_1 = datetime(
         year=1970,
         month=1,
         day=1,
-        hour=1,
-        minute=1,
-        second=1,
-        microsecond=1,
-        tzinfo=zoneinfo.ZoneInfo("America/Los_Angeles"),
-    ) + timedelta(minutes=1)
-    logger.debug(end_at)
+        hour=end_at.hour,
+        minute=end_at.minute,
+        tzinfo=defult_tz,
+    )
     interval = IntervalsORM(
-        start_at=start_at,
-        end_at=end_at,
+        start_at=start_at_1,
+        end_at=end_at_1,
     )
     session.add(interval)
     await session.commit()

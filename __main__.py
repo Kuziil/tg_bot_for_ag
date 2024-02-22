@@ -120,7 +120,7 @@ async def main():
         agency_title=agenсy[1],
         _translations=translations,
         # TODO: подтянуть из бд
-        deafult_tz=ZoneInfo("Europe/Moscow"),
+        defult_tz=ZoneInfo("Europe/Moscow"),
     )
 
 

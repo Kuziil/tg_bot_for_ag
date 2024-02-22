@@ -1,4 +1,6 @@
 import logging
+import datetime as dt
+from zoneinfo import ZoneInfo
 
 from aiogram import Router
 from aiogram.types import Message
@@ -21,24 +23,7 @@ router = Router()
 
 logger = logging.getLogger(__name__)
 
-# get_interval_by_id
-
-
-@router.message(StateFilter(default_state))
-async def send_echo(
-    message: Message,
-    session: AsyncSession,
-):
-    interval = await get_interval_by_id(
-        session=session,
-        interval_id=message.text,
-    )
-    await message.answer(
-        text=f"{interval.id} - {interval.start_at} - {interval.end_at}",
-    )
-
-
-# # add_interval
+# # get_interval_by_id
 
 
 # @router.message(StateFilter(default_state))
@@ -46,12 +31,36 @@ async def send_echo(
 #     message: Message,
 #     session: AsyncSession,
 # ):
-#     await add_interval(
+#     interval = await get_interval_by_id(
 #         session=session,
+#         interval_id=message.text,
 #     )
 #     await message.answer(
-#         text="Интервал добавлен",
+#         text=f"{interval.id} - {interval.start_at} - {interval.end_at}",
 #     )
+
+
+# add_interval
+
+
+@router.message(StateFilter(default_state))
+async def send_echo(
+    message: Message,
+    session: AsyncSession,
+    defult_tz: ZoneInfo,
+):
+    interval = message.text.split("-")
+    start_at = dt.datetime.strptime(interval[0], "%H:%M").time()
+    end_at = dt.datetime.strptime(interval[1], "%H:%M").time()
+    await add_interval(
+        session=session,
+        defult_tz=defult_tz,
+        start_at=start_at,
+        end_at=end_at,
+    )
+    await message.answer(
+        text="Интервал добавлен",
+    )
 
 
 # # get_user_and_availible_pages_intervals
