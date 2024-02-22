@@ -18,10 +18,32 @@ from db.requests.with_page import (
 from db.requests.with_interval import get_interval_by_id
 from db.requests.with_user import get_user_and_availible_pages_intervals_by_tg_id
 from db.models import PagesIntervalsORM, TgsORM
+from keyboards.schedule.mounth_v2.bilder import create_mounth_shudle_v2
 
 router = Router()
 
 logger = logging.getLogger(__name__)
+
+# test create_mounth_shudle_v2
+
+
+@router.message(StateFilter(default_state))
+async def send_echo(
+    message: Message,
+    session: AsyncSession,
+    defult_tz: ZoneInfo,
+    i18n: dict,
+):
+    await message.answer(
+        text="1",
+        reply_markup=await create_mounth_shudle_v2(
+            session=session,
+            user_tg_id=message.from_user.id,
+            defult_tz=defult_tz,
+            i18n=i18n,
+        ),
+    )
+
 
 # # get_interval_by_id
 

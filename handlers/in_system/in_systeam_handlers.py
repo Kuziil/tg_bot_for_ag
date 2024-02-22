@@ -65,7 +65,7 @@ async def process_mounth_schedule_press(
     callback: CallbackQuery,
     session: AsyncSession,
     i18n: dict[str, dict[str, str]],
-    deafult_tz: ZoneInfo,
+    defult_tz: ZoneInfo,
 ):
     await callback.message.edit_text(
         text=i18n["lexicon"]["week_schedule"],
@@ -73,7 +73,7 @@ async def process_mounth_schedule_press(
             session=session,
             user_tg_id=callback.from_user.id,
             i18n=i18n,
-            deafult_tz=deafult_tz,
+            defult_tz=defult_tz,
         ),
     )
     await callback.answer()

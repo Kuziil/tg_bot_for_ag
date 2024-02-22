@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.engine import Result
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import PagesORM, PagesIntervalsORM, UsersORM, TgsORM
@@ -16,6 +16,7 @@ async def get_pages_with_inter_users_tgs_by_user_tg_id(
         .join(UsersORM, PagesIntervalsORM.user_id == UsersORM.id)
         .join(TgsORM, UsersORM.id == TgsORM.user_id)
         .options(
+            joinedload(PagesORM.model),
             selectinload(PagesORM.intervals_details).joinedload(
                 PagesIntervalsORM.interval
             ),
