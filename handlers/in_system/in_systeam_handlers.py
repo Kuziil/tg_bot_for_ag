@@ -6,10 +6,10 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
 
 from lexicon.lexicon_ru import LEXICON_RU
-from keyboards.schedule.mounth.kb_mounth_schedule import create_schedule
+from keyboards.schedule.month.kb_month_schedule import create_schedule
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from handlers.in_system.schedules.mounth_handlers import schedule_router
-from keyboards.schedule.mounth_v2.bilder import create_mounth_shudle_v2
+from keyboards.schedule.month_v2.bilder import create_month_shudle_v2
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -69,7 +69,7 @@ async def process_mounth_schedule_press(
 ):
     await callback.message.edit_text(
         text=i18n["lexicon"]["week_schedule"],
-        reply_markup=await create_mounth_shudle_v2(
+        reply_markup=await create_month_shudle_v2(
             session=session,
             user_tg_id=callback.from_user.id,
             i18n=i18n,

@@ -18,7 +18,7 @@ from db.requests.with_page import (
 from db.requests.with_interval import get_interval_by_id
 from db.requests.with_user import get_user_and_availible_pages_intervals_by_tg_id
 from db.models import PagesIntervalsORM, TgsORM
-from keyboards.schedule.mounth_v2.bilder import create_mounth_shudle_v2
+from keyboards.schedule.month_v2.bilder import create_month_shudle_v2
 
 router = Router()
 
@@ -36,7 +36,7 @@ async def send_echo(
 ):
     await message.answer(
         text="1",
-        reply_markup=await create_mounth_shudle_v2(
+        reply_markup=await create_month_shudle_v2(
             session=session,
             user_tg_id=message.from_user.id,
             defult_tz=defult_tz,

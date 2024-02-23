@@ -1,7 +1,6 @@
 import datetime as dt
 from calendar import monthcalendar
 from zoneinfo import ZoneInfo
-from random import randint
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -20,7 +19,7 @@ from db.models import (
 )
 
 
-async def create_mounth_shudle_v2(
+async def create_month_shudle_v2(
     user_tg_id: int,
     session: AsyncSession,
     i18n: dict[dict[str, str]],
@@ -31,6 +30,8 @@ async def create_mounth_shudle_v2(
         session=session,
         user_tg_id=user_tg_id,
     )
+    month_calendar: list[list[int]] = monthcalendar(year=1, month=1)
+
     if not current_page:
         page: PagesORM = pages[0]
         model: ModelsORM = page.model

@@ -5,7 +5,7 @@ import logging
 import locale
 from datetime import datetime
 import calendar
-from keyboards.schedule.mounth.classes_callback_data_mounth_schedule import (
+from keyboards.schedule.month.classes_callback_data_month_schedule import (
     DayCallbackData,
     ModelCallbackData,
     MonthCallbackData,
