@@ -45,6 +45,10 @@ class PagesIntervalsORM(Base):
             ondelete="CASCADE",
         ),
     )
+    lineup: Mapped[intbigint] = mapped_column(
+        server_default="1",
+        default=1,
+    )
 
     # relationships
     page: Mapped["PagesORM"] = relationship(
