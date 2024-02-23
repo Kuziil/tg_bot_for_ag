@@ -1,6 +1,8 @@
 import asyncio
 import logging
+import locale
 from zoneinfo import ZoneInfo
+
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -50,6 +52,8 @@ translations = {
         "schedule": LEXICON_SCHEDULE_RU,
     },
 }
+
+locale.setlocale(locale.LC_TIME, "ru_RU.UTF8")
 
 
 # Функция конфигурирования и запуска бота
