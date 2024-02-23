@@ -8,7 +8,7 @@ from aiogram.fsm.state import default_state
 from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.schedule.month.kb_month_schedule import create_schedule
 from keyboards.kb_single_line_vertically import create_menu_keyboard
-from handlers.in_system.schedules.mounth_handlers import schedule_router
+from handlers.in_system.schedules.month_handlers import schedule_router
 from keyboards.schedule.month_v2.bilder import create_month_shudle_v2
 from sqlalchemy.ext.asyncio import AsyncSession
 
