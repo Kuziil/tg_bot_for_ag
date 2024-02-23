@@ -36,6 +36,55 @@ async def convert_interval_to_str(
     return dict_current_interval
 
 
+async def process_intervals(
+    current_start_at: str,
+    current_end_at: str,
+    defult_tz: ZoneInfo,
+    pages_intervals: list[PagesIntervalsORM],
+    user_tg_id: int,
+) -> dict[str, dict[str, str]]:
+    dict_intervals: dict[str, dict[str, str]] = {}
+    current_interval_dict: dict[str, str] = {
+        "start_at": current_start_at,
+        "end_at": current_end_at,
+    }
+
+    current: int | None = None
+    interval_dict_list: list[dict[str, str]] = []
+    interval_for_user: int | None = None
+    for key, page_interval in enumerate(pages_intervals):
+        interval: IntervalsORM = page_interval.interval
+        interval_dict_list.append(
+            await convert_interval_to_str(
+                defult_tz=defult_tz,
+                interval=interval,
+            )
+        )
+        if interval_for_user is None:
+            user: UsersORM = page_interval.user
+            tgs = user.tgs
+            for tg in tgs:
+                if tg.user_tg_id == user_tg_id:
+                    interval_for_user = key
+                    if not current_start_at or not current_end_at:
+                        current = key
+                    break
+        if interval_dict_list[key] == current_interval_dict:
+            current = key
+    dict_intervals["current"] = interval_dict_list[current]
+    if current == 0:
+        dict_intervals["before"] = interval_dict_list[-1]
+        dict_intervals["after"] = interval_dict_list[current + 1]
+    elif current == len(pages_intervals) - 1:
+        dict_intervals["before"] = interval_dict_list[current - 1]
+        dict_intervals["after"] = interval_dict_list[0]
+    else:
+        dict_intervals["before"] = interval_dict_list[current - 1]
+        dict_intervals["after"] = interval_dict_list[current + 1]
+
+    return dict_intervals
+
+
 async def create_month_shudle_v2(
     user_tg_id: int,
     session: AsyncSession,
@@ -62,77 +111,15 @@ async def create_month_shudle_v2(
 
     model: ModelsORM = page.model
     pages_intervals: list[PagesIntervalsORM] = page.intervals_details
-    current_interval_dict: dict[str, str] = {
-        "start_at": current_start_at,
-        "end_at": current_end_at,
-    }
-    dict_intervals: dict[str, dict[str, str]] = {}
+    pages_intervals = sorted(pages_intervals, key=lambda x: x.interval.start_at)
 
-    if not current_start_at or not current_end_at:
-        first_interval: IntervalsORM = pages_intervals[0].interval
-        for page_interval in pages_intervals:
-            user: UsersORM = page_interval.user
-            interval: IntervalsORM = page_interval.interval
-            if "current" in dict_intervals:
-                dict_intervals["after"] = await convert_interval_to_str(
-                    defult_tz=defult_tz,
-                    interval=interval,
-                )
-                break
-            elif user:
-                tgs = user.tgs
-                logger.debug(f"tgs: {user}")
-                for tg in tgs:
-                    if tg.user_tg_id == user_tg_id:
-                        dict_intervals["current"] = await convert_interval_to_str(
-                            defult_tz=defult_tz,
-                            interval=interval,
-                        )
-                        break
-            elif "current" not in dict_intervals:
-                dict_intervals["before"] = await convert_interval_to_str(
-                    defult_tz=defult_tz,
-                    interval=interval,
-                )
-        if "before" not in dict_intervals:
-            dict_intervals["before"] = await convert_interval_to_str(
-                defult_tz=defult_tz,
-                interval=interval,
-            )
-        if "after" not in dict_intervals:
-            dict_intervals["after"] = await convert_interval_to_str(
-                defult_tz=defult_tz,
-                interval=interval,
-            )
-
-    else:
-        first_interval: IntervalsORM = pages_intervals[0].interval
-        first_interval_dict = await convert_interval_to_str(
-            defult_tz=defult_tz,
-            interval=first_interval,
-        )
-        for page_interval in pages_intervals:
-            interval: IntervalsORM = page_interval.interval
-            interval_dict = await convert_interval_to_str(
-                defult_tz=defult_tz,
-                interval=interval,
-            )
-            if "current" in dict_intervals:
-                dict_intervals["after"] = interval_dict
-
-            if current_interval_dict == interval_dict:
-                dict_intervals["current"] = interval_dict
-
-            elif (
-                current_interval_dict != interval_dict
-                and "current" not in dict_intervals
-            ):
-                dict_intervals["before"] = interval_dict
-
-        if current_interval_dict != interval_dict and "before" not in dict_intervals:
-            dict_intervals["before"] = interval_dict
-        elif "after" not in dict_intervals:
-            dict_intervals["after"] = first_interval_dict
+    dict_intervals = await process_intervals(
+        current_start_at=current_start_at,
+        current_end_at=current_end_at,
+        defult_tz=defult_tz,
+        pages_intervals=pages_intervals,
+        user_tg_id=user_tg_id,
+    )
 
     # row test
     kb_builder.row(
