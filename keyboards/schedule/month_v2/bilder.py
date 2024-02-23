@@ -85,12 +85,16 @@ async def process_intervals(
     return dict_intervals
 
 
+async def process_page():
+    pass
+
+
 async def create_month_shudle_v2(
     user_tg_id: int,
     session: AsyncSession,
     i18n: dict[dict[str, str]],
     defult_tz: ZoneInfo,
-    current_page: PagesORM | None = None,
+    current_page: str | None = None,
     current_year: int = 1,
     current_month: int = 1,
     current_day: int = 1,
@@ -106,8 +110,11 @@ async def create_month_shudle_v2(
 
     if not current_page:
         page: PagesORM = pages[0]
+        model: ModelsORM = page.model
+        model_name: str = model.title
+        work_the_same_time: int = page.work_same_time
     else:
-        page: PagesORM = current_page
+        pass
 
     model: ModelsORM = page.model
     pages_intervals: list[PagesIntervalsORM] = page.intervals_details
@@ -122,6 +129,14 @@ async def create_month_shudle_v2(
     )
 
     # row test
+    kb_builder.row(
+        InlineKeyboardButton(
+            text="7",
+            callback_data="test",
+        )
+    )
+
+    # row interval
     kb_builder.row(
         InlineKeyboardButton(
             text=f"<<<",
