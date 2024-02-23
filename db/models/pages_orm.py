@@ -23,11 +23,14 @@ class PagesORM(Base):
 
     # columns
     id: Mapped[intpk]
-    vip: Mapped[boolbool]
+    title: Mapped[strtext]
+    type: Mapped[strtext]
+    subscription_type: Mapped[strtext]
+    platform: Mapped[strtext]
     sales_commission: Mapped[intbigint]
     work_same_time: Mapped[intbigint] = mapped_column(
         server_default=text(f"{1}"),
-        default=text(f"{1}"),
+        default=1,
     )
     page_link: Mapped[strtext | None]
     senior_id: Mapped[intbigint | None] = mapped_column(
@@ -42,6 +45,7 @@ class PagesORM(Base):
             ondelete="CASCADE",
         ),
     )
+    type: Mapped[strtext]
 
     # relationships
     seniors: Mapped["UsersORM"] = relationship(
