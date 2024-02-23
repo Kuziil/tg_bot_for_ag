@@ -24,7 +24,7 @@ class PagesORM(Base):
     # columns
     id: Mapped[intpk]
     title: Mapped[strtext]
-    type: Mapped[strtext]
+    type_in_agency: Mapped[strtext]
     subscription_type: Mapped[strtext]
     platform: Mapped[strtext]
     sales_commission: Mapped[intbigint]
