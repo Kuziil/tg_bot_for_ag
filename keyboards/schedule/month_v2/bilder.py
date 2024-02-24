@@ -25,6 +25,30 @@ from keyboards.schedule.month_v2.classes_callback_data import (
 logger = logging.getLogger(__name__)
 
 
+async def process_page(
+    pages: list[PagesORM],
+    current_page_id: int,
+) -> dict[str, PagesORM]:
+    dict_pages: dict[str, PagesORM] = {}
+    current: int = 0
+    for key, page in enumerate(pages):
+        page: PagesORM = page
+        if page.id == current_page_id:
+            current = key
+            break
+    dict_pages["current"] = pages[current]
+    if current == 0:
+        dict_pages["before"] = pages[-1]
+        dict_pages["after"] = pages[current + 1]
+    elif current == len(pages) - 1:
+        dict_pages["before"] = pages[current - 1]
+        dict_pages["after"] = pages[0]
+    else:
+        dict_pages["before"] = pages[current - 1]
+        dict_pages["after"] = pages[current + 1]
+    return dict_pages
+
+
 async def convert_interval_to_str(
     defult_tz: ZoneInfo,
     interval: IntervalsORM,
@@ -88,10 +112,6 @@ async def process_intervals(
     return dict_intervals
 
 
-async def process_page():
-    pass
-
-
 async def create_month_shudle_v2(
     user_tg_id: int,
     session: AsyncSession,
@@ -125,23 +145,10 @@ async def create_month_shudle_v2(
     #                 logger.debug(f"        {tgs_t}")
     #         else:
     #             logger.debug(f"            None")
-    dict_pages: dict[str, dict[str, str]] = {}
-    current: int = 0
-    for key, page in enumerate(pages):
-        page: PagesORM = page
-        if page.id == current_page_id:
-            current = key
-            break
-    dict_pages["current"] = pages[current]
-    if current == 0:
-        dict_pages["before"] = pages[-1]
-        dict_pages["after"] = pages[current + 1]
-    elif current == len(pages) - 1:
-        dict_pages["before"] = pages[current - 1]
-        dict_pages["after"] = pages[0]
-    else:
-        dict_pages["before"] = pages[current - 1]
-        dict_pages["after"] = pages[current + 1]
+    dict_pages: dict[str, PagesORM] = await process_page(
+        pages=pages,
+        current_page_id=current_page_id,
+    )
 
     page: PagesORM = dict_pages["current"]
     page_id: int = page.id
