@@ -18,7 +18,10 @@ from db.models import (
     TgsORM,
     ModelsORM,
 )
-from keyboards.schedule.month_v2.classes_callback_data import IntervalCallbackData
+from keyboards.schedule.month_v2.classes_callback_data import (
+    IntervalCallbackData,
+    PageCallbackData,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +116,9 @@ async def create_month_shudle_v2(
         model: ModelsORM = page.model
         model_name: str = model.title
         work_the_same_time: int = page.work_same_time
+        if work_the_same_time == 1:
+            pass
+
     else:
         pass
 

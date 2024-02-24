@@ -21,7 +21,9 @@ class PagesIntervalsORM(Base):
         UniqueConstraint(
             "page_id",
             "interval_id",
-            name="idx_unique_page_interval",
+            "user_id",
+            "lineup",
+            name="idx_unique_page_interval_user_lineup",
         ),
     )
 
