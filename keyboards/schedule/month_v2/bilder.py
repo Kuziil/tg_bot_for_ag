@@ -151,19 +151,10 @@ async def create_month_shudle_v2(
     )
 
     page: PagesORM = dict_pages["current"]
-    page_id: int = page.id
-    page_subscription_type: str = page.subscription_type
-    work_the_same_time: int = page.work_same_time
-    model: ModelsORM = page.model
-    model_id: int = model.id
-    model_title: str = model.title
-    pages_intervals: list[PagesIntervalsORM] = page.intervals_details  # повтор
-    pages_intervals = sorted(
-        pages_intervals, key=lambda x: x.interval.start_at
-    )  # повтор
-    for page_interval in pages_intervals:
-        lineup: IntervalsORM = page_interval.lineup
-        user: UsersORM = page_interval.user
+    pages_intervals: list[PagesIntervalsORM] = sorted(
+        page.intervals_details,
+        key=lambda x: x.interval.start_at,
+    )
 
     dict_intervals = await process_intervals(
         current_start_at=current_start_at,
