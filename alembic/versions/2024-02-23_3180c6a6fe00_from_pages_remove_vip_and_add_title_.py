@@ -21,7 +21,6 @@ def upgrade():
     op.add_column("pages", sa.Column("type_in_agency", sa.TEXT(), nullable=False))
     op.add_column("pages", sa.Column("subscription_type", sa.TEXT(), nullable=False))
     op.add_column("pages", sa.Column("platform", sa.TEXT(), nullable=False))
-    op.add_column("pages", sa.Column("type", sa.TEXT(), nullable=False))
     op.drop_column("pages", "vip")
 
 
@@ -29,7 +28,6 @@ def downgrade():
     op.add_column(
         "pages", sa.Column("vip", sa.BOOLEAN(), autoincrement=False, nullable=False)
     )
-    op.drop_column("pages", "type")
     op.drop_column("pages", "platform")
     op.drop_column("pages", "subscription_type")
     op.drop_column("pages", "type_in_agency")

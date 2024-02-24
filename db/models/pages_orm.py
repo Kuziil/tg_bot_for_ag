@@ -45,7 +45,6 @@ class PagesORM(Base):
             ondelete="CASCADE",
         ),
     )
-    type: Mapped[strtext]
 
     # relationships
     seniors: Mapped["UsersORM"] = relationship(
