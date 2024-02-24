@@ -78,7 +78,7 @@ async def process_intervals(
     current_interval_id: int | None,
     pages_intervals: list[PagesIntervalsORM],
     user_tg_id: int,
-):
+) -> dict[str, IntervalsORM]:
     dict_intervals: dict[str, IntervalsORM] = {}
     current: int | None = None
     intervals: list[IntervalsORM] = []
@@ -108,6 +108,39 @@ async def process_intervals(
     return dict_intervals
 
 
+async def create_row_inervals(
+    dict_pages: dict[str, PagesORM],
+    dict_intervals: dict[str, IntervalsORM],
+    defult_tz: ZoneInfo,
+):
+    before_interval_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f"<<<",
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=1,
+            interval_id=dict_intervals["before"].id,
+        ).pack(),
+    )
+    current_interval_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f'{await convert_interval_to_str(interval=dict_intervals["current"], defult_tz=defult_tz,)}',
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=1,
+            interval_id=dict_intervals["current"].id,
+        ).pack(),
+    )
+    after_interval_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f">>>",
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=1,
+            interval_id=dict_intervals["after"].id,
+        ).pack(),
+    )
+
+    return [before_interval_ikb, current_interval_ikb, after_interval_ikb]
+
+
 async def create_month_shudle_v2(
     user_tg_id: int,
     session: AsyncSession,
@@ -118,8 +151,6 @@ async def create_month_shudle_v2(
     current_month: int = 1,
     current_day: int = 1,
     current_interval_id: int | None = None,
-    current_start_at: str | None = None,
-    current_end_at: str | None = None,
     lineup: int | None = None,
 ):
     pages: list[PagesORM] = await get_pages_with_inter_users_tgs_by_user_tg_id(
@@ -208,29 +239,10 @@ async def create_month_shudle_v2(
 
     # row interval
     kb_builder.row(
-        InlineKeyboardButton(
-            text=f"<<<",
-            callback_data=MonthShudleCallbackData(
-                page_id=dict_pages["current"].id,
-                lineup=1,
-                interval_id=dict_intervals["before"].id,
-            ).pack(),
-        ),
-        InlineKeyboardButton(
-            text=f'{await convert_interval_to_str(interval=dict_intervals["current"], defult_tz=defult_tz,)}',
-            callback_data=MonthShudleCallbackData(
-                page_id=dict_pages["current"].id,
-                lineup=1,
-                interval_id=dict_intervals["current"].id,
-            ).pack(),
-        ),
-        InlineKeyboardButton(
-            text=f">>>",
-            callback_data=MonthShudleCallbackData(
-                page_id=dict_pages["current"].id,
-                lineup=1,
-                interval_id=dict_intervals["after"].id,
-            ).pack(),
-        ),
+        *await create_row_inervals(
+            dict_pages=dict_pages,
+            dict_intervals=dict_intervals,
+            defult_tz=defult_tz,
+        )
     )
     return kb_builder.as_markup()
