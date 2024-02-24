@@ -167,7 +167,16 @@ async def create_month_shudle_v2(
         user_tg_id=user_tg_id,
     )
     current_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=dict_pages["current"].title,
+        text=dict_pages["current"].model.title,
+        callback_data=MonthShudleCallbackData(
+            start_at=dict_intervals["current"]["start_at"],
+            end_at=dict_intervals["current"]["end_at"],
+            page_id=dict_pages["current"].id,
+            lineup=1,
+        ).pack(),
+    )
+    current_page_type_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=dict_pages["current"].type_in_agency,
         callback_data=MonthShudleCallbackData(
             start_at=dict_intervals["current"]["start_at"],
             end_at=dict_intervals["current"]["end_at"],
@@ -198,10 +207,14 @@ async def create_month_shudle_v2(
         row_pages: list[InlineKeyboardButton] = [
             before_page_ikb,
             current_page_ikb,
+            current_page_type_ikb,
             after_page_ikb,
         ]
     else:
-        row_pages: list[InlineKeyboardButton] = [current_page_ikb]
+        row_pages: list[InlineKeyboardButton] = [
+            current_page_ikb,
+            current_page_type_ikb,
+        ]
 
     kb_builder.row(*row_pages)
 
