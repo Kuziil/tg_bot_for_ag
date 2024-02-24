@@ -37,10 +37,13 @@ async def process_page(
             current = key
             break
     dict_pages["current"] = pages[current]
+    len_pages: int = len(pages)
+    if len_pages == 1:
+        return dict_pages
     if current == 0:
         dict_pages["before"] = pages[-1]
         dict_pages["after"] = pages[current + 1]
-    elif current == len(pages) - 1:
+    elif current == len_pages - 1:
         dict_pages["before"] = pages[current - 1]
         dict_pages["after"] = pages[0]
     else:
@@ -163,10 +166,18 @@ async def create_month_shudle_v2(
         pages_intervals=pages_intervals,
         user_tg_id=user_tg_id,
     )
-
-    # row test
-    kb_builder.row(
-        InlineKeyboardButton(
+    current_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=dict_pages["current"].title,
+        callback_data=MonthShudleCallbackData(
+            start_at=dict_intervals["current"]["start_at"],
+            end_at=dict_intervals["current"]["end_at"],
+            page_id=dict_pages["current"].id,
+            lineup=1,
+        ).pack(),
+    )
+    # row pages
+    if "before" in dict_pages and "after" in dict_pages:
+        before_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
             text="<<",
             callback_data=MonthShudleCallbackData(
                 start_at=dict_intervals["current"]["start_at"],
@@ -174,17 +185,8 @@ async def create_month_shudle_v2(
                 page_id=dict_pages["before"].id,
                 lineup=1,
             ).pack(),
-        ),
-        InlineKeyboardButton(
-            text=dict_pages["current"].title,
-            callback_data=MonthShudleCallbackData(
-                start_at=dict_intervals["current"]["start_at"],
-                end_at=dict_intervals["current"]["end_at"],
-                page_id=dict_pages["current"].id,
-                lineup=1,
-            ).pack(),
-        ),
-        InlineKeyboardButton(
+        )
+        after_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
             text=">>",
             callback_data=MonthShudleCallbackData(
                 start_at=dict_intervals["current"]["start_at"],
@@ -192,8 +194,16 @@ async def create_month_shudle_v2(
                 page_id=dict_pages["after"].id,
                 lineup=1,
             ).pack(),
-        ),
-    )
+        )
+        row_pages: list[InlineKeyboardButton] = [
+            before_page_ikb,
+            current_page_ikb,
+            after_page_ikb,
+        ]
+    else:
+        row_pages: list[InlineKeyboardButton] = [current_page_ikb]
+
+    kb_builder.row(*row_pages)
 
     # row interval
     kb_builder.row(
