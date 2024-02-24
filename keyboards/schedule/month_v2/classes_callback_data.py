@@ -6,7 +6,6 @@ class MonthShudleCallbackData(
     prefix="interval",
     sep="-",
 ):
-    start_at: str
-    end_at: str
     page_id: int
     lineup: int
+    interval_id: int

@@ -65,53 +65,46 @@ async def convert_interval_to_str(
     return dict_current_interval
 
 
-async def process_intervals(
-    current_start_at: str,
-    current_end_at: str,
+async def convert_interval_to_str(
     defult_tz: ZoneInfo,
+    interval: IntervalsORM,
+) -> str:
+    start_at: str = interval.start_at.astimezone(defult_tz).strftime("%H:%M")
+    end_at: str = interval.end_at.astimezone(defult_tz).strftime("%H:%M")
+    return f"{start_at}-{end_at}"
+
+
+async def process_intervals(
+    current_interval_id: int | None,
     pages_intervals: list[PagesIntervalsORM],
     user_tg_id: int,
-) -> dict[str, dict[str, str]]:
-    dict_intervals: dict[str, dict[str, str]] = {}
-    current_interval_dict: dict[str, str] = {
-        "start_at": current_start_at,
-        "end_at": current_end_at,
-    }
-
+):
+    dict_intervals: dict[str, IntervalsORM] = {}
     current: int | None = None
-    interval_dict_list: list[dict[str, str]] = []
-    interval_for_user: int | None = None
+    intervals: list[IntervalsORM] = []
     for key, page_interval in enumerate(pages_intervals):
         interval: IntervalsORM = page_interval.interval
-        interval_dict_list.append(
-            await convert_interval_to_str(
-                defult_tz=defult_tz,
-                interval=interval,
-            )
-        )
-        if interval_for_user is None:
+        intervals.append(interval)
+        if current_interval_id is None:
             user: UsersORM = page_interval.user
             if user is not None:
-                tgs = user.tgs
+                tgs: list[TgsORM] = user.tgs
                 for tg in tgs:
                     if tg.user_tg_id == user_tg_id:
-                        interval_for_user = key
-                        if not current_start_at or not current_end_at:
-                            current = key
-                        break
-        if interval_dict_list[key] == current_interval_dict:
-            current = key
-    dict_intervals["current"] = interval_dict_list[current]
+                        current = key
+        else:
+            if interval.id == current_interval_id:
+                current = key
+    dict_intervals["current"] = intervals[current]
     if current == 0:
-        dict_intervals["before"] = interval_dict_list[-1]
-        dict_intervals["after"] = interval_dict_list[current + 1]
-    elif current == len(pages_intervals) - 1:
-        dict_intervals["before"] = interval_dict_list[current - 1]
-        dict_intervals["after"] = interval_dict_list[0]
+        dict_intervals["before"] = intervals[-1]
+        dict_intervals["after"] = intervals[current + 1]
+    elif current == len(intervals) - 1:
+        dict_intervals["before"] = intervals[current - 1]
+        dict_intervals["after"] = intervals[0]
     else:
-        dict_intervals["before"] = interval_dict_list[current - 1]
-        dict_intervals["after"] = interval_dict_list[current + 1]
-
+        dict_intervals["before"] = intervals[current - 1]
+        dict_intervals["after"] = intervals[current + 1]
     return dict_intervals
 
 
@@ -124,6 +117,7 @@ async def create_month_shudle_v2(
     current_year: int = 1,
     current_month: int = 1,
     current_day: int = 1,
+    current_interval_id: int | None = None,
     current_start_at: str | None = None,
     current_end_at: str | None = None,
     lineup: int | None = None,
@@ -160,28 +154,24 @@ async def create_month_shudle_v2(
     )
 
     dict_intervals = await process_intervals(
-        current_start_at=current_start_at,
-        current_end_at=current_end_at,
-        defult_tz=defult_tz,
+        current_interval_id=current_interval_id,
         pages_intervals=pages_intervals,
         user_tg_id=user_tg_id,
     )
     current_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
         text=dict_pages["current"].model.title,
         callback_data=MonthShudleCallbackData(
-            start_at=dict_intervals["current"]["start_at"],
-            end_at=dict_intervals["current"]["end_at"],
             page_id=dict_pages["current"].id,
             lineup=1,
+            interval_id=dict_intervals["current"].id,
         ).pack(),
     )
     current_page_type_ikb: InlineKeyboardButton = InlineKeyboardButton(
         text=dict_pages["current"].type_in_agency,
         callback_data=MonthShudleCallbackData(
-            start_at=dict_intervals["current"]["start_at"],
-            end_at=dict_intervals["current"]["end_at"],
             page_id=dict_pages["current"].id,
             lineup=1,
+            interval_id=dict_intervals["current"].id,
         ).pack(),
     )
     # row pages
@@ -189,19 +179,17 @@ async def create_month_shudle_v2(
         before_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
             text="<<",
             callback_data=MonthShudleCallbackData(
-                start_at=dict_intervals["current"]["start_at"],
-                end_at=dict_intervals["current"]["end_at"],
                 page_id=dict_pages["before"].id,
                 lineup=1,
+                interval_id=dict_intervals["current"].id,
             ).pack(),
         )
         after_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
             text=">>",
             callback_data=MonthShudleCallbackData(
-                start_at=dict_intervals["current"]["start_at"],
-                end_at=dict_intervals["current"]["end_at"],
                 page_id=dict_pages["after"].id,
                 lineup=1,
+                interval_id=dict_intervals["current"].id,
             ).pack(),
         )
         row_pages: list[InlineKeyboardButton] = [
@@ -223,28 +211,25 @@ async def create_month_shudle_v2(
         InlineKeyboardButton(
             text=f"<<<",
             callback_data=MonthShudleCallbackData(
-                start_at=dict_intervals["before"]["start_at"],
-                end_at=dict_intervals["before"]["end_at"],
                 page_id=dict_pages["current"].id,
                 lineup=1,
+                interval_id=dict_intervals["before"].id,
             ).pack(),
         ),
         InlineKeyboardButton(
-            text=f'{dict_intervals["current"]["start_at"]}-{dict_intervals["current"]["end_at"]}',
+            text=f'{await convert_interval_to_str(interval=dict_intervals["current"], defult_tz=defult_tz,)}',
             callback_data=MonthShudleCallbackData(
-                start_at=dict_intervals["current"]["start_at"],
-                end_at=dict_intervals["current"]["end_at"],
                 page_id=dict_pages["current"].id,
                 lineup=1,
+                interval_id=dict_intervals["current"].id,
             ).pack(),
         ),
         InlineKeyboardButton(
             text=f">>>",
             callback_data=MonthShudleCallbackData(
-                start_at=dict_intervals["after"]["start_at"],
-                end_at=dict_intervals["after"]["end_at"],
                 page_id=dict_pages["current"].id,
                 lineup=1,
+                interval_id=dict_intervals["after"].id,
             ).pack(),
         ),
     )

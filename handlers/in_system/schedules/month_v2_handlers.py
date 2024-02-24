@@ -33,9 +33,8 @@ async def process_day_press(
             session=session,
             i18n=i18n,
             defult_tz=defult_tz,
-            current_start_at=callback_data.start_at,
-            current_end_at=callback_data.end_at,
             current_page_id=callback_data.page_id,
+            current_interval_id=callback_data.interval_id,
         ),
     )
     await callback.answer()
