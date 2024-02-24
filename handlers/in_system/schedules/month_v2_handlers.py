@@ -7,7 +7,7 @@ from aiogram.fsm.state import default_state
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from keyboards.schedule.month_v2.classes_callback_data import (
-    IntervalCallbackData,
+    MonthShudleCallbackData,
 )
 from keyboards.schedule.month_v2.bilder import create_month_shudle_v2
 
@@ -17,11 +17,11 @@ month_v2_router = Router()
 
 @month_v2_router.callback_query(
     StateFilter(default_state),
-    IntervalCallbackData.filter(),
+    MonthShudleCallbackData.filter(),
 )
 async def process_day_press(
     callback: CallbackQuery,
-    callback_data: IntervalCallbackData,
+    callback_data: MonthShudleCallbackData,
     session: AsyncSession,
     defult_tz: ZoneInfo,
     i18n: dict[dict[str, str]],

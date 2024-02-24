@@ -19,8 +19,7 @@ from db.models import (
     ModelsORM,
 )
 from keyboards.schedule.month_v2.classes_callback_data import (
-    IntervalCallbackData,
-    PageCallbackData,
+    MonthShudleCallbackData,
 )
 
 logger = logging.getLogger(__name__)
@@ -171,7 +170,7 @@ async def create_month_shudle_v2(
     kb_builder.row(
         InlineKeyboardButton(
             text="<<",
-            callback_data=IntervalCallbackData(
+            callback_data=MonthShudleCallbackData(
                 start_at=dict_intervals["current"]["start_at"],
                 end_at=dict_intervals["current"]["end_at"],
                 page_id=dict_pages["before"].id,
@@ -180,7 +179,7 @@ async def create_month_shudle_v2(
         ),
         InlineKeyboardButton(
             text=dict_pages["current"].title,
-            callback_data=IntervalCallbackData(
+            callback_data=MonthShudleCallbackData(
                 start_at=dict_intervals["current"]["start_at"],
                 end_at=dict_intervals["current"]["end_at"],
                 page_id=dict_pages["current"].id,
@@ -189,7 +188,7 @@ async def create_month_shudle_v2(
         ),
         InlineKeyboardButton(
             text=">>",
-            callback_data=IntervalCallbackData(
+            callback_data=MonthShudleCallbackData(
                 start_at=dict_intervals["current"]["start_at"],
                 end_at=dict_intervals["current"]["end_at"],
                 page_id=dict_pages["after"].id,
@@ -202,7 +201,7 @@ async def create_month_shudle_v2(
     kb_builder.row(
         InlineKeyboardButton(
             text=f"<<<",
-            callback_data=IntervalCallbackData(
+            callback_data=MonthShudleCallbackData(
                 start_at=dict_intervals["before"]["start_at"],
                 end_at=dict_intervals["before"]["end_at"],
                 page_id=dict_pages["current"].id,
@@ -211,7 +210,7 @@ async def create_month_shudle_v2(
         ),
         InlineKeyboardButton(
             text=f'{dict_intervals["current"]["start_at"]}-{dict_intervals["current"]["end_at"]}',
-            callback_data=IntervalCallbackData(
+            callback_data=MonthShudleCallbackData(
                 start_at=dict_intervals["current"]["start_at"],
                 end_at=dict_intervals["current"]["end_at"],
                 page_id=dict_pages["current"].id,
@@ -220,7 +219,7 @@ async def create_month_shudle_v2(
         ),
         InlineKeyboardButton(
             text=f">>>",
-            callback_data=IntervalCallbackData(
+            callback_data=MonthShudleCallbackData(
                 start_at=dict_intervals["after"]["start_at"],
                 end_at=dict_intervals["after"]["end_at"],
                 page_id=dict_pages["current"].id,
