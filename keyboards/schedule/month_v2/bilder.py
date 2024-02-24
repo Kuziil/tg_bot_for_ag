@@ -112,13 +112,14 @@ async def process_intervals_and_lineups(
 
 async def create_row_pages(
     dict_pages: dict[str, PagesORM],
+    dict_lineups: dict[str, int],
     dict_intervals: dict[str, IntervalsORM],
 ):
     current_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
         text=dict_pages["current"].model.title,
         callback_data=MonthShudleCallbackData(
             page_id=dict_pages["current"].id,
-            lineup=1,
+            lineup=dict_lineups["current"],
             interval_id=dict_intervals["current"].id,
         ).pack(),
     )
@@ -126,7 +127,7 @@ async def create_row_pages(
         text=dict_pages["current"].type_in_agency,
         callback_data=MonthShudleCallbackData(
             page_id=dict_pages["current"].id,
-            lineup=1,
+            lineup=dict_lineups["current"],
             interval_id=dict_intervals["current"].id,
         ).pack(),
     )
@@ -135,7 +136,7 @@ async def create_row_pages(
             text="<<",
             callback_data=MonthShudleCallbackData(
                 page_id=dict_pages["before"].id,
-                lineup=1,
+                lineup=dict_lineups["current"],
                 interval_id=dict_intervals["current"].id,
             ).pack(),
         )
@@ -143,7 +144,7 @@ async def create_row_pages(
             text=">>",
             callback_data=MonthShudleCallbackData(
                 page_id=dict_pages["after"].id,
-                lineup=1,
+                lineup=dict_lineups["current"],
                 interval_id=dict_intervals["current"].id,
             ).pack(),
         )
@@ -154,6 +155,7 @@ async def create_row_pages(
 
 async def create_row_inervals(
     dict_pages: dict[str, PagesORM],
+    dict_lineups: dict[str, int],
     dict_intervals: dict[str, IntervalsORM],
     defult_tz: ZoneInfo,
 ):
@@ -161,7 +163,7 @@ async def create_row_inervals(
         text=f"<<<",
         callback_data=MonthShudleCallbackData(
             page_id=dict_pages["current"].id,
-            lineup=1,
+            lineup=dict_lineups["current"],
             interval_id=dict_intervals["before"].id,
         ).pack(),
     )
@@ -169,7 +171,7 @@ async def create_row_inervals(
         text=f'{await convert_interval_to_str(interval=dict_intervals["current"], defult_tz=defult_tz,)}',
         callback_data=MonthShudleCallbackData(
             page_id=dict_pages["current"].id,
-            lineup=1,
+            lineup=dict_lineups["current"],
             interval_id=dict_intervals["current"].id,
         ).pack(),
     )
@@ -177,12 +179,44 @@ async def create_row_inervals(
         text=f">>>",
         callback_data=MonthShudleCallbackData(
             page_id=dict_pages["current"].id,
-            lineup=1,
+            lineup=dict_lineups["current"],
             interval_id=dict_intervals["after"].id,
         ).pack(),
     )
 
     return before_interval_ikb, current_interval_ikb, after_interval_ikb
+
+
+async def create_row_lineups(
+    dict_pages: dict[str, PagesORM],
+    dict_lineups: dict[str, int],
+    dict_intervals: dict[str, IntervalsORM],
+):
+    before_lineup_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f"<<<",
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=dict_lineups["before"],
+            interval_id=dict_intervals["current"].id,
+        ).pack(),
+    )
+    current_lineup_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f'{dict_lineups["current"]}',
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=dict_lineups["current"],
+            interval_id=dict_intervals["current"].id,
+        ).pack(),
+    )
+    after_lineup_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f">>>",
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=dict_lineups["after"],
+            interval_id=dict_intervals["current"].id,
+        ).pack(),
+    )
+    return before_lineup_ikb, current_lineup_ikb, after_lineup_ikb
 
 
 async def create_month_shudle_v2(
@@ -237,16 +271,28 @@ async def create_month_shudle_v2(
     dict_intervals: dict[str, IntervalsORM] = dict_intervals_and_lineups[0]
     dict_lineups: dict[str, int] = dict_intervals_and_lineups[1]
 
+    # row lineup
+    if "before" in dict_lineups and "after" in dict_lineups:
+        kb_builder.row(
+            *await create_row_lineups(
+                dict_pages=dict_pages,
+                dict_lineups=dict_lineups,
+                dict_intervals=dict_intervals,
+            )
+        )
+    # row page
     kb_builder.row(
         *await create_row_pages(
-            dict_pages,
-            dict_intervals,
+            dict_pages=dict_pages,
+            dict_lineups=dict_lineups,
+            dict_intervals=dict_intervals,
         )
     )
     # row interval
     kb_builder.row(
         *await create_row_inervals(
             dict_pages=dict_pages,
+            dict_lineups=dict_lineups,
             dict_intervals=dict_intervals,
             defult_tz=defult_tz,
         )
