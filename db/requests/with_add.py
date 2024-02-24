@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import (
-    AgenciesModelsORM,
+    AgenciesPagesORM,
     AgenciesUsersORM,
     IntervalsORM,
     ModelsORM,
@@ -52,7 +52,7 @@ async def add_model(
     session.add(model)
     await session.commit()
 
-    agency_model = AgenciesModelsORM(
+    agency_model = AgenciesPagesORM(
         agency_id=agency_id,
         model_id=model.id,
     )
