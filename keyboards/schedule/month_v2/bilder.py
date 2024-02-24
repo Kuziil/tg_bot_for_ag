@@ -61,17 +61,19 @@ async def convert_interval_to_str(
     return f"{start_at}-{end_at}"
 
 
-async def process_intervals(
+async def process_intervals_and_lineups(
     current_interval_id: int | None,
     pages_intervals: list[PagesIntervalsORM],
     user_tg_id: int,
-) -> dict[str, IntervalsORM]:
+) -> tuple[dict[str, IntervalsORM], set[int]]:
     dict_intervals: dict[str, IntervalsORM] = {}
+    lineups: set[int] = set()  # lineup
     current: int | None = None
     intervals: list[IntervalsORM] = []
     for key, page_interval in enumerate(pages_intervals):
         interval: IntervalsORM = page_interval.interval
         intervals.append(interval)
+        lineups.add(page_interval.lineup)  # lineup
         if current_interval_id is None:
             user: UsersORM = page_interval.user
             if user is not None:
@@ -92,7 +94,7 @@ async def process_intervals(
     else:
         dict_intervals["before"] = intervals[current - 1]
         dict_intervals["after"] = intervals[current + 1]
-    return dict_intervals
+    return dict_intervals, lineups
 
 
 async def create_row_pages(
@@ -212,12 +214,15 @@ async def create_month_shudle_v2(
         page.intervals_details,
         key=lambda x: x.interval.start_at,
     )
-
-    dict_intervals = await process_intervals(
+    dict_intervals_and_set_lineups = await process_intervals_and_lineups(
         current_interval_id=current_interval_id,
         pages_intervals=pages_intervals,
         user_tg_id=user_tg_id,
     )
+    logger.debug(type(dict_intervals_and_set_lineups))
+    dict_intervals: dict[str, IntervalsORM] = dict_intervals_and_set_lineups[0]
+    lineups: set[int] = dict_intervals_and_set_lineups[1]
+
     # row pages
     kb_builder.row(
         *await create_row_pages(
