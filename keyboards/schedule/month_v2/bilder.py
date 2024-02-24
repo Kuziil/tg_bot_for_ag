@@ -55,19 +55,6 @@ async def process_page(
 async def convert_interval_to_str(
     defult_tz: ZoneInfo,
     interval: IntervalsORM,
-) -> dict[str, str]:
-    # interval_list: dict[strdt.datetime] = [interval.start_at, interval.end_at]
-    dict_current_interval: dict[str, str] = {}
-    start_at: dt.datetime = interval.start_at.astimezone(defult_tz)
-    end_at: dt.datetime = interval.end_at.astimezone(defult_tz)
-    dict_current_interval["start_at"] = start_at.strftime("%H:%M")
-    dict_current_interval["end_at"] = end_at.strftime("%H:%M")
-    return dict_current_interval
-
-
-async def convert_interval_to_str(
-    defult_tz: ZoneInfo,
-    interval: IntervalsORM,
 ) -> str:
     start_at: str = interval.start_at.astimezone(defult_tz).strftime("%H:%M")
     end_at: str = interval.end_at.astimezone(defult_tz).strftime("%H:%M")
