@@ -8,6 +8,8 @@ class IntervalCallbackData(
 ):
     start_at: str
     end_at: str
+    page_id: int
+    lineup: int
 
 
 class PageCallbackData(
@@ -15,6 +17,5 @@ class PageCallbackData(
     prefix="page",
     sep="-",
 ):
-    model_id: int
     page_id: int
     lineup: int
