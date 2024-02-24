@@ -6,7 +6,7 @@ from db.models.base import Base
 from db.models.types import intpk, strtext, intbigint
 
 if TYPE_CHECKING:
-    from .agencies_models_orm import AgenciesModelsORM
+    from .agencies_pages_orm import AgenciesPagesORM
     from .agencies_users_orm import AgenciesUsersORM
 
 
@@ -24,7 +24,7 @@ class AgenciesORM(Base):
     #     secondary="agencies_models",
     #     back_populates="agencies",
     # )
-    models_details: Mapped[list["AgenciesModelsORM"]] = relationship(
+    pages_details: Mapped[list["AgenciesPagesORM"]] = relationship(
         back_populates="agency",
     )
     users_details: Mapped[list["AgenciesUsersORM"]] = relationship(

@@ -8,16 +8,16 @@ from db.models.types import intpk
 
 if TYPE_CHECKING:
     from .agencies_orm import AgenciesORM
-    from .models_orm import ModelsORM
+    from .models_orm import PagesORM
 
 
-class AgenciesModelsORM(Base):
-    __tablename__ = "agencies_models"
+class AgenciesPagesORM(Base):
+    __tablename__ = "agencies_pages"
     __table_args__ = (
         UniqueConstraint(
             "agency_id",
-            "model_id",
-            name="idx_unique_agency_model",
+            "page_id",
+            name="idx_unique_agency_page",
         ),
     )
 
@@ -29,17 +29,17 @@ class AgenciesModelsORM(Base):
             ondelete="CASCADE",
         ),
     )
-    model_id: Mapped[int] = mapped_column(
+    page_id: Mapped[int] = mapped_column(
         ForeignKey(
-            "models.id",
+            "pages.id",
             ondelete="CASCADE",
         ),
     )
 
     # relationships
     agency: Mapped["AgenciesORM"] = relationship(
-        back_populates="models_details",
+        back_populates="pages_details",
     )
-    model: Mapped["ModelsORM"] = relationship(
+    page: Mapped["PagesORM"] = relationship(
         back_populates="agencies_details",
     )
