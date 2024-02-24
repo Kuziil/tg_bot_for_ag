@@ -108,6 +108,48 @@ async def process_intervals(
     return dict_intervals
 
 
+async def create_row_pages(
+    dict_pages: dict[str, PagesORM],
+    dict_intervals: dict[str, IntervalsORM],
+):
+    current_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=dict_pages["current"].model.title,
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=1,
+            interval_id=dict_intervals["current"].id,
+        ).pack(),
+    )
+    current_page_type_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=dict_pages["current"].type_in_agency,
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=1,
+            interval_id=dict_intervals["current"].id,
+        ).pack(),
+    )
+    if "before" in dict_pages and "after" in dict_pages:
+        before_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
+            text="<<",
+            callback_data=MonthShudleCallbackData(
+                page_id=dict_pages["before"].id,
+                lineup=1,
+                interval_id=dict_intervals["current"].id,
+            ).pack(),
+        )
+        after_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
+            text=">>",
+            callback_data=MonthShudleCallbackData(
+                page_id=dict_pages["after"].id,
+                lineup=1,
+                interval_id=dict_intervals["current"].id,
+            ).pack(),
+        )
+        return before_page_ikb, current_page_ikb, current_page_type_ikb, after_page_ikb
+    else:
+        return current_page_ikb, current_page_type_ikb
+
+
 async def create_row_inervals(
     dict_pages: dict[str, PagesORM],
     dict_intervals: dict[str, IntervalsORM],
@@ -138,7 +180,7 @@ async def create_row_inervals(
         ).pack(),
     )
 
-    return [before_interval_ikb, current_interval_ikb, after_interval_ikb]
+    return before_interval_ikb, current_interval_ikb, after_interval_ikb
 
 
 async def create_month_shudle_v2(
@@ -189,54 +231,13 @@ async def create_month_shudle_v2(
         pages_intervals=pages_intervals,
         user_tg_id=user_tg_id,
     )
-    current_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=dict_pages["current"].model.title,
-        callback_data=MonthShudleCallbackData(
-            page_id=dict_pages["current"].id,
-            lineup=1,
-            interval_id=dict_intervals["current"].id,
-        ).pack(),
-    )
-    current_page_type_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=dict_pages["current"].type_in_agency,
-        callback_data=MonthShudleCallbackData(
-            page_id=dict_pages["current"].id,
-            lineup=1,
-            interval_id=dict_intervals["current"].id,
-        ).pack(),
-    )
     # row pages
-    if "before" in dict_pages and "after" in dict_pages:
-        before_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
-            text="<<",
-            callback_data=MonthShudleCallbackData(
-                page_id=dict_pages["before"].id,
-                lineup=1,
-                interval_id=dict_intervals["current"].id,
-            ).pack(),
+    kb_builder.row(
+        *await create_row_pages(
+            dict_pages,
+            dict_intervals,
         )
-        after_page_ikb: InlineKeyboardButton = InlineKeyboardButton(
-            text=">>",
-            callback_data=MonthShudleCallbackData(
-                page_id=dict_pages["after"].id,
-                lineup=1,
-                interval_id=dict_intervals["current"].id,
-            ).pack(),
-        )
-        row_pages: list[InlineKeyboardButton] = [
-            before_page_ikb,
-            current_page_ikb,
-            current_page_type_ikb,
-            after_page_ikb,
-        ]
-    else:
-        row_pages: list[InlineKeyboardButton] = [
-            current_page_ikb,
-            current_page_type_ikb,
-        ]
-
-    kb_builder.row(*row_pages)
-
+    )
     # row interval
     kb_builder.row(
         *await create_row_inervals(
