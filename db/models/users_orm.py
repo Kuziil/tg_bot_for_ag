@@ -34,12 +34,6 @@ class UsersORM(Base):
         default=False,
     )
     wallet: Mapped[strtext | None]
-    interval_id: Mapped[intbigint | None] = mapped_column(
-        ForeignKey(
-            "intervals.id",
-            ondelete="CASCADE",
-        )
-    )
     role_id: Mapped[intbigint | None] = mapped_column(
         ForeignKey(
             "roles.id",
@@ -54,9 +48,7 @@ class UsersORM(Base):
     )
 
     # relationships
-    interval: Mapped["IntervalsORM"] = relationship(
-        back_populates="users",
-    )
+
     role: Mapped["RolesORM"] = relationship(
         back_populates="users",
     )

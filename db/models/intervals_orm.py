@@ -19,9 +19,6 @@ class IntervalsORM(Base):
     end_at: Mapped[dtdatetime]
 
     # relationships
-    users: Mapped["UsersORM"] = relationship(
-        back_populates="interval",
-    )
     # pages: Mapped[list["PagesORM"]] = relationship(
     #     secondary="pages_intervals",
     #     back_populates="intervals",
