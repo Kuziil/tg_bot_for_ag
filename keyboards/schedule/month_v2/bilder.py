@@ -1,5 +1,6 @@
 import datetime as dt
 from calendar import monthcalendar
+from typing import Any
 from zoneinfo import ZoneInfo
 import logging
 
@@ -25,6 +26,27 @@ from keyboards.schedule.month_v2.classes_callback_data import (
 logger = logging.getLogger(__name__)
 
 
+async def in_circle(
+    values: list[Any],
+    current: int,
+):
+    dict_position: dict[str, Any] = {}
+    dict_position["current"] = values[current]
+    len_values: int = len(values)
+    if len_values == 1:
+        return dict_position
+    if current == 0:
+        dict_position["before"] = values[-1]
+        dict_position["after"] = values[current + 1]
+    elif current == len_values - 1:
+        dict_position["before"] = values[current - 1]
+        dict_position["after"] = values[0]
+    else:
+        dict_position["before"] = values[current - 1]
+        dict_position["after"] = values[current + 1]
+    return dict_position
+
+
 async def process_page(
     pages: list[PagesORM],
     current_page_id: int,
@@ -36,20 +58,7 @@ async def process_page(
         if page.id == current_page_id:
             current = key
             break
-    dict_pages["current"] = pages[current]
-    len_pages: int = len(pages)
-    if len_pages == 1:
-        return dict_pages
-    if current == 0:
-        dict_pages["before"] = pages[-1]
-        dict_pages["after"] = pages[current + 1]
-    elif current == len_pages - 1:
-        dict_pages["before"] = pages[current - 1]
-        dict_pages["after"] = pages[0]
-    else:
-        dict_pages["before"] = pages[current - 1]
-        dict_pages["after"] = pages[current + 1]
-    return dict_pages
+    return await in_circle(values=pages, current=current)
 
 
 async def convert_interval_to_str(
@@ -63,38 +72,42 @@ async def convert_interval_to_str(
 
 async def process_intervals_and_lineups(
     current_interval_id: int | None,
+    current_lineup: int | None,  # lineup
     pages_intervals: list[PagesIntervalsORM],
     user_tg_id: int,
-) -> tuple[dict[str, IntervalsORM], set[int]]:
-    dict_intervals: dict[str, IntervalsORM] = {}
-    lineups: set[int] = set()  # lineup
-    current: int | None = None
+) -> tuple[dict[str, IntervalsORM], dict[str, int]]:
     intervals: list[IntervalsORM] = []
+    lineups: list[int] = []  # lineup
+    current_interval_key: int | None = None
+    current_lineup_key: int | None = None  # lineup
     for key, page_interval in enumerate(pages_intervals):
         interval: IntervalsORM = page_interval.interval
         intervals.append(interval)
-        lineups.add(page_interval.lineup)  # lineup
-        if current_interval_id is None:
+        lineup: int = page_interval.lineup  # lineup
+        if lineup not in lineups:  # lineup
+            lineups.append(lineup)  # lineup
+        if current_interval_id is None and current_lineup is None:
             user: UsersORM = page_interval.user
             if user is not None:
                 tgs: list[TgsORM] = user.tgs
                 for tg in tgs:
                     if tg.user_tg_id == user_tg_id:
-                        current = key
+                        current_interval_key = key
+                        current_lineup = lineup  # lineup
         else:
             if interval.id == current_interval_id:
-                current = key
-    dict_intervals["current"] = intervals[current]
-    if current == 0:
-        dict_intervals["before"] = intervals[-1]
-        dict_intervals["after"] = intervals[current + 1]
-    elif current == len(intervals) - 1:
-        dict_intervals["before"] = intervals[current - 1]
-        dict_intervals["after"] = intervals[0]
-    else:
-        dict_intervals["before"] = intervals[current - 1]
-        dict_intervals["after"] = intervals[current + 1]
-    return dict_intervals, lineups
+                current_interval_key = key
+    lineups.sort()
+    current_lineup_key = current_lineup - 1  # lineup
+    dict_intervals: dict[str, IntervalsORM] = await in_circle(
+        values=intervals,
+        current=current_interval_key,
+    )
+    dict_lineups: dict[str, int] = await in_circle(
+        values=lineups,
+        current=current_lineup_key,
+    )  # lineup
+    return dict_intervals, dict_lineups
 
 
 async def create_row_pages(
@@ -182,7 +195,7 @@ async def create_month_shudle_v2(
     current_month: int = 1,
     current_day: int = 1,
     current_interval_id: int | None = None,
-    lineup: int | None = None,
+    current_lineup: int | None = None,
 ):
     pages: list[PagesORM] = await get_pages_with_inter_users_tgs_by_user_tg_id(
         session=session,
@@ -214,16 +227,16 @@ async def create_month_shudle_v2(
         page.intervals_details,
         key=lambda x: x.interval.start_at,
     )
-    dict_intervals_and_set_lineups = await process_intervals_and_lineups(
+    dict_intervals_and_lineups = await process_intervals_and_lineups(
         current_interval_id=current_interval_id,
+        current_lineup=current_lineup,
         pages_intervals=pages_intervals,
         user_tg_id=user_tg_id,
     )
-    logger.debug(type(dict_intervals_and_set_lineups))
-    dict_intervals: dict[str, IntervalsORM] = dict_intervals_and_set_lineups[0]
-    lineups: set[int] = dict_intervals_and_set_lineups[1]
+    logger.debug(type(dict_intervals_and_lineups))
+    dict_intervals: dict[str, IntervalsORM] = dict_intervals_and_lineups[0]
+    dict_lineups: dict[str, int] = dict_intervals_and_lineups[1]
 
-    # row pages
     kb_builder.row(
         *await create_row_pages(
             dict_pages,
