@@ -1,5 +1,5 @@
 import datetime as dt
-from calendar import monthcalendar, monthrange
+from calendar import monthcalendar, monthrange, day_abbr
 from typing import Any
 from zoneinfo import ZoneInfo
 import logging
@@ -382,6 +382,23 @@ async def create_month_shudle_v2(
             dict_lineups=dict_lineups,
             dict_intervals=dict_intervals,
         )
+    )
+    # row weekday
+    kb_builder.row(
+        *[
+            InlineKeyboardButton(
+                text=weekday,
+                callback_data=MonthShudleCallbackData(
+                    day=0,
+                    month=dict_datetimes["current"].month,
+                    year=dict_datetimes["current"].year,
+                    page_id=dict_pages["current"].id,
+                    lineup=dict_lineups["current"],
+                    interval_id=dict_intervals["current"].id,
+                ).pack(),
+            )
+            for weekday in day_abbr
+        ]
     )
 
     # row days
