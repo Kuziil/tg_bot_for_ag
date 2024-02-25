@@ -296,40 +296,36 @@ async def create_row_lineups(
     dict_lineups: dict[str, int],
     dict_intervals: dict[str, IntervalsORM],
 ):
-    before_lineup_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f"<<<",
-        callback_data=MonthShudleCallbackData(
-            day=dict_datetimes["current"].day,
-            month=dict_datetimes["current"].month,
-            year=dict_datetimes["current"].year,
-            page_id=dict_pages["current"].id,
-            lineup=dict_lineups["before"],
-            interval_id=dict_intervals["current"].id,
-        ).pack(),
-    )
-    current_lineup_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f'{dict_lineups["current"]}',
-        callback_data=MonthShudleCallbackData(
-            day=dict_datetimes["current"].day,
-            month=dict_datetimes["current"].month,
-            year=dict_datetimes["current"].year,
-            page_id=dict_pages["current"].id,
-            lineup=dict_lineups["current"],
-            interval_id=dict_intervals["current"].id,
-        ).pack(),
-    )
-    after_lineup_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f">>>",
-        callback_data=MonthShudleCallbackData(
-            day=dict_datetimes["current"].day,
-            month=dict_datetimes["current"].month,
-            year=dict_datetimes["current"].year,
-            page_id=dict_pages["current"].id,
-            lineup=dict_lineups["after"],
-            interval_id=dict_intervals["current"].id,
-        ).pack(),
-    )
-    return before_lineup_ikb, current_lineup_ikb, after_lineup_ikb
+    buttons: list[InlineKeyboardButton] = []
+    dict_for_ikb: list[dict[str, str]] = [
+        {
+            "sequence_item": "before",
+            "text": "<<<",
+        },
+        {
+            "sequence_item": "current",
+            "text": f'{dict_lineups["current"]}',
+        },
+        {
+            "sequence_item": "after",
+            "text": ">>>",
+        },
+    ]
+    for button in dict_for_ikb:
+        buttons.append(
+            InlineKeyboardButton(
+                text=button["text"],
+                callback_data=MonthShudleCallbackData(
+                    day=dict_datetimes["current"].day,
+                    month=dict_datetimes["current"].month,
+                    year=dict_datetimes["current"].year,
+                    page_id=dict_pages["current"].id,
+                    lineup=dict_lineups[button["sequence_item"]],
+                    interval_id=dict_intervals["current"].id,
+                ).pack(),
+            )
+        )
+    return buttons
 
 
 async def create_month_shudle_v2(
