@@ -166,19 +166,20 @@ async def create_row_month_year(
         },
     ]
     for button in dict_for_ikb:
-        buttons.append(
-            InlineKeyboardButton(
-                text=button["text"],
-                callback_data=MonthShudleCallbackData(
-                    day=dict_datetimes[button["sequence_item"]].day,
-                    month=dict_datetimes[button["sequence_item"]].month,
-                    year=dict_datetimes[button["sequence_item"]].year,
-                    page_id=dict_pages["current"].id,
-                    lineup=dict_lineups["current"],
-                    interval_id=dict_intervals["current"].id,
-                ).pack(),
+        if button["sequence_item"] in dict_datetimes:
+            buttons.append(
+                InlineKeyboardButton(
+                    text=button["text"],
+                    callback_data=MonthShudleCallbackData(
+                        day=dict_datetimes[button["sequence_item"]].day,
+                        month=dict_datetimes[button["sequence_item"]].month,
+                        year=dict_datetimes[button["sequence_item"]].year,
+                        page_id=dict_pages["current"].id,
+                        lineup=dict_lineups["current"],
+                        interval_id=dict_intervals["current"].id,
+                    ).pack(),
+                )
             )
-        )
     return buttons
 
 
@@ -258,19 +259,20 @@ async def create_row_inervals(
         },
     ]
     for button in dict_for_ikb:
-        buttons.append(
-            InlineKeyboardButton(
-                text=button["text"],
-                callback_data=MonthShudleCallbackData(
-                    day=dict_datetimes["current"].day,
-                    month=dict_datetimes["current"].month,
-                    year=dict_datetimes["current"].year,
-                    page_id=dict_pages["current"].id,
-                    lineup=dict_lineups["current"],
-                    interval_id=dict_intervals[button["sequence_item"]].id,
-                ).pack(),
+        if button["sequence_item"] in dict_intervals:
+            buttons.append(
+                InlineKeyboardButton(
+                    text=button["text"],
+                    callback_data=MonthShudleCallbackData(
+                        day=dict_datetimes["current"].day,
+                        month=dict_datetimes["current"].month,
+                        year=dict_datetimes["current"].year,
+                        page_id=dict_pages["current"].id,
+                        lineup=dict_lineups["current"],
+                        interval_id=dict_intervals[button["sequence_item"]].id,
+                    ).pack(),
+                )
             )
-        )
     return buttons
 
 
@@ -296,19 +298,20 @@ async def create_row_lineups(
         },
     ]
     for button in dict_for_ikb:
-        buttons.append(
-            InlineKeyboardButton(
-                text=button["text"],
-                callback_data=MonthShudleCallbackData(
-                    day=dict_datetimes["current"].day,
-                    month=dict_datetimes["current"].month,
-                    year=dict_datetimes["current"].year,
-                    page_id=dict_pages["current"].id,
-                    lineup=dict_lineups[button["sequence_item"]],
-                    interval_id=dict_intervals["current"].id,
-                ).pack(),
+        if button["sequence_item"] in dict_lineups:
+            buttons.append(
+                InlineKeyboardButton(
+                    text=button["text"],
+                    callback_data=MonthShudleCallbackData(
+                        day=dict_datetimes["current"].day,
+                        month=dict_datetimes["current"].month,
+                        year=dict_datetimes["current"].year,
+                        page_id=dict_pages["current"].id,
+                        lineup=dict_lineups[button["sequence_item"]],
+                        interval_id=dict_intervals["current"].id,
+                    ).pack(),
+                )
             )
-        )
     return buttons
 
 
