@@ -1,5 +1,5 @@
 import datetime as dt
-from calendar import monthcalendar
+from calendar import monthcalendar, monthrange
 from typing import Any
 from zoneinfo import ZoneInfo
 import logging
@@ -51,7 +51,6 @@ async def process_page(
     pages: list[PagesORM],
     current_page_id: int,
 ) -> dict[str, PagesORM]:
-    dict_pages: dict[str, PagesORM] = {}
     current: int = 0
     for key, page in enumerate(pages):
         page: PagesORM = page
@@ -108,6 +107,52 @@ async def process_intervals_and_lineups(
         current=current_lineup_key,
     )  # lineup
     return dict_intervals, dict_lineups
+
+
+async def create_row_month_year(
+    dict_months_years: dict[str, dt.datetime],
+    dict_pages: dict[str, PagesORM],
+    dict_lineups: dict[str, int],
+    dict_intervals: dict[str, IntervalsORM],
+):
+    before_month_year_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f"<",
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=dict_lineups["current"],
+            interval_id=dict_intervals["current"].id,
+        ).pack(),
+    )
+    current_month_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f'{dict_months_years["current"].month}',
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=dict_lineups["current"],
+            interval_id=dict_intervals["current"].id,
+        ).pack(),
+    )
+    current_year_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f'{dict_months_years["current"].year}',
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=dict_lineups["current"],
+            interval_id=dict_intervals["current"].id,
+        ).pack(),
+    )
+    after_month_year_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f">",
+        callback_data=MonthShudleCallbackData(
+            page_id=dict_pages["current"].id,
+            lineup=dict_lineups["current"],
+            interval_id=dict_intervals["current"].id,
+        ).pack(),
+    )
+    return (
+        before_month_year_ikb,
+        current_month_ikb,
+        current_year_ikb,
+        after_month_year_ikb,
+    )
 
 
 async def create_row_pages(
@@ -225,9 +270,9 @@ async def create_month_shudle_v2(
     i18n: dict[dict[str, str]],
     defult_tz: ZoneInfo,
     current_page_id: int | None = None,
-    current_year: int = 1,
-    current_month: int = 1,
-    current_day: int = 1,
+    current_year: int | None = None,
+    current_month: int | None = None,
+    current_day: int | None = None,
     current_interval_id: int | None = None,
     current_lineup: int | None = None,
 ):
@@ -236,7 +281,33 @@ async def create_month_shudle_v2(
         user_tg_id=user_tg_id,
     )
     kb_builder = InlineKeyboardBuilder()
-    month_calendar: list[list[int]] = monthcalendar(year=1, month=1)
+    dict_months_years: dict[str, dt.datetime] = {}
+    if current_year is None or current_month is None or current_day is None:
+        current_datetime: dt.datetime = dt.datetime.now(tz=defult_tz)
+    else:
+        current_datetime: dt.datetime = dt.datetime(
+            year=current_year,
+            month=current_month,
+            day=current_day,
+            tzinfo=defult_tz,
+        )
+    dict_months_years["current"] = current_datetime
+    timedelta_of_days_for_current_month: dt.timedelta = dt.timedelta(
+        days=monthrange(
+            year=dict_months_years["current"].year,
+            month=dict_months_years["current"].month,
+        )[1]
+    )
+    dict_months_years["before"] = (
+        dict_months_years["current"] - timedelta_of_days_for_current_month
+    )
+    dict_months_years["after"] = (
+        dict_months_years["current"] + timedelta_of_days_for_current_month
+    )
+    month_calendar: list[list[int]] = monthcalendar(
+        year=dict_months_years["current"].year,
+        month=dict_months_years["current"].month,
+    )
     pages = sorted(pages, key=lambda x: (x.model.title, x.type_in_agency))
     # for page_t in pages:
     #     logger.debug(f"{page_t}")
@@ -261,15 +332,26 @@ async def create_month_shudle_v2(
         page.intervals_details,
         key=lambda x: x.interval.start_at,
     )
+
     dict_intervals_and_lineups = await process_intervals_and_lineups(
         current_interval_id=current_interval_id,
         current_lineup=current_lineup,
         pages_intervals=pages_intervals,
         user_tg_id=user_tg_id,
     )
-    logger.debug(type(dict_intervals_and_lineups))
+
     dict_intervals: dict[str, IntervalsORM] = dict_intervals_and_lineups[0]
     dict_lineups: dict[str, int] = dict_intervals_and_lineups[1]
+
+    # row month_year
+    kb_builder.row(
+        *await create_row_month_year(
+            dict_months_years=dict_months_years,
+            dict_pages=dict_pages,
+            dict_lineups=dict_lineups,
+            dict_intervals=dict_intervals,
+        )
+    )
 
     # row lineup
     if "before" in dict_lineups and "after" in dict_lineups:
@@ -297,4 +379,5 @@ async def create_month_shudle_v2(
             defult_tz=defult_tz,
         )
     )
+
     return kb_builder.as_markup()
