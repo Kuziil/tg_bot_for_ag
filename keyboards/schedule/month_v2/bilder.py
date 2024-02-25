@@ -261,57 +261,47 @@ async def create_row_inervals(
     dict_intervals: dict[str, IntervalsORM],
     defult_tz: ZoneInfo,
 ):
-    before_interval_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f"<<<",
-        callback_data=MonthShudleCallbackData(
-            day=dict_datetimes["current"].day,
-            month=dict_datetimes["current"].month,
-            year=dict_datetimes["current"].year,
-            page_id=dict_pages["current"].id,
-            lineup=dict_lineups["current"],
-            interval_id=dict_intervals["before"].id,
-        ).pack(),
-    )
-    current_start_at_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f'{await convert_datetime_to_time_str(time=dict_intervals["current"].start_at, defult_tz=defult_tz,)}',
-        callback_data=MonthShudleCallbackData(
-            day=dict_datetimes["current"].day,
-            month=dict_datetimes["current"].month,
-            year=dict_datetimes["current"].year,
-            page_id=dict_pages["current"].id,
-            lineup=dict_lineups["current"],
-            interval_id=dict_intervals["current"].id,
-        ).pack(),
-    )
-    current_end_at_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f'{await convert_datetime_to_time_str(time=dict_intervals["current"].end_at, defult_tz=defult_tz,)}',
-        callback_data=MonthShudleCallbackData(
-            day=dict_datetimes["current"].day,
-            month=dict_datetimes["current"].month,
-            year=dict_datetimes["current"].year,
-            page_id=dict_pages["current"].id,
-            lineup=dict_lineups["current"],
-            interval_id=dict_intervals["current"].id,
-        ).pack(),
-    )
-    after_interval_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f">>>",
-        callback_data=MonthShudleCallbackData(
-            day=dict_datetimes["current"].day,
-            month=dict_datetimes["current"].month,
-            year=dict_datetimes["current"].year,
-            page_id=dict_pages["current"].id,
-            lineup=dict_lineups["current"],
-            interval_id=dict_intervals["after"].id,
-        ).pack(),
-    )
+    buttons: list[InlineKeyboardButton] = []
+    dict_for_ikb: list[dict[str, str]] = [
+        {
+            "sequence_item": "before",
+            "text": "<<<",
+        },
+        {
+            "sequence_item": "current",
+            "text": await convert_datetime_to_time_str(
+                time=dict_intervals["current"].start_at,
+                defult_tz=defult_tz,
+            ),
+        },
+        {
+            "sequence_item": "current",
+            "text": await convert_datetime_to_time_str(
+                time=dict_intervals["current"].end_at,
+                defult_tz=defult_tz,
+            ),
+        },
+        {
+            "sequence_item": "after",
+            "text": ">>>",
+        },
+    ]
+    for button in dict_for_ikb:
+        buttons.append(
+            InlineKeyboardButton(
+                text=button["text"],
+                callback_data=MonthShudleCallbackData(
+                    day=dict_datetimes["current"].day,
+                    month=dict_datetimes["current"].month,
+                    year=dict_datetimes["current"].year,
+                    page_id=dict_pages["current"].id,
+                    lineup=dict_lineups["current"],
+                    interval_id=dict_intervals[button["sequence_item"]].id,
+                ).pack(),
+            )
+        )
 
-    return (
-        before_interval_ikb,
-        current_start_at_ikb,
-        current_end_at_ikb,
-        after_interval_ikb,
-    )
+    return buttons
 
 
 async def create_row_lineups(
