@@ -146,56 +146,40 @@ async def create_row_month_year(
     dict_lineups: dict[str, int],
     dict_intervals: dict[str, IntervalsORM],
 ):
-    before_month_year_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f"<",
-        callback_data=MonthShudleCallbackData(
-            day=dict_datetimes["before"].day,
-            month=dict_datetimes["before"].month,
-            year=dict_datetimes["before"].year,
-            page_id=dict_pages["current"].id,
-            lineup=dict_lineups["current"],
-            interval_id=dict_intervals["current"].id,
-        ).pack(),
-    )
-    current_month_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f'{dict_datetimes["current"].strftime("%B")}',
-        callback_data=MonthShudleCallbackData(
-            day=dict_datetimes["current"].day,
-            month=dict_datetimes["current"].month,
-            year=dict_datetimes["current"].year,
-            page_id=dict_pages["current"].id,
-            lineup=dict_lineups["current"],
-            interval_id=dict_intervals["current"].id,
-        ).pack(),
-    )
-    current_year_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f'{dict_datetimes["current"].year}',
-        callback_data=MonthShudleCallbackData(
-            day=dict_datetimes["current"].day,
-            month=dict_datetimes["current"].month,
-            year=dict_datetimes["current"].year,
-            page_id=dict_pages["current"].id,
-            lineup=dict_lineups["current"],
-            interval_id=dict_intervals["current"].id,
-        ).pack(),
-    )
-    after_month_year_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f">",
-        callback_data=MonthShudleCallbackData(
-            day=dict_datetimes["after"].day,
-            month=dict_datetimes["after"].month,
-            year=dict_datetimes["after"].year,
-            page_id=dict_pages["current"].id,
-            lineup=dict_lineups["current"],
-            interval_id=dict_intervals["current"].id,
-        ).pack(),
-    )
-    return (
-        before_month_year_ikb,
-        current_month_ikb,
-        current_year_ikb,
-        after_month_year_ikb,
-    )
+    buttons: list[InlineKeyboardButton] = []
+    dict_for_ikb: list[dict[str, str]] = [
+        {
+            "sequence_item": "before",
+            "text": f"<",
+        },
+        {
+            "sequence_item": "current",
+            "text": dict_datetimes["current"].strftime("%B"),
+        },
+        {
+            "sequence_item": "current",
+            "text": f'{dict_datetimes["current"].year}',
+        },
+        {
+            "sequence_item": "after",
+            "text": f">",
+        },
+    ]
+    for button in dict_for_ikb:
+        buttons.append(
+            InlineKeyboardButton(
+                text=button["text"],
+                callback_data=MonthShudleCallbackData(
+                    day=dict_datetimes[button["sequence_item"]].day,
+                    month=dict_datetimes[button["sequence_item"]].month,
+                    year=dict_datetimes[button["sequence_item"]].year,
+                    page_id=dict_pages["current"].id,
+                    lineup=dict_lineups["current"],
+                    interval_id=dict_intervals["current"].id,
+                ).pack(),
+            )
+        )
+    return buttons
 
 
 async def create_row_pages(
