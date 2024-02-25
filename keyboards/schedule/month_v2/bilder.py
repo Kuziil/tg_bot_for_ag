@@ -127,7 +127,7 @@ async def create_row_month_year(
         ).pack(),
     )
     current_month_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f'{dict_datetimes["current"].month}',
+        text=f'{dict_datetimes["current"].strftime("%B")}',
         callback_data=MonthShudleCallbackData(
             day=dict_datetimes["current"].day,
             month=dict_datetimes["current"].month,
