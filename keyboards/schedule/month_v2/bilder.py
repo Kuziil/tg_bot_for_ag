@@ -171,7 +171,7 @@ async def create_row_month_year(
                 InlineKeyboardButton(
                     text=button["text"],
                     callback_data=MonthShudleCallbackData(
-                        day=dict_datetimes[button["sequence_item"]].day,
+                        day=0,
                         month=dict_datetimes[button["sequence_item"]].month,
                         year=dict_datetimes[button["sequence_item"]].year,
                         page_id=dict_pages["current"].id,
@@ -214,7 +214,7 @@ async def create_row_pages(
                 InlineKeyboardButton(
                     text=button["text"],
                     callback_data=MonthShudleCallbackData(
-                        day=dict_datetimes["current"].day,
+                        day=0,
                         month=dict_datetimes["current"].month,
                         year=dict_datetimes["current"].year,
                         page_id=dict_pages[button["sequence_item"]].id,
@@ -264,7 +264,7 @@ async def create_row_inervals(
                 InlineKeyboardButton(
                     text=button["text"],
                     callback_data=MonthShudleCallbackData(
-                        day=dict_datetimes["current"].day,
+                        day=0,
                         month=dict_datetimes["current"].month,
                         year=dict_datetimes["current"].year,
                         page_id=dict_pages["current"].id,
@@ -303,7 +303,7 @@ async def create_row_lineups(
                 InlineKeyboardButton(
                     text=button["text"],
                     callback_data=MonthShudleCallbackData(
-                        day=dict_datetimes["current"].day,
+                        day=0,
                         month=dict_datetimes["current"].month,
                         year=dict_datetimes["current"].year,
                         page_id=dict_pages["current"].id,
@@ -337,11 +337,6 @@ async def create_month_shudle_v2(
         current_day=current_month,
         current_month=current_month,
         current_year=current_year,
-    )
-
-    month_calendar: list[list[int]] = monthcalendar(
-        year=dict_datetimes["current"].year,
-        month=dict_datetimes["current"].month,
     )
     pages = sorted(pages, key=lambda x: (x.model.title, x.type_in_agency))
     # for page_t in pages:
@@ -387,6 +382,32 @@ async def create_month_shudle_v2(
             dict_intervals=dict_intervals,
         )
     )
+    # row days
+    month_calendar: list[list[int]] = monthcalendar(
+        year=dict_datetimes["current"].year,
+        month=dict_datetimes["current"].month,
+    )
+    for week in month_calendar:
+        week_ikb: list[InlineKeyboardButton] = []
+        for day in week:
+            if day > 0:
+                day_str = f"{day}"
+            else:
+                day_str = f" "
+            week_ikb.append(
+                InlineKeyboardButton(
+                    text=day_str,
+                    callback_data=MonthShudleCallbackData(
+                        day=day,
+                        month=dict_datetimes["current"].month,
+                        year=dict_datetimes["current"].year,
+                        page_id=dict_pages["current"].id,
+                        lineup=dict_lineups["current"],
+                        interval_id=dict_intervals["current"].id,
+                    ).pack(),
+                )
+            )
+        kb_builder.row(*week_ikb)
 
     # row lineup
     if "before" in dict_lineups and "after" in dict_lineups:
