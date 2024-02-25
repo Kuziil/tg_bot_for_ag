@@ -155,7 +155,7 @@ async def create_row_month_year(
         },
         {
             "sequence_item": "current",
-            "text": dict_datetimes["current"].strftime("%B"),
+            "text": dict_datetimes["current"].strftime("%b"),
         },
         {
             "sequence_item": "current",
