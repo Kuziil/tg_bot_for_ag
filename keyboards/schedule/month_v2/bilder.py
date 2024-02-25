@@ -112,7 +112,8 @@ async def process_intervals_and_lineups(
     current_lineup_key: int | None = None  # lineup
     for key, page_interval in enumerate(pages_intervals):
         interval: IntervalsORM = page_interval.interval
-        intervals.append(interval)
+        if interval not in intervals:
+            intervals.append(interval)
         lineup: int = page_interval.lineup  # lineup
         if lineup not in lineups:  # lineup
             lineups.append(lineup)  # lineup
@@ -122,11 +123,11 @@ async def process_intervals_and_lineups(
                 tgs: list[TgsORM] = user.tgs
                 for tg in tgs:
                     if tg.user_tg_id == user_tg_id:
-                        current_interval_key = key
+                        current_interval_key = len(intervals) - 1
                         current_lineup = lineup  # lineup
         else:
             if interval.id == current_interval_id:
-                current_interval_key = key
+                current_interval_key = len(intervals) - 1
     lineups.sort()
     current_lineup_key = current_lineup - 1  # lineup
     dict_intervals: dict[str, IntervalsORM] = await in_circle(
@@ -382,6 +383,7 @@ async def create_month_shudle_v2(
             dict_intervals=dict_intervals,
         )
     )
+
     # row days
     month_calendar: list[list[int]] = monthcalendar(
         year=dict_datetimes["current"].year,
@@ -437,6 +439,23 @@ async def create_month_shudle_v2(
             dict_intervals=dict_intervals,
             defult_tz=defult_tz,
         )
+    )
+    kb_builder.row(
+        InlineKeyboardButton(
+            text="назад",
+            callback_data="back_button",
+        ),
+        InlineKeyboardButton(
+            text="обновить",
+            callback_data=MonthShudleCallbackData(
+                day=0,
+                month=dict_datetimes["current"].month,
+                year=dict_datetimes["current"].year,
+                page_id=dict_pages["current"].id,
+                lineup=dict_lineups["current"],
+                interval_id=dict_intervals["current"].id,
+            ).pack(),
+        ),
     )
 
     return kb_builder.as_markup()
