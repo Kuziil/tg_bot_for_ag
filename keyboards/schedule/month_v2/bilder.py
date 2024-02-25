@@ -92,13 +92,12 @@ async def process_page(
     return await in_circle(values=pages, current=current)
 
 
-async def convert_interval_to_str(
+async def convert_datetime_to_time_str(
     defult_tz: ZoneInfo,
-    interval: IntervalsORM,
+    time: dt.datetime,
 ) -> str:
-    start_at: str = interval.start_at.astimezone(defult_tz).strftime("%H:%M")
-    end_at: str = interval.end_at.astimezone(defult_tz).strftime("%H:%M")
-    return f"{start_at}-{end_at}"
+    time_str: str = time.astimezone(defult_tz).strftime("%H:%M")
+    return time_str
 
 
 async def process_intervals_and_lineups(
@@ -273,8 +272,19 @@ async def create_row_inervals(
             interval_id=dict_intervals["before"].id,
         ).pack(),
     )
-    current_interval_ikb: InlineKeyboardButton = InlineKeyboardButton(
-        text=f'{await convert_interval_to_str(interval=dict_intervals["current"], defult_tz=defult_tz,)}',
+    current_start_at_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f'{await convert_datetime_to_time_str(time=dict_intervals["current"].start_at, defult_tz=defult_tz,)}',
+        callback_data=MonthShudleCallbackData(
+            day=dict_datetimes["current"].day,
+            month=dict_datetimes["current"].month,
+            year=dict_datetimes["current"].year,
+            page_id=dict_pages["current"].id,
+            lineup=dict_lineups["current"],
+            interval_id=dict_intervals["current"].id,
+        ).pack(),
+    )
+    current_end_at_ikb: InlineKeyboardButton = InlineKeyboardButton(
+        text=f'{await convert_datetime_to_time_str(time=dict_intervals["current"].end_at, defult_tz=defult_tz,)}',
         callback_data=MonthShudleCallbackData(
             day=dict_datetimes["current"].day,
             month=dict_datetimes["current"].month,
@@ -296,7 +306,12 @@ async def create_row_inervals(
         ).pack(),
     )
 
-    return before_interval_ikb, current_interval_ikb, after_interval_ikb
+    return (
+        before_interval_ikb,
+        current_start_at_ikb,
+        current_end_at_ikb,
+        after_interval_ikb,
+    )
 
 
 async def create_row_lineups(
