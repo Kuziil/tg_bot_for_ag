@@ -3,7 +3,7 @@ from aiogram.filters.callback_data import CallbackData
 
 class MonthShudleCallbackData(
     CallbackData,
-    prefix="interval",
+    prefix="shu",
     sep="-",
 ):
     day: int
