@@ -26,6 +26,38 @@ from keyboards.schedule.month_v2.classes_callback_data import (
 logger = logging.getLogger(__name__)
 
 
+async def process_datetime(
+    defult_tz: ZoneInfo,
+    current_day: int | None,
+    current_month: int | None,
+    current_year: int | None,
+) -> dict[str, dt.datetime]:
+    dict_datetimes: dict[str, dt.datetime] = {}
+    if current_year is None or current_month is None or current_day is None:
+        current_datetime: dt.datetime = dt.datetime.now(tz=defult_tz)
+    else:
+        current_datetime: dt.datetime = dt.datetime(
+            year=current_year,
+            month=current_month,
+            day=current_day,
+            tzinfo=defult_tz,
+        )
+    dict_datetimes["current"] = current_datetime
+    timedelta_of_days_for_current_month: dt.timedelta = dt.timedelta(
+        days=monthrange(
+            year=dict_datetimes["current"].year,
+            month=dict_datetimes["current"].month,
+        )[1]
+    )
+    dict_datetimes["before"] = (
+        dict_datetimes["current"] - timedelta_of_days_for_current_month
+    )
+    dict_datetimes["after"] = (
+        dict_datetimes["current"] + timedelta_of_days_for_current_month
+    )
+    return dict_datetimes
+
+
 async def in_circle(
     values: list[Any],
     current: int,
@@ -326,29 +358,13 @@ async def create_month_shudle_v2(
         user_tg_id=user_tg_id,
     )
     kb_builder = InlineKeyboardBuilder()
-    dict_datetimes: dict[str, dt.datetime] = {}
-    if current_year is None or current_month is None or current_day is None:
-        current_datetime: dt.datetime = dt.datetime.now(tz=defult_tz)
-    else:
-        current_datetime: dt.datetime = dt.datetime(
-            year=current_year,
-            month=current_month,
-            day=current_day,
-            tzinfo=defult_tz,
-        )
-    dict_datetimes["current"] = current_datetime
-    timedelta_of_days_for_current_month: dt.timedelta = dt.timedelta(
-        days=monthrange(
-            year=dict_datetimes["current"].year,
-            month=dict_datetimes["current"].month,
-        )[1]
+    dict_datetimes: dict[str, dt.datetime] = await process_datetime(
+        defult_tz=defult_tz,
+        current_day=current_month,
+        current_month=current_month,
+        current_year=current_year,
     )
-    dict_datetimes["before"] = (
-        dict_datetimes["current"] - timedelta_of_days_for_current_month
-    )
-    dict_datetimes["after"] = (
-        dict_datetimes["current"] + timedelta_of_days_for_current_month
-    )
+
     month_calendar: list[list[int]] = monthcalendar(
         year=dict_datetimes["current"].year,
         month=dict_datetimes["current"].month,
