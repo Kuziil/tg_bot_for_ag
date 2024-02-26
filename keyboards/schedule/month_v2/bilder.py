@@ -340,19 +340,19 @@ async def create_month_shudle_v2(
         current_year=current_year,
     )
     pages = sorted(pages, key=lambda x: (x.model.title, x.type_in_agency))
-    # for page_t in pages:
-    #     logger.debug(f"{page_t}")
-    #     logger.debug(f"    {page_t.model}")
-    #     for page_interval_t in page_t.intervals_details:
-    #         logger.debug(f"    {page_interval_t}")
-    #         logger.debug(f"    {page_interval_t.interval}")
-    #         logger.debug(f"    {page_interval_t.page}")
-    #         logger.debug(f"    {page_interval_t.user}")
-    #         if page_interval_t.user is not None:
-    #             for tgs_t in page_interval_t.user.tgs:
-    #                 logger.debug(f"        {tgs_t}")
-    #         else:
-    #             logger.debug(f"            None")
+    for page_t in pages:
+        logger.debug(f"{page_t}")
+        logger.debug(f"    {page_t.model}")
+        for page_interval_t in page_t.intervals_details:
+            logger.debug(f"    {page_interval_t}")
+            logger.debug(f"    {page_interval_t.interval}")
+            logger.debug(f"    {page_interval_t.page}")
+            logger.debug(f"    {page_interval_t.user}")
+            if page_interval_t.user is not None:
+                for tgs_t in page_interval_t.user.tgs:
+                    logger.debug(f"        {tgs_t}")
+            else:
+                logger.debug(f"            None")
     dict_pages: dict[str, PagesORM] = await process_page(
         pages=pages,
         current_page_id=current_page_id,

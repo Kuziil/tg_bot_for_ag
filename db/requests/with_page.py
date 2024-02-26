@@ -17,12 +17,10 @@ async def get_pages_with_inter_users_tgs_by_user_tg_id(
         .join(TgsORM, UsersORM.id == TgsORM.user_id)
         .options(
             joinedload(PagesORM.model),
-            selectinload(PagesORM.intervals_details).joinedload(
-                PagesIntervalsORM.interval
+            selectinload(PagesORM.intervals_details).options(
+                joinedload(PagesIntervalsORM.interval),
+                joinedload(PagesIntervalsORM.user).selectinload(UsersORM.tgs),
             ),
-            selectinload(PagesORM.intervals_details)
-            .joinedload(PagesIntervalsORM.user)
-            .selectinload(UsersORM.tgs),
         )
         .where(TgsORM.user_tg_id == user_tg_id)
     )
