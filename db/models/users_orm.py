@@ -8,7 +8,6 @@ from db.models.base import Base
 from db.models.types import intpk, strtext, boolbool, intbigint
 
 if TYPE_CHECKING:
-    from .intervals_orm import IntervalsORM
     from .roles_orm import RolesORM
     from .tgs_orm import TgsORM
     from .pages_orm import PagesORM
@@ -16,6 +15,7 @@ if TYPE_CHECKING:
     from .fines_orm import FinesORM
     from .agencies_users_orm import AgenciesUsersORM
     from .pages_intervals_orm import PagesIntervalsORM
+    from .shifts_orm import ShiftsORM
 
 
 class UsersORM(Base):
@@ -88,4 +88,7 @@ class UsersORM(Base):
     # )
     pages_intervals: Mapped[list["PagesIntervalsORM"]] = relationship(
         back_populates="user",
+    )
+    shifts: Mapped[list["ShiftsORM"]] = relationship(
+        back_populates="replacement",
     )

@@ -9,7 +9,7 @@ from sqlalchemy import ForeignKey
 if TYPE_CHECKING:
     from .pages_intervals_orm import PagesIntervalsORM
     from .shifts_users_orm import ShiftsUsersORM
-    from .shifts_users_orm import ShiftsUsersORM
+    from .users_orm import UsersORM
 
 
 class ShiftsORM(Base):
@@ -24,7 +24,12 @@ class ShiftsORM(Base):
             ondelete="CASCADE",
         ),
     )
-
+    replacement_id: Mapped[intbigint | None] = mapped_column(
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
+    )
     # relationships
     page_interval: Mapped["PagesIntervalsORM"] = relationship(
         back_populates="shifts",
@@ -35,4 +40,7 @@ class ShiftsORM(Base):
     # )
     users_details: Mapped[list["ShiftsUsersORM"]] = relationship(
         back_populates="shift",
+    )
+    replacement: Mapped["UsersORM"] = relationship(
+        back_populates="shifts",
     )
