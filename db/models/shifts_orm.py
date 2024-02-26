@@ -8,8 +8,8 @@ from sqlalchemy import ForeignKey
 
 if TYPE_CHECKING:
     from .pages_intervals_orm import PagesIntervalsORM
-    from .shifts_users_orm import ShiftsUsersORM
     from .users_orm import UsersORM
+    from .earnings_orm import EarningsORM
 
 
 class ShiftsORM(Base):
@@ -38,9 +38,9 @@ class ShiftsORM(Base):
     #     secondary="shifts_users",
     #     back_populates="shifts",
     # )
-    users_details: Mapped[list["ShiftsUsersORM"]] = relationship(
-        back_populates="shift",
-    )
     replacement: Mapped["UsersORM"] = relationship(
         back_populates="shifts",
+    )
+    earnings: Mapped[list["EarningsORM"]] = relationship(
+        back_populates="shift",
     )

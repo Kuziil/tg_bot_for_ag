@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from .roles_orm import RolesORM
     from .tgs_orm import TgsORM
     from .pages_orm import PagesORM
-    from .shifts_users_orm import ShiftsUsersORM
     from .fines_orm import FinesORM
     from .agencies_users_orm import AgenciesUsersORM
     from .pages_intervals_orm import PagesIntervalsORM
@@ -69,9 +68,6 @@ class UsersORM(Base):
     #     secondary="shifts_users",
     #     back_populates="users",
     # )
-    shifts_details: Mapped[list["ShiftsUsersORM"]] = relationship(
-        back_populates="user",
-    )
     fines: Mapped[list["FinesORM"]] = relationship(
         back_populates="user",
     )
