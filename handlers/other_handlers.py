@@ -12,9 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # from lexicon.lexicon_ru import LEXICON_RU
 
 from db.requests.with_add import add_model, add_page, add_page_interval, add_interval
-from db.requests.with_page import (
-    get_pages_with_inter_users_tgs_by_user_tg_id,
-)
+from db.requests.with_page import get_pages_with_inter_users_tgs_by_user_tg_id, test_123
 from db.requests.with_interval import get_interval_by_id
 from db.requests.with_user import get_user_and_availible_pages_intervals_by_tg_id
 from db.models import PagesIntervalsORM, TgsORM
@@ -23,6 +21,27 @@ from keyboards.schedule.month_v2.bilder import create_month_shudle_v2
 router = Router()
 
 logger = logging.getLogger(__name__)
+
+
+# # test shifts
+
+
+# @router.message(StateFilter(default_state))
+# async def send_echo(
+#     message: Message,
+#     session: AsyncSession,
+#     defult_tz: ZoneInfo,
+#     i18n: dict,
+# ):
+#     pages_intervals = await test_123(
+#         session=session,
+#     )
+#     for page_interval in pages_intervals:
+#         logger.debug(page_interval)
+#         for shift in page_interval.shifts:
+#             logger.debug(shift)
+#     await message.answer(text="1")
+
 
 # test create_mounth_shudle_v2
 
