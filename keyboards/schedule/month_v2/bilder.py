@@ -9,7 +9,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.requests.with_page import (
-    get_pages_with_inter_users_tgs_by_user_tg_id,
+    get_pages_with_inter_users_tgs_shifts_by_user_tg_id,
 )
 from db.models import (
     PagesORM,
@@ -328,7 +328,7 @@ async def create_month_shudle_v2(
     current_interval_id: int | None = None,
     current_lineup: int | None = None,
 ):
-    pages: list[PagesORM] = await get_pages_with_inter_users_tgs_by_user_tg_id(
+    pages: list[PagesORM] = await get_pages_with_inter_users_tgs_shifts_by_user_tg_id(
         session=session,
         user_tg_id=user_tg_id,
     )
@@ -346,13 +346,15 @@ async def create_month_shudle_v2(
         for page_interval_t in page_t.intervals_details:
             logger.debug(f"    {page_interval_t}")
             logger.debug(f"    {page_interval_t.interval}")
-            logger.debug(f"    {page_interval_t.page}")
             logger.debug(f"    {page_interval_t.user}")
             if page_interval_t.user is not None:
                 for tgs_t in page_interval_t.user.tgs:
                     logger.debug(f"        {tgs_t}")
             else:
                 logger.debug(f"            None")
+
+            for shift_t in page_interval_t.shifts:
+                logger.debug(f"        {shift_t}")
     dict_pages: dict[str, PagesORM] = await process_page(
         pages=pages,
         current_page_id=current_page_id,

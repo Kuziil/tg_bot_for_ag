@@ -1,6 +1,6 @@
 import datetime as dt
 
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.engine import Result
 from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.models import PagesORM, PagesIntervalsORM, UsersORM, TgsORM, ShiftsORM
 
 
-async def get_pages_with_inter_users_tgs_by_user_tg_id(
+async def get_pages_with_inter_users_tgs_shifts_by_user_tg_id(
     session: AsyncSession,
     user_tg_id: int,
 ):
@@ -27,6 +27,10 @@ async def get_pages_with_inter_users_tgs_by_user_tg_id(
         )
         .filter(
             UsersORM.tgs.any(user_tg_id=user_tg_id),
+            or_(
+                PagesIntervalsORM.shifts.any(date_shift=date),
+                ~PagesIntervalsORM.shifts.any(),
+            ),
         )
     )
     pages: list[PagesORM] = result.scalars().all()

@@ -12,7 +12,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # from lexicon.lexicon_ru import LEXICON_RU
 
 from db.requests.with_add import add_model, add_page, add_page_interval, add_interval
-from db.requests.with_page import get_pages_with_inter_users_tgs_by_user_tg_id, test_123
+from db.requests.with_page import (
+    get_pages_with_inter_users_tgs_shifts_by_user_tg_id,
+    test_123,
+)
 from db.requests.with_interval import get_interval_by_id
 from db.requests.with_user import get_user_and_availible_pages_intervals_by_tg_id
 from db.models import PagesIntervalsORM, TgsORM

@@ -8,7 +8,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.requests.with_page import (
-    get_pages_with_inter_users_tgs_by_user_tg_id,
+    get_pages_with_inter_users_tgs_shifts_by_user_tg_id,
 )
 from db.models import PagesORM, PagesIntervalsORM, IntervalsORM, UsersORM, TgsORM
 
@@ -22,7 +22,7 @@ async def create_week_shudle(
     # localized = datetime(2022, 6, 4, tzinfo=nyc)
     current_page: PagesORM | None = None,
 ) -> InlineKeyboardMarkup:
-    pages: list[PagesORM] = await get_pages_with_inter_users_tgs_by_user_tg_id(
+    pages: list[PagesORM] = await get_pages_with_inter_users_tgs_shifts_by_user_tg_id(
         session=session,
         user_tg_id=user_tg_id,
     )
