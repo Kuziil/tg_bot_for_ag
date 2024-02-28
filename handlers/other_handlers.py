@@ -29,47 +29,47 @@ logger = logging.getLogger(__name__)
 # test shifts
 
 
-@router.message(StateFilter(default_state))
-async def send_echo(
-    message: Message,
-    session: AsyncSession,
-    defult_tz: ZoneInfo,
-    i18n: dict,
-):
-    pages = await test_123(
-        session=session,
-        user_tg_id=message.from_user.id,
-    )
-    for page in pages:
-        # logger.debug(f"{page.model}")
-        logger.debug(f"{page}")
-        for page_interval in page.intervals_details:
-            logger.debug(f"        {page_interval}")
-            logger.debug(f"        {page_interval.interval}")
-            logger.debug(f"        {page_interval.user}")
-            if page_interval.user is not None:
-                for tg in page_interval.user.tgs:
-                    logger.debug(f"                {tg}")
-            for shift in page_interval.shifts:
-                logger.debug(f"                {shift}")
-    await message.answer(text="1")
+# @router.message(StateFilter(default_state))
+# async def send_echo(
+#     message: Message,
+#     session: AsyncSession,
+#     defult_tz: ZoneInfo,
+#     i18n: dict,
+# ):
+#     pages = await test_123(
+#         session=session,
+#         user_tg_id=message.from_user.id,
+#     )
+#     for page in pages:
+#         # logger.debug(f"{page.model}")
+#         logger.debug(f"{page}")
+#         for page_interval in page.intervals_details:
+#             logger.debug(f"        {page_interval}")
+#             logger.debug(f"        {page_interval.interval}")
+#             logger.debug(f"        {page_interval.user}")
+#             if page_interval.user is not None:
+#                 for tg in page_interval.user.tgs:
+#                     logger.debug(f"                {tg}")
+#             for shift in page_interval.shifts:
+#                 logger.debug(f"                {shift}")
+#     await message.answer(text="1")
 
 
-@router.message(StateFilter(default_state))
-async def send_echo(
-    message: Message,
-    session: AsyncSession,
-    defult_tz: ZoneInfo,
-    i18n: dict,
-):
-    pages_intervals = await test_123(
-        session=session,
-    )
-    for page_interval in pages_intervals:
-        logger.debug(f"{page_interval}")
-        for shift in page_interval.shifts:
-            logger.debug(f"                {shift}")
-    await message.answer(text="1")
+# @router.message(StateFilter(default_state))
+# async def send_echo(
+#     message: Message,
+#     session: AsyncSession,
+#     defult_tz: ZoneInfo,
+#     i18n: dict,
+# ):
+#     pages_intervals = await test_123(
+#         session=session,
+#     )
+#     for page_interval in pages_intervals:
+#         logger.debug(f"{page_interval}")
+#         for shift in page_interval.shifts:
+#             logger.debug(f"                {shift}")
+#     await message.answer(text="1")
 
 
 # test create_mounth_shudle_v2
