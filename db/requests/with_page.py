@@ -16,8 +16,8 @@ from db.models import PagesORM, PagesIntervalsORM, UsersORM, TgsORM, ShiftsORM
 async def get_pages_with_inter_users_tgs_shifts_by_user_tg_id(
     session: AsyncSession,
     user_tg_id: int,
+    current_month: int,
 ):
-    date = dt.date.today()
     result: Result = await session.execute(
         select(PagesORM)
         .join(PagesIntervalsORM, PagesORM.id == PagesIntervalsORM.page_id)
@@ -29,7 +29,7 @@ async def get_pages_with_inter_users_tgs_shifts_by_user_tg_id(
                 joinedload(PagesIntervalsORM.user).selectinload(UsersORM.tgs),
                 selectinload(
                     PagesIntervalsORM.shifts.and_(
-                        extract("month", ShiftsORM.date_shift) == 1
+                        extract("month", ShiftsORM.date_shift) == current_month
                     )
                 ),
             ),

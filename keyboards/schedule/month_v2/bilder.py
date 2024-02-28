@@ -328,16 +328,17 @@ async def create_month_shudle_v2(
     current_interval_id: int | None = None,
     current_lineup: int | None = None,
 ):
-    pages: list[PagesORM] = await get_pages_with_inter_users_tgs_shifts_by_user_tg_id(
-        session=session,
-        user_tg_id=user_tg_id,
-    )
     kb_builder = InlineKeyboardBuilder()
     dict_datetimes: dict[str, dt.datetime] = await process_datetime(
         defult_tz=defult_tz,
         current_day=current_month,
         current_month=current_month,
         current_year=current_year,
+    )
+    pages: list[PagesORM] = await get_pages_with_inter_users_tgs_shifts_by_user_tg_id(
+        session=session,
+        user_tg_id=user_tg_id,
+        current_month=dict_datetimes["current"].month,
     )
     pages = sorted(pages, key=lambda x: (x.model.title, x.type_in_agency))
     for page_t in pages:
