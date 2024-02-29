@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.requests.with_page import (
     get_pages_with_inter_users_tgs_shifts_by_user_tg_id,
 )
+from db.requests.with_add import add_shift
 from db.models import (
     PagesORM,
     PagesIntervalsORM,
@@ -34,15 +35,26 @@ async def process_datetime(
     current_year: int | None,
 ) -> dict[str, dt.datetime]:
     dict_datetimes: dict[str, dt.datetime] = {}
+    current_datetime_now: dt.datetime = dt.datetime.now(tz=defult_tz)
     if current_year is None or current_month is None or current_day is None:
-        current_datetime: dt.datetime = dt.datetime.now(tz=defult_tz)
+        current_datetime: dt.datetime = current_datetime_now
     else:
-        current_datetime: dt.datetime = dt.datetime(
-            year=current_year,
-            month=current_month,
-            day=current_day,
-            tzinfo=defult_tz,
-        )
+        current_datetime: dt.datetime = None
+        if current_day == 0:
+            current_datetime = dt.datetime(
+                year=current_year,
+                month=current_month,
+                day=current_datetime_now.day,
+                tzinfo=defult_tz,
+            )
+        else:
+            current_datetime = dt.datetime(
+                year=current_year,
+                month=current_month,
+                day=current_day,
+                tzinfo=defult_tz,
+            )
+
     dict_datetimes["current"] = current_datetime
     timedelta_of_days_for_current_month: dt.timedelta = dt.timedelta(
         days=monthrange(
@@ -102,8 +114,11 @@ async def convert_datetime_to_time_str(
 
 
 async def process_intervals_lineups_emojis(
+    session: AsyncSession,
     current_interval_id: int | None,
     current_lineup: int | None,  # lineup
+    current_datetime: dt.datetime | None,  # emoji
+    current_day: int | None,
     pages_intervals: list[PagesIntervalsORM],
     user_tg_id: int,
 ) -> tuple[dict[str, IntervalsORM], dict[str, int], dict[int, str]]:
@@ -113,7 +128,7 @@ async def process_intervals_lineups_emojis(
     current_lineup_key: int | None = None  # lineup
     days_emojis: dict[int, str] = {}  # emoji
     shifts_packed: bool = False  # emoji
-    for key, page_interval in enumerate(pages_intervals):
+    for page_interval in pages_intervals:
         interval: IntervalsORM = page_interval.interval
         if interval not in intervals:
             intervals.append(interval)
@@ -139,6 +154,17 @@ async def process_intervals_lineups_emojis(
                         days_emojis[shift.date_shift.day] = user.emoji  # emoji
                 else:
                     days_emojis[shift.date_shift.day] = shift.replacement.emoji
+            if current_datetime is not None:
+                if current_day != 0 and current_day is not None:
+                    if current_day not in days_emojis:
+                        current_date: dt.date = current_datetime.date()
+                        await add_shift(
+                            session=session,
+                            date_shift=current_date,
+                            page_interval_id=page_interval.id,
+                        )
+                        days_emojis[current_day] = user.emoji  # emoji
+
             shifts_packed = True  # emoji
 
     lineups.sort()
@@ -344,7 +370,7 @@ async def create_month_shudle_v2(
     kb_builder = InlineKeyboardBuilder()
     dict_datetimes: dict[str, dt.datetime] = await process_datetime(
         defult_tz=defult_tz,
-        current_day=current_month,
+        current_day=current_day,
         current_month=current_month,
         current_year=current_year,
     )
@@ -383,8 +409,11 @@ async def create_month_shudle_v2(
     )
 
     dict_intervals_and_lineups = await process_intervals_lineups_emojis(
+        session=session,
         current_interval_id=current_interval_id,
         current_lineup=current_lineup,
+        current_datetime=dict_datetimes["current"],
+        current_day=current_day,
         pages_intervals=pages_intervals,
         user_tg_id=user_tg_id,
     )

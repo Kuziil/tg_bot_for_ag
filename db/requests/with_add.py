@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone, timedelta, time
+import datetime as dt
 from zoneinfo import ZoneInfo
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,9 +13,25 @@ from db.models import (
     PagesORM,
     TgsORM,
     UsersORM,
+    ShiftsORM,
 )
 
 logger = logging.getLogger(__name__)
+
+
+async def add_shift(
+    session: AsyncSession,
+    date_shift: dt.date,
+    page_interval_id: int,
+    replacement_id: int | None = None,
+):
+    shift = ShiftsORM(
+        date_shift=date_shift,
+        page_interval_id=page_interval_id,
+        replacement_id=replacement_id,
+    )
+    session.add(shift)
+    await session.commit()
 
 
 async def add_page(
@@ -105,10 +121,10 @@ async def add_page_interval(
 async def add_interval(
     session: AsyncSession,
     defult_tz: ZoneInfo,
-    start_at: time,
-    end_at: time,
+    start_at: dt.time,
+    end_at: dt.time,
 ):
-    start_at_1 = datetime(
+    start_at_1 = dt.datetime(
         year=1970,
         month=1,
         day=1,
@@ -116,7 +132,7 @@ async def add_interval(
         minute=start_at.minute,
         tzinfo=defult_tz,
     )
-    end_at_1 = datetime(
+    end_at_1 = dt.datetime(
         year=1970,
         month=1,
         day=1,
