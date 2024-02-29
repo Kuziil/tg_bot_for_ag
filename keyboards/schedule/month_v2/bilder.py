@@ -137,6 +137,8 @@ async def process_intervals_lineups_emojis(
                 if shift.replacement_id is None:  # emoji
                     if user is not None:  # emoji
                         days_emojis[shift.date_shift.day] = user.emoji  # emoji
+                else:
+                    days_emojis[shift.date_shift.day] = shift.replacement.emoji
             shifts_packed = True  # emoji
 
     lineups.sort()
@@ -367,6 +369,8 @@ async def create_month_shudle_v2(
 
             for shift_t in page_interval_t.shifts:
                 logger.debug(f"        {shift_t}")
+                if shift_t.replacement_id is not None:
+                    logger.debug(f"                     {shift_t.replacement.emoji}")
     dict_pages: dict[str, PagesORM] = await process_page(
         pages=pages,
         current_page_id=current_page_id,

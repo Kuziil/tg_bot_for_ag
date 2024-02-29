@@ -31,7 +31,7 @@ async def get_pages_with_inter_users_tgs_shifts_by_user_tg_id(
                     PagesIntervalsORM.shifts.and_(
                         extract("month", ShiftsORM.date_shift) == current_month
                     )
-                ),
+                ).joinedload(ShiftsORM.replacement),
             ),
         )
         .filter(
