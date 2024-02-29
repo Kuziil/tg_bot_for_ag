@@ -18,6 +18,7 @@ from db.models import (
     UsersORM,
     TgsORM,
     ModelsORM,
+    ShiftsORM,
 )
 from keyboards.schedule.month_v2.classes_callback_data import (
     MonthShudleCallbackData,
@@ -100,16 +101,18 @@ async def convert_datetime_to_time_str(
     return time_str
 
 
-async def process_intervals_and_lineups(
+async def process_intervals_lineups_emojis(
     current_interval_id: int | None,
     current_lineup: int | None,  # lineup
     pages_intervals: list[PagesIntervalsORM],
     user_tg_id: int,
-) -> tuple[dict[str, IntervalsORM], dict[str, int]]:
+) -> tuple[dict[str, IntervalsORM], dict[str, int], dict[int, str]]:
     intervals: list[IntervalsORM] = []
     lineups: list[int] = []  # lineup
     current_interval_key: int | None = None
     current_lineup_key: int | None = None  # lineup
+    days_emojis: dict[int, str] = {}  # emoji
+    shifts_packed: bool = False  # emoji
     for key, page_interval in enumerate(pages_intervals):
         interval: IntervalsORM = page_interval.interval
         if interval not in intervals:
@@ -117,8 +120,8 @@ async def process_intervals_and_lineups(
         lineup: int = page_interval.lineup  # lineup
         if lineup not in lineups:  # lineup
             lineups.append(lineup)  # lineup
+        user: UsersORM = page_interval.user
         if current_interval_id is None and current_lineup is None:
-            user: UsersORM = page_interval.user
             if user is not None:
                 tgs: list[TgsORM] = user.tgs
                 for tg in tgs:
@@ -126,8 +129,16 @@ async def process_intervals_and_lineups(
                         current_interval_key = len(intervals) - 1
                         current_lineup = lineup  # lineup
         else:
-            if interval.id == current_interval_id:
+            if interval.id == current_interval_id and lineup == current_lineup:
                 current_interval_key = len(intervals) - 1
+        if current_interval_key is not None and shifts_packed is False:  # emoji
+            shifts: list[ShiftsORM] = page_interval.shifts  # emoji
+            for shift in shifts:  # emoji
+                if shift.replacement_id is None:  # emoji
+                    if user is not None:  # emoji
+                        days_emojis[shift.date_shift.day] = user.emoji  # emoji
+            shifts_packed = True  # emoji
+
     lineups.sort()
     current_lineup_key = current_lineup - 1  # lineup
     dict_intervals: dict[str, IntervalsORM] = await in_circle(
@@ -138,7 +149,7 @@ async def process_intervals_and_lineups(
         values=lineups,
         current=current_lineup_key,
     )  # lineup
-    return dict_intervals, dict_lineups
+    return dict_intervals, dict_lineups, days_emojis
 
 
 async def create_row_month_year(
@@ -367,7 +378,7 @@ async def create_month_shudle_v2(
         key=lambda x: x.interval.start_at,
     )
 
-    dict_intervals_and_lineups = await process_intervals_and_lineups(
+    dict_intervals_and_lineups = await process_intervals_lineups_emojis(
         current_interval_id=current_interval_id,
         current_lineup=current_lineup,
         pages_intervals=pages_intervals,
@@ -376,6 +387,7 @@ async def create_month_shudle_v2(
 
     dict_intervals: dict[str, IntervalsORM] = dict_intervals_and_lineups[0]
     dict_lineups: dict[str, int] = dict_intervals_and_lineups[1]
+    dict_days_emojis: dict[int, str] = dict_intervals_and_lineups[2]
 
     # row month_year
     kb_builder.row(
@@ -413,7 +425,10 @@ async def create_month_shudle_v2(
         week_ikb: list[InlineKeyboardButton] = []
         for day in week:
             if day > 0:
-                day_str = f"{day}"
+                if day in dict_days_emojis:
+                    day_str = dict_days_emojis[day]
+                else:
+                    day_str = f"{day}"
             else:
                 day_str = f" "
             week_ikb.append(
