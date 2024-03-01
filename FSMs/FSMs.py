@@ -5,3 +5,7 @@ class FSMFillForm(StatesGroup):
     fill_username = State()
     fill_emoticon = State()
     fiil_shifts = State()
+
+
+class FSMSetShifts(StatesGroup):
+    shifts = State()
