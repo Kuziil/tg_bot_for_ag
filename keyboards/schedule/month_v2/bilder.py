@@ -123,6 +123,7 @@ async def process_intervals_lineups_emojis(
     user_tg_id: int,
 ) -> tuple[dict[str, IntervalsORM], dict[str, int], dict[int, str]]:
     intervals: list[IntervalsORM] = []
+    current_user: UsersORM = None
     lineups: list[int] = []  # lineup
     current_interval_key: int | None = None
     current_lineup_key: int | None = None  # lineup
@@ -136,14 +137,16 @@ async def process_intervals_lineups_emojis(
         if lineup not in lineups:  # lineup
             lineups.append(lineup)  # lineup
         user: UsersORM = page_interval.user
-        if current_interval_id is None and current_lineup is None:
-            if user is not None:
-                tgs: list[TgsORM] = user.tgs
-                for tg in tgs:
-                    if tg.user_tg_id == user_tg_id:
+
+        if user is not None:
+            tgs: list[TgsORM] = user.tgs
+            for tg in tgs:
+                if tg.user_tg_id == user_tg_id:
+                    if current_interval_id is None and current_lineup is None:
                         current_interval_key = len(intervals) - 1
                         current_lineup = lineup  # lineup
-        else:
+                    current_user = user
+        if current_interval_id and current_lineup:
             if interval.id == current_interval_id and lineup == current_lineup:
                 current_interval_key = len(intervals) - 1
         if current_interval_key is not None and shifts_packed is False:  # emoji
@@ -157,13 +160,14 @@ async def process_intervals_lineups_emojis(
             if current_datetime is not None:
                 if current_day != 0 and current_day is not None:
                     if current_day not in days_emojis:
-                        current_date: dt.date = current_datetime.date()
-                        await add_shift(
-                            session=session,
-                            date_shift=current_date,
-                            page_interval_id=page_interval.id,
-                        )
-                        days_emojis[current_day] = user.emoji  # emoji
+                        if current_user == user:
+                            current_date: dt.date = current_datetime.date()
+                            await add_shift(
+                                session=session,
+                                date_shift=current_date,
+                                page_interval_id=page_interval.id,
+                            )
+                            days_emojis[current_day] = user.emoji  # emoji
 
             shifts_packed = True  # emoji
 
