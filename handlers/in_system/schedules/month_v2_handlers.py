@@ -17,9 +17,23 @@ month_v2_router = Router()
 
 @month_v2_router.callback_query(
     StateFilter(default_state),
-    MonthShudleCallbackData.filter(),
+    MonthShudleCallbackData.filter(F.day > 0),
 )
 async def process_day_press(
+    callback: CallbackQuery,
+    callback_data: MonthShudleCallbackData,
+    session: AsyncSession,
+    defult_tz: ZoneInfo,
+    i18n: dict[dict[str, str]],
+):
+    await callback.message.answer(text="1")
+
+
+@month_v2_router.callback_query(
+    StateFilter(default_state),
+    MonthShudleCallbackData.filter(),
+)
+async def process_not_day_press(
     callback: CallbackQuery,
     callback_data: MonthShudleCallbackData,
     session: AsyncSession,
