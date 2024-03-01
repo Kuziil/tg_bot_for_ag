@@ -113,6 +113,21 @@ async def convert_datetime_to_time_str(
     return time_str
 
 
+async def create_dict_lineups(
+    lineups: list[int],
+    current_lineup: int,
+) -> dict[str, int]:
+
+    lineups.sort()
+    current_lineup_key = current_lineup - 1
+
+    dict_lineups: dict[str, int] = await in_circle(
+        values=lineups,
+        current=current_lineup_key,
+    )
+    return dict_lineups
+
+
 async def process_intervals_lineups_emojis(
     session: AsyncSession,
     current_interval_id: int | None,
@@ -171,16 +186,14 @@ async def process_intervals_lineups_emojis(
 
             shifts_packed = True  # emoji
 
-    lineups.sort()
-    current_lineup_key = current_lineup - 1  # lineup
     dict_intervals: dict[str, IntervalsORM] = await in_circle(
         values=intervals,
         current=current_interval_key,
     )
-    dict_lineups: dict[str, int] = await in_circle(
-        values=lineups,
-        current=current_lineup_key,
-    )  # lineup
+    dict_lineups: dict[str, int] = await create_dict_lineups(
+        lineups=lineups,
+        current_lineup=current_lineup,  # lineup
+    )
     return dict_intervals, dict_lineups, days_emojis
 
 
