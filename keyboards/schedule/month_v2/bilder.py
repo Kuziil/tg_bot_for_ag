@@ -136,6 +136,7 @@ async def process_intervals_lineups_emojis(
     current_day: int | None,
     pages_intervals: list[PagesIntervalsORM],
     user_tg_id: int,
+    st_shifts: list[dict[str, str]] | None,
 ) -> tuple[dict[str, IntervalsORM], dict[str, int], dict[int, str]]:
 
     intervals: list[IntervalsORM] = []
@@ -195,12 +196,16 @@ async def process_intervals_lineups_emojis(
                 and current_user == user
             ):
                 current_date: dt.date = current_datetime.date()
-                await add_shift(
-                    session=session,
-                    date_shift=current_date,
-                    page_interval_id=page_interval.id,
-                )
-                days_emojis[current_day] = user.emoji
+                # await add_shift(
+                #     session=session,
+                #     date_shift=current_date,
+                #     page_interval_id=page_interval.id,
+                # )
+                for st_shift in st_shifts:
+
+                    st_day = st_shift["day"]
+                    # days_emojis[st_day] = user.emoji
+                    days_emojis[st_day] = "🟢"
 
             shifts_packed = True
 
@@ -401,6 +406,7 @@ async def create_month_shudle_v2(
     current_day: int | None = None,
     current_interval_id: int | None = None,
     current_lineup: int | None = None,
+    st_shifts: list[dict[str, str]] | None = None,
 ):
     kb_builder = InlineKeyboardBuilder()
     dict_datetimes: dict[str, dt.datetime] = await process_datetime(
@@ -451,6 +457,7 @@ async def create_month_shudle_v2(
         current_day=current_day,
         pages_intervals=pages_intervals,
         user_tg_id=user_tg_id,
+        st_shifts=st_shifts,
     )
 
     dict_intervals: dict[str, IntervalsORM] = dict_intervals_and_lineups[0]
