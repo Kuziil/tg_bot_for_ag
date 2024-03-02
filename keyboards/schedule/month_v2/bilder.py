@@ -550,22 +550,35 @@ async def create_month_shudle_v2(
             defult_tz=defult_tz,
         )
     )
-    kb_builder.row(
-        InlineKeyboardButton(
-            text="назад",
-            callback_data="back_button",
-        ),
-        InlineKeyboardButton(
-            text="обновить",
-            callback_data=MonthShudleCallbackData(
-                day=0,
-                month=dict_datetimes["current"].month,
-                year=dict_datetimes["current"].year,
-                page_id=dict_pages["current"].id,
-                lineup=dict_lineups["current"],
-                interval_id=dict_intervals["current"].id,
-            ).pack(),
-        ),
-    )
+
+    if st_shifts:
+        kb_builder.row(
+            InlineKeyboardButton(
+                text="Отменить",
+                callback_data="ch",
+            ),
+            InlineKeyboardButton(
+                text="Применить",
+                callback_data="ap",
+            ),
+        )
+    else:
+        kb_builder.row(
+            InlineKeyboardButton(
+                text="назад",
+                callback_data="back_button",
+            ),
+            InlineKeyboardButton(
+                text="обновить",
+                callback_data=MonthShudleCallbackData(
+                    day=0,
+                    month=dict_datetimes["current"].month,
+                    year=dict_datetimes["current"].year,
+                    page_id=dict_pages["current"].id,
+                    lineup=dict_lineups["current"],
+                    interval_id=dict_intervals["current"].id,
+                ).pack(),
+            ),
+        )
 
     return kb_builder.as_markup()
