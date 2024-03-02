@@ -1,10 +1,12 @@
 from aiogram.filters import BaseFilter
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 from emoji import emoji_count
 from sqlalchemy.ext.asyncio import AsyncSession
+from aiogram.fsm.context import FSMContext
 
 from db.requests.with_user import is_user_in_agency
 from db.requests.with_emoji import is_busy_emoji_in_agency
+from keyboards.schedule.month_v2.classes_callback_data import MonthShudleCallbackData
 
 
 class IsEmoji(BaseFilter):
@@ -44,3 +46,24 @@ class IsUserInSystem(BaseFilter):
             user_tg_id=user_tg_id,
             agency_id=agency_id,
         )
+
+
+class IsStShiftInStShifts(BaseFilter):
+    async def __call__(
+        self,
+        callback_data: MonthShudleCallbackData,
+        state: FSMContext,
+    ) -> bool:
+        st: dict[str, str] = await state.get_data()
+        st_shifts: list[dict[str, str]] = st["shifts"]
+        st_shift: dict[str, str] = {
+            "day": callback_data.day,
+            "month": callback_data.month,
+            "year": callback_data.year,
+            "interval_id": callback_data.interval_id,
+        }
+        if st_shift in st_shifts:
+            return False
+        else:
+            st_shifts.append(st_shift)
+            return {"st_shifts": st_shifts}

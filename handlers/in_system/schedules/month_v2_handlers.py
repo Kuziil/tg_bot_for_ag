@@ -12,6 +12,7 @@ from keyboards.schedule.month_v2.classes_callback_data import (
 )
 from keyboards.schedule.month_v2.bilder import create_month_shudle_v2
 from FSMs.FSMs import FSMSetShifts
+from filters.filters import IsStShiftInStShifts
 
 
 month_v2_router = Router()
@@ -62,6 +63,7 @@ async def process_first_day_press(
 @month_v2_router.callback_query(
     StateFilter(FSMSetShifts),
     MonthShudleCallbackData.filter(F.day > 0),
+    IsStShiftInStShifts(),
 )
 async def process_days_press(
     callback: CallbackQuery,
@@ -70,16 +72,8 @@ async def process_days_press(
     defult_tz: ZoneInfo,
     i18n: dict[dict[str, str]],
     state: FSMContext,
+    st_shifts: list[dict[str, str]],
 ):
-    st: dict[str, str] = await state.get_data()
-    st_shifts: list[dict[str, str]] = st["shifts"]
-    st_shift: dict[str, str] = {
-        "day": callback_data.day,
-        "month": callback_data.month,
-        "year": callback_data.year,
-        "interval_id": callback_data.interval_id,
-    }
-    st_shifts.append(st_shift)
     await state.update_data(shifts=st_shifts)
     await callback.message.edit_text(
         text="4",
