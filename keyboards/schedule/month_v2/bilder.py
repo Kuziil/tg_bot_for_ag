@@ -257,6 +257,7 @@ async def create_row_month_year(
                         page_id=dict_pages["current"].id,
                         lineup=dict_lineups["current"],
                         interval_id=dict_intervals["current"].id,
+                        apply=0,
                     ).pack(),
                 )
             )
@@ -300,6 +301,7 @@ async def create_row_pages(
                         page_id=dict_pages[button["sequence_item"]].id,
                         lineup=dict_lineups["current"],
                         interval_id=dict_intervals["current"].id,
+                        apply=0,
                     ).pack(),
                 )
             )
@@ -350,6 +352,7 @@ async def create_row_inervals(
                         page_id=dict_pages["current"].id,
                         lineup=dict_lineups["current"],
                         interval_id=dict_intervals[button["sequence_item"]].id,
+                        apply=0,
                     ).pack(),
                 )
             )
@@ -389,6 +392,7 @@ async def create_row_lineups(
                         page_id=dict_pages["current"].id,
                         lineup=dict_lineups[button["sequence_item"]],
                         interval_id=dict_intervals["current"].id,
+                        apply=0,
                     ).pack(),
                 )
             )
@@ -485,6 +489,7 @@ async def create_month_shudle_v2(
                     page_id=dict_pages["current"].id,
                     lineup=dict_lineups["current"],
                     interval_id=dict_intervals["current"].id,
+                    apply=0,
                 ).pack(),
             )
             for weekday in day_abbr
@@ -516,6 +521,7 @@ async def create_month_shudle_v2(
                         page_id=dict_pages["current"].id,
                         lineup=dict_lineups["current"],
                         interval_id=dict_intervals["current"].id,
+                        apply=0,
                     ).pack(),
                 )
             )
@@ -577,6 +583,7 @@ async def create_month_shudle_v2(
                     page_id=dict_pages["current"].id,
                     lineup=dict_lineups["current"],
                     interval_id=dict_intervals["current"].id,
+                    apply=0,
                 ).pack(),
             ),
         )

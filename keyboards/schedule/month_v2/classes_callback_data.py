@@ -12,3 +12,4 @@ class MonthShudleCallbackData(
     page_id: int
     lineup: int
     interval_id: int
+    apply: int
