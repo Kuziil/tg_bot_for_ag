@@ -51,7 +51,7 @@ class IsUserInSystem(BaseFilter):
 class IsStShiftInStShifts(BaseFilter):
     async def __call__(
         self,
-        callback: CallbackQuery,
+        callback: CallbackQuery,  # нельзя удалять т.к. callback_data связана
         callback_data: MonthShudleCallbackData,
         state: FSMContext,
     ) -> bool:
