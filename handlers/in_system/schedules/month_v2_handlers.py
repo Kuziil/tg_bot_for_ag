@@ -94,6 +94,35 @@ async def process_days_press(
 
 
 @month_v2_router.callback_query(
+    StateFilter(FSMSetShifts),
+    MonthShudleCallbackData.filter(),
+)
+async def process_not_day_press(
+    callback: CallbackQuery,
+    callback_data: MonthShudleCallbackData,
+    session: AsyncSession,
+    defult_tz: ZoneInfo,
+    i18n: dict[dict[str, str]],
+):
+    await callback.message.edit_text(
+        text="2",
+        reply_markup=await create_month_shudle_v2(
+            user_tg_id=callback.from_user.id,
+            session=session,
+            i18n=i18n,
+            defult_tz=defult_tz,
+            current_month=callback_data.month,
+            current_year=callback_data.year,
+            current_day=callback_data.day,
+            current_page_id=callback_data.page_id,
+            current_interval_id=callback_data.interval_id,
+            current_lineup=callback_data.lineup,
+        ),
+    )
+    await callback.answer()
+
+
+@month_v2_router.callback_query(
     StateFilter(default_state),
     MonthShudleCallbackData.filter(),
 )
