@@ -31,7 +31,6 @@ async def process_not_day_press(
     defult_tz: ZoneInfo,
     i18n: dict[dict[str, str]],
 ):
-    print("process_not_day_press")
     await callback.message.edit_text(
         text="2",
         reply_markup=await create_month_shudle_v2(

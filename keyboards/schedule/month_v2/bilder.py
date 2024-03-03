@@ -178,6 +178,7 @@ async def process_intervals_lineups_emojis(
             current_interval_key = len(intervals) - 1
 
         if current_interval_key is not None and shifts_packed is False:
+            logger.debug("first")
             shifts: list[ShiftsORM] = page_interval.shifts
 
             for shift in shifts:
@@ -187,20 +188,26 @@ async def process_intervals_lineups_emojis(
 
                 else:
                     days_emojis[shift.date_shift.day] = shift.replacement.emoji
-
+            logger.debug(current_datetime, current_day, current_user, user)
+            logger.debug(days_emojis)
             if (
                 current_datetime is not None
                 and current_day is not None
                 and current_day != 0
-                and current_day not in days_emojis
+                # and current_day not in days_emojis
                 and current_user == user
             ):
+                logger.debug("second")
                 current_date: dt.date = current_datetime.date()
                 # await add_shift(
                 #     session=session,
                 #     date_shift=current_date,
                 #     page_interval_id=page_interval.id,
                 # )
+                if st_shifts[-1]["day"] in days_emojis:
+                    logger.debug(st_shifts)
+                    del st_shifts[-1]
+                    logger.debug(st_shifts)
                 for st_shift in st_shifts:
 
                     st_day = st_shift["day"]
@@ -217,7 +224,7 @@ async def process_intervals_lineups_emojis(
         lineups=lineups,
         current_lineup=current_lineup,
     )
-    return dict_intervals, dict_lineups, days_emojis
+    return dict_intervals, dict_lineups, days_emojis, st_shifts
 
 
 async def create_row_month_year(
@@ -467,6 +474,7 @@ async def create_month_shudle_v2(
     dict_intervals: dict[str, IntervalsORM] = dict_intervals_and_lineups[0]
     dict_lineups: dict[str, int] = dict_intervals_and_lineups[1]
     dict_days_emojis: dict[int, str] = dict_intervals_and_lineups[2]
+    st_shifts: list[dict[str, str]] = dict_intervals_and_lineups[3]
 
     # row month_year
     kb_builder.row(
@@ -587,5 +595,7 @@ async def create_month_shudle_v2(
                 ).pack(),
             ),
         )
-
-    return kb_builder.as_markup()
+    if st_shifts:
+        return kb_builder.as_markup(), st_shifts
+    else:
+        return kb_builder.as_markup()
