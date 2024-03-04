@@ -212,7 +212,11 @@ async def process_intervals_lineups_emojis(
             current_interval_key = len(intervals) - 1
         # Данная проверка нужна для того чтобы паковать days_emojis в момент когда определен нужный интервал,
         # а также состав и соответсвенно страница
+        logger.debug(
+            f"current_interval_key: {current_interval_key}, interval.id: {interval.id}, current_interval_id: {current_interval_id}"
+        )
         if current_interval_key is not None and shifts_packed is False:
+
             shifts: list[ShiftsORM] = page_interval.shifts
             # перебор всех смен для данной page_interval, где определен cuurent_interval_key, а так же состав
             for shift in shifts:
@@ -231,6 +235,7 @@ async def process_intervals_lineups_emojis(
             # но при этом если внести изменения в другую секцию расписания в которой нет пользователя,
             # она там не отобразится, но при этом, если вернуться в предыдущую секцию, то изменения не отобразившиеся,
             # появятся в секции в которой есть пользователь
+            logger.debug(f"current_user: {current_user}, st_shifts: {st_shifts}")
             if (
                 # current_datetime is not None
                 # and current_day is not None
@@ -294,23 +299,23 @@ async def create_month_shudle_v2(
         current_month=dict_datetimes["current"].month,
     )
     pages = sorted(pages, key=lambda x: (x.model.title, x.type_in_agency))
-    for page_t in pages:
-        logger.debug(f"{page_t}")
-        logger.debug(f"    {page_t.model}")
-        for page_interval_t in page_t.intervals_details:
-            logger.debug(f"    {page_interval_t}")
-            logger.debug(f"    {page_interval_t.interval}")
-            logger.debug(f"    {page_interval_t.user}")
-            if page_interval_t.user is not None:
-                for tgs_t in page_interval_t.user.tgs:
-                    logger.debug(f"        {tgs_t}")
-            else:
-                logger.debug(f"            None")
+    # for page_t in pages:
+    #     logger.debug(f"{page_t}")
+    #     logger.debug(f"    {page_t.model}")
+    #     for page_interval_t in page_t.intervals_details:
+    #         logger.debug(f"    {page_interval_t}")
+    #         logger.debug(f"    {page_interval_t.interval}")
+    #         logger.debug(f"    {page_interval_t.user}")
+    #         if page_interval_t.user is not None:
+    #             for tgs_t in page_interval_t.user.tgs:
+    #                 logger.debug(f"        {tgs_t}")
+    #         else:
+    #             logger.debug(f"            None")
 
-            for shift_t in page_interval_t.shifts:
-                logger.debug(f"        {shift_t}")
-                if shift_t.replacement_id is not None:
-                    logger.debug(f"                     {shift_t.replacement.emoji}")
+    #         for shift_t in page_interval_t.shifts:
+    #             logger.debug(f"        {shift_t}")
+    #             if shift_t.replacement_id is not None:
+    #                 logger.debug(f"                     {shift_t.replacement.emoji}")
     dict_pages: dict[str, PagesORM] = await process_page(
         pages=pages,
         current_page_id=current_page_id,
