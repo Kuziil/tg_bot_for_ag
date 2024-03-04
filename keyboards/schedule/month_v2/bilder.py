@@ -200,7 +200,9 @@ async def process_intervals_lineups_emojis(
                     if current_interval_id is None and current_lineup is None:
                         current_interval_key = len(intervals) - 1
                         current_lineup = lineup
-
+        # если существует current_interval_id и current_lineup, то сравнивать их с текущими значениями
+        # это сделано для того чтобы получать новые current_interval_key после первой инициализации
+        # NOTE: нужно пересмотреть данный подход в веду пердыдщей заметки
         if (
             current_interval_id
             and current_lineup
@@ -208,20 +210,27 @@ async def process_intervals_lineups_emojis(
             and lineup == current_lineup
         ):
             current_interval_key = len(intervals) - 1
-
+        # Данная проверка нужна для того чтобы паковать days_emojis в момент когда определен нужный интервал,
+        # а также состав и соответсвенно страница
         if current_interval_key is not None and shifts_packed is False:
-            logger.debug("first")
             shifts: list[ShiftsORM] = page_interval.shifts
-
+            # перебор всех смен для данной page_interval, где определен cuurent_interval_key, а так же состав
             for shift in shifts:
+                # наполняем days_emojis днем и соответсвующим ему эмодзи для отображения в расписании
 
+                # если пользователь существует и у смены нет замены, то выведется эмодзи пользователя, чья смена сейчас
                 if shift.replacement_id is None and user is not None:
                     days_emojis[shift.date_shift.day] = user.emoji
-
-                else:
+                # если же замена указана, то выведется эмодзи замены, для данной смены
+                elif shift.replacement_id is not None:
                     days_emojis[shift.date_shift.day] = shift.replacement.emoji
-            logger.debug(current_day, current_user, user)
-            logger.debug(days_emojis)
+
+            # в данной проверке оценивается, был ле передан st_shifts, для того чтобы в дальнейшем отобразить смены на расписании
+            # FIXME: current_user может не определится вовремя, так же в виду хранения только дня в days_emojis,
+            # не происходит фильтрайия данных на основе месяца, года, страницы, интервала, состава,
+            # но при этом если внести изменения в другую секцию расписания в которой нет пользователя,
+            # она там не отобразится, но при этом, если вернуться в предыдущую секцию, то изменения не отобразившиеся,
+            # появятся в секции в которой есть пользователь
             if (
                 # current_datetime is not None
                 # and current_day is not None
@@ -230,11 +239,15 @@ async def process_intervals_lineups_emojis(
                 st_shifts is not None
                 and current_user == user
             ):
-                logger.debug("second")
+                # FIXME: Данная проверка работает корректно при условии что данные вносятся в секции
+                # в которой есть пользователь и удаляет уже занятый день в st_shift чтобы избежать конфликта FSM и бд,
+                # но она перестает работать корректно, если пользователь внес изменения в другой секции
+                # BUG: нужно учитывать, что данные могут измениться и нужно перенести проверку в цикл ниже
                 if st_shifts[-1]["day"] in days_emojis:
                     logger.debug(st_shifts)
                     del st_shifts[-1]
                     logger.debug(st_shifts)
+                # данный цикл нужен для отображения новых данных, до отправки их в бд
                 for st_shift in st_shifts:
 
                     st_day = st_shift["day"]
