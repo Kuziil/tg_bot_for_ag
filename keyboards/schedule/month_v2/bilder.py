@@ -191,10 +191,11 @@ async def process_intervals_lineups_emojis(
             logger.debug(current_datetime, current_day, current_user, user)
             logger.debug(days_emojis)
             if (
-                current_datetime is not None
-                and current_day is not None
-                and current_day != 0
+                # current_datetime is not None
+                # and current_day is not None
+                # and current_day != 0
                 # and current_day not in days_emojis
+                st_shifts is not None
                 and current_user == user
             ):
                 logger.debug("second")
