@@ -20,9 +20,10 @@ month_v2_router = Router()
 month_v2_router.include_router(update_shifts_router)
 
 
+# TODO: Решить проблему с регестрацией данного хэндлера, что бы он не перекрывал хэндлеры для FSM
 @month_v2_router.callback_query(
     StateFilter(default_state),
-    MonthShudleCallbackData.filter(F.day == 0 | F.day == None),
+    MonthShudleCallbackData.filter(),
 )
 async def process_not_day_press(
     callback: CallbackQuery,
