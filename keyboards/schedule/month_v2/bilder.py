@@ -129,7 +129,6 @@ async def create_dict_lineups(
 async def process_intervals_lineups_emojis(
     current_interval_id: int | None,
     current_lineup: int | None,
-    current_day: int | None,
     pages_intervals: list[PagesIntervalsORM],
     user_tg_id: int,
     st_shifts: list[dict[str, str]] | None,
@@ -154,22 +153,23 @@ async def process_intervals_lineups_emojis(
         tuple[dict[str, IntervalsORM], dict[str, int], dict[int, str]]: _description_
     """
     intervals: list[IntervalsORM] = []  # список с упорядочеными уникальными интервалами
-    current_user: UsersORM = None  # ORM пользователя использующего систему
     lineups: list[int] = []  # список с уникальными составами
+    # словарь с днями и соответсвующими им эмодзи для отображения в расписании
+    days_emojis: dict[int, str] = {}
+    shifts_packed: bool = False  # указатель на то что days_emojis упакован
+
     current_interval_key: int | None = (
         None  # ключ интервала в intervals который отобразить
     )
-    days_emojis: dict[int, str] = (
-        {}
-    )  # словарь с днями и соответсвующими им эмодзи для отображения в расписании
-    shifts_packed: bool = False  # указатель на то что days_emojis упакован
+    current_user: UsersORM | None = None
 
     for page_interval in pages_intervals:
-        interval: IntervalsORM = (
-            page_interval.interval
-        )  # интервал в данном page_interval
-        lineup: int = page_interval.lineup  # состав в данном page_interval
-        user: UsersORM = page_interval.user  # пользователь в данном page_interval
+        # интервал в данном page_interval
+        interval: IntervalsORM = page_interval.interval
+        # состав в данном page_interval
+        lineup: int = page_interval.lineup
+        # пользователь в данном page_interval
+        user: UsersORM = page_interval.user
 
         # Сбор уникальных ORM интервалов
         if interval not in intervals:
@@ -178,6 +178,16 @@ async def process_intervals_lineups_emojis(
         # Сбор уникальных составов
         if lineup not in lineups:
             lineups.append(lineup)
+        # если существует current_interval_id и current_lineup, то сравнивать их с текущими значениями
+        # это сделано для того чтобы получать новые current_interval_key после первой инициализации
+        if (
+            current_interval_id
+            and current_lineup
+            and interval.id == current_interval_id
+            and lineup == current_lineup
+        ):
+            current_interval_key = len(intervals) - 1
+            current_lineup = lineup
 
         # Проверка на наличее user в данном page_interval, это нужно
         # т.к. не у каждого page_interval может быть пльзователь,
@@ -196,27 +206,19 @@ async def process_intervals_lineups_emojis(
                     current_user = user
                     # если значения по умолчанию не были переданы, следовательно это первый запуск расписания,
                     # то передаем заполняем current_interval_key и current_lineup
-                    # NOTE: Нужно решить проблему с хранением данных о смене и пользователе, что бы потом использовать при наполнении смен
                     if current_interval_id is None and current_lineup is None:
                         current_interval_key = len(intervals) - 1
                         current_lineup = lineup
-        # если существует current_interval_id и current_lineup, то сравнивать их с текущими значениями
-        # это сделано для того чтобы получать новые current_interval_key после первой инициализации
-        # NOTE: нужно пересмотреть данный подход в веду пердыдщей заметки
-        if (
-            current_interval_id
-            and current_lineup
-            and interval.id == current_interval_id
-            and lineup == current_lineup
-        ):
-            current_interval_key = len(intervals) - 1
         # Данная проверка нужна для того чтобы паковать days_emojis в момент когда определен нужный интервал,
         # а также состав и соответсвенно страница
         logger.debug(
             f"current_interval_key: {current_interval_key}, interval.id: {interval.id}, current_interval_id: {current_interval_id}"
         )
-        if current_interval_key is not None and shifts_packed is False:
-
+        if (
+            current_interval_key is not None
+            and current_lineup is not None
+            and shifts_packed is False
+        ):
             shifts: list[ShiftsORM] = page_interval.shifts
             # перебор всех смен для данной page_interval, где определен cuurent_interval_key, а так же состав
             for shift in shifts:
@@ -228,39 +230,37 @@ async def process_intervals_lineups_emojis(
                 # если же замена указана, то выведется эмодзи замены, для данной смены
                 elif shift.replacement_id is not None:
                     days_emojis[shift.date_shift.day] = shift.replacement.emoji
-
-            # в данной проверке оценивается, был ле передан st_shifts, для того чтобы в дальнейшем отобразить смены на расписании
-            # FIXME: current_user может не определится вовремя, так же в виду хранения только дня в days_emojis,
-            # не происходит фильтрайия данных на основе месяца, года, страницы, интервала, состава,
-            # но при этом если внести изменения в другую секцию расписания в которой нет пользователя,
-            # она там не отобразится, но при этом, если вернуться в предыдущую секцию, то изменения не отобразившиеся,
-            # появятся в секции в которой есть пользователь
-            logger.debug(f"current_user: {current_user}, st_shifts: {st_shifts}")
-            if (
-                # current_datetime is not None
-                # and current_day is not None
-                # and current_day != 0
-                # and current_day not in days_emojis
-                st_shifts is not None
-                and current_user == user
-            ):
-                # FIXME: Данная проверка работает корректно при условии что данные вносятся в секции
-                # в которой есть пользователь и удаляет уже занятый день в st_shift чтобы избежать конфликта FSM и бд,
-                # но она перестает работать корректно, если пользователь внес изменения в другой секции
-
-                # данный цикл нужен для отображения новых данных, до отправки их в бд
-                logger.debug(f"st_shifts: {st_shifts}")
-                for st_shift in st_shifts:
-                    # TODO: нужно внести проверку по дате и page _interval_id, для этого нужно переработать callback_data и убрать оттуда interval_id, lineup
-                    if st_shift["day"] not in days_emojis:
-                        st_day = st_shift["day"]
-                        # days_emojis[st_day] = user.emoji
-                        days_emojis[st_day] = "🟢"
-                    else:
-                        st_shifts.remove(st_shift)
-                logger.debug(f"st_shifts: {st_shifts}")
-
             shifts_packed = True
+
+    # в данной проверке оценивается, был ле передан st_shifts, для того чтобы в дальнейшем отобразить смены на расписании
+    # FIXME: current_user может не определится вовремя, так же в виду хранения только дня в days_emojis,
+    # не происходит фильтрайия данных на основе месяца, года, страницы, интервала, состава,
+    # но при этом если внести изменения в другую секцию расписания в которой нет пользователя,
+    # она там не отобразится, но при этом, если вернуться в предыдущую секцию, то изменения не отобразившиеся,
+    # появятся в секции в которой есть пользователь
+    if (
+        # current_datetime is not None
+        # and current_day is not None
+        # and current_day != 0
+        # and current_day not in days_emojis
+        st_shifts is not None
+        and current_user is not None
+    ):
+        # FIXME: Данная проверка работает корректно при условии что данные вносятся в секции
+        # в которой есть пользователь и удаляет уже занятый день в st_shift чтобы избежать конфликта FSM и бд,
+        # но она перестает работать корректно, если пользователь внес изменения в другой секции
+
+        # данный цикл нужен для отображения новых данных, до отправки их в бд
+        logger.debug(f"st_shifts: {st_shifts}")
+        for st_shift in st_shifts:
+            # TODO: нужно внести проверку по дате и page _interval_id, для этого нужно переработать callback_data и убрать оттуда interval_id, lineup
+            if st_shift["day"] not in days_emojis:
+                st_day = st_shift["day"]
+                # days_emojis[st_day] = user.emoji
+                days_emojis[st_day] = "🟢"
+            else:
+                st_shifts.remove(st_shift)
+        logger.debug(f"st_shifts: {st_shifts}")
 
     dict_intervals: dict[str, IntervalsORM] = await in_circle(
         values=intervals,
@@ -330,7 +330,6 @@ async def create_month_shudle_v2(
     dict_intervals_and_lineups = await process_intervals_lineups_emojis(
         current_interval_id=current_interval_id,
         current_lineup=current_lineup,
-        current_day=current_day,
         pages_intervals=pages_intervals,
         user_tg_id=user_tg_id,
         st_shifts=st_shifts,
