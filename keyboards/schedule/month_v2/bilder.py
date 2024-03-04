@@ -155,7 +155,7 @@ async def process_intervals_lineups_emojis(
     intervals: list[IntervalsORM] = []  # список с упорядочеными уникальными интервалами
     lineups: list[int] = []  # список с уникальными составами
     # словарь с днями и соответсвующими им эмодзи для отображения в расписании
-    days_emojis: dict[int, str] = {}
+    days_emojis: list[dict[str, str | int]] = []
     shifts_packed: bool = False  # указатель на то что days_emojis упакован
 
     current_interval_key: int | None = (
@@ -223,13 +223,17 @@ async def process_intervals_lineups_emojis(
             # перебор всех смен для данной page_interval, где определен cuurent_interval_key, а так же состав
             for shift in shifts:
                 # наполняем days_emojis днем и соответсвующим ему эмодзи для отображения в расписании
-
+                dict_shift: dict[str, str | int] = {}
+                dict_shift["day"] = shift.date_shift.day
+                dict_shift["month"] = shift.date_shift.month
+                dict_shift["year"] = shift.date_shift.year
                 # если пользователь существует и у смены нет замены, то выведется эмодзи пользователя, чья смена сейчас
                 if shift.replacement_id is None and user is not None:
-                    days_emojis[shift.date_shift.day] = user.emoji
+                    dict_shift["emoji"] = user.emoji
                 # если же замена указана, то выведется эмодзи замены, для данной смены
                 elif shift.replacement_id is not None:
-                    days_emojis[shift.date_shift.day] = shift.replacement.emoji
+                    dict_shift["emoji"] = shift.replacement.emoji
+                days_emojis.append(dict_shift)
             shifts_packed = True
 
     # в данной проверке оценивается, был ле передан st_shifts, для того чтобы в дальнейшем отобразить смены на расписании
@@ -253,10 +257,8 @@ async def process_intervals_lineups_emojis(
         # данный цикл нужен для отображения новых данных, до отправки их в бд
         logger.debug(f"st_shifts: {st_shifts}")
         for st_shift in st_shifts:
-            # TODO: нужно внести проверку по дате и page _interval_id, для этого нужно переработать callback_data и убрать оттуда interval_id, lineup
             if st_shift["day"] not in days_emojis:
                 st_day = st_shift["day"]
-                # days_emojis[st_day] = user.emoji
                 days_emojis[st_day] = "🟢"
             else:
                 st_shifts.remove(st_shift)
@@ -377,12 +379,14 @@ async def create_month_shudle_v2(
         week_ikb: list[InlineKeyboardButton] = []
         for day in week:
             if day > 0:
-                if day in dict_days_emojis:
-                    day_str = dict_days_emojis[day]
-                else:
-                    day_str = f"{day}"
+                day_str = f"{day}"
+                for dict_shift in dict_days_emojis:
+                    if dict_shift["day"] == day:
+                        day_str = dict_shift["emoji"]
+                        break
             else:
                 day_str = f" "
+
             week_ikb.append(
                 InlineKeyboardButton(
                     text=day_str,
