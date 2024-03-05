@@ -2,6 +2,7 @@ import logging
 import datetime as dt
 from zoneinfo import ZoneInfo
 
+from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import (
@@ -160,3 +161,24 @@ async def add_interval(
 #     )
 #     session.add(interval)
 #     await session.commit()
+
+
+async def add_shifts(
+    session: AsyncSession,
+    st_shifts: list[dict[str, str]],
+):
+    shifts = []
+    for st_shift in st_shifts:
+        shifts.append(
+            ShiftsORM(
+                date_shift=dt.datetime(
+                    year=st_shift["year"],
+                    month=st_shift["month"],
+                    day=st_shift["day"],
+                ),
+                page_interval_id=st_shift["page_interval_id"],
+            )
+        )
+
+    session.add_all(shifts)
+    await session.commit()

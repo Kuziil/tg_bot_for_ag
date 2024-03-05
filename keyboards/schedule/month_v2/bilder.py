@@ -478,7 +478,16 @@ async def create_month_shudle_v2(
             ),
             InlineKeyboardButton(
                 text="Применить",
-                callback_data="ap",
+                callback_data=MonthShudleCallbackData(
+                    day=0,
+                    month=dict_datetimes["current"].month,
+                    year=dict_datetimes["current"].year,
+                    page_id=dict_pages["current"].id,
+                    lineup=dict_lineups["current"],
+                    interval_id=dict_intervals["current"].id,
+                    page_interval_id=current_page_interval_id,
+                    apply=1,
+                ).pack(),
             ),
         )
         return kb_builder.as_markup(), st_shifts
