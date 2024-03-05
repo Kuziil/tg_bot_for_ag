@@ -364,19 +364,17 @@ async def create_month_shudle_v2(
     st_shifts: list[dict[str, str]] = dict_intervals_and_lineups[3]
     current_page_interval_id: int = dict_intervals_and_lineups[4]
 
-    if st_shifts:
-        pass
-    else:
-        # row month_year
-        kb_builder.row(
-            *await create_row_month_year(
-                dict_datetimes=dict_datetimes,
-                dict_pages=dict_pages,
-                dict_lineups=dict_lineups,
-                dict_intervals=dict_intervals,
-                current_page_interval_id=current_page_interval_id,
-            )
+    # row month_year
+    kb_builder.row(
+        *await create_row_month_year(
+            dict_datetimes=dict_datetimes,
+            dict_pages=dict_pages,
+            dict_lineups=dict_lineups,
+            dict_intervals=dict_intervals,
+            current_page_interval_id=current_page_interval_id,
+            st_shifts=st_shifts,
         )
+    )
     # row weekday
     kb_builder.row(
         *[
@@ -436,6 +434,42 @@ async def create_month_shudle_v2(
             )
         kb_builder.row(*week_ikb)
 
+    # row lineup
+    if "before" in dict_lineups and "after" in dict_lineups:
+        kb_builder.row(
+            *await create_row_lineups(
+                dict_datetimes=dict_datetimes,
+                dict_pages=dict_pages,
+                dict_lineups=dict_lineups,
+                dict_intervals=dict_intervals,
+                current_page_interval_id=current_page_interval_id,
+                st_shifts=st_shifts,
+            )
+        )
+    # row page
+    kb_builder.row(
+        *await create_row_pages(
+            dict_datetimes=dict_datetimes,
+            dict_pages=dict_pages,
+            dict_lineups=dict_lineups,
+            dict_intervals=dict_intervals,
+            current_page_interval_id=current_page_interval_id,
+            st_shifts=st_shifts,
+        )
+    )
+    # row interval
+    kb_builder.row(
+        *await create_row_inervals(
+            dict_datetimes=dict_datetimes,
+            dict_pages=dict_pages,
+            dict_lineups=dict_lineups,
+            dict_intervals=dict_intervals,
+            defult_tz=defult_tz,
+            current_page_interval_id=current_page_interval_id,
+            st_shifts=st_shifts,
+        )
+    )
+
     if st_shifts:
         kb_builder.row(
             InlineKeyboardButton(
@@ -467,37 +501,5 @@ async def create_month_shudle_v2(
                     apply=0,
                 ).pack(),
             ),
-        )
-        # row lineup
-        if "before" in dict_lineups and "after" in dict_lineups:
-            kb_builder.row(
-                *await create_row_lineups(
-                    dict_datetimes=dict_datetimes,
-                    dict_pages=dict_pages,
-                    dict_lineups=dict_lineups,
-                    dict_intervals=dict_intervals,
-                    current_page_interval_id=current_page_interval_id,
-                )
-            )
-        # row page
-        kb_builder.row(
-            *await create_row_pages(
-                dict_datetimes=dict_datetimes,
-                dict_pages=dict_pages,
-                dict_lineups=dict_lineups,
-                dict_intervals=dict_intervals,
-                current_page_interval_id=current_page_interval_id,
-            )
-        )
-        # row interval
-        kb_builder.row(
-            *await create_row_inervals(
-                dict_datetimes=dict_datetimes,
-                dict_pages=dict_pages,
-                dict_lineups=dict_lineups,
-                dict_intervals=dict_intervals,
-                defult_tz=defult_tz,
-                current_page_interval_id=current_page_interval_id,
-            )
         )
         return kb_builder.as_markup()
