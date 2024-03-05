@@ -174,6 +174,8 @@ async def process_intervals_lineups_emojis(
     )
     current_user: UsersORM | None = None
 
+    available_pages_intervals_id: list[int] = []
+
     for page_interval in pages_intervals:
         # интервал в данном page_interval
         interval: IntervalsORM = page_interval.interval
@@ -197,6 +199,7 @@ async def process_intervals_lineups_emojis(
             and interval.id == current_interval_id
             and lineup == current_lineup
         ):
+            current_page_interval_id = page_interval.id
             current_interval_key = len(intervals) - 1
             current_lineup = lineup
 
@@ -215,9 +218,11 @@ async def process_intervals_lineups_emojis(
                 if tg.user_tg_id == user_tg_id:
                     # Если он нашелся, то записываем его в current_user
                     current_user = user
+                    available_pages_intervals_id.append(page_interval.id)
                     # если значения по умолчанию не были переданы, следовательно это первый запуск расписания,
                     # то передаем заполняем current_interval_key и current_lineup
                     if current_interval_id is None and current_lineup is None:
+                        current_page_interval_id = page_interval.id
                         current_interval_key = len(intervals) - 1
                         current_lineup = lineup
         # Данная проверка нужна для того чтобы паковать days_emojis в момент когда определен нужный интервал,
@@ -275,7 +280,13 @@ async def process_intervals_lineups_emojis(
         lineups=lineups,
         current_lineup=current_lineup,
     )
-    return dict_intervals, dict_lineups, list_of_dict_shifts, st_shifts
+    return (
+        dict_intervals,
+        dict_lineups,
+        list_of_dict_shifts,
+        st_shifts,
+        current_page_interval_id,
+    )
 
 
 async def create_month_shudle_v2(
@@ -345,6 +356,7 @@ async def create_month_shudle_v2(
     dict_lineups: dict[str, int] = dict_intervals_and_lineups[1]
     dict_days_emojis: dict[int, str] = dict_intervals_and_lineups[2]
     st_shifts: list[dict[str, str]] = dict_intervals_and_lineups[3]
+    current_page_interval_id: int = dict_intervals_and_lineups[4]
 
     # row month_year
     kb_builder.row(
@@ -353,6 +365,7 @@ async def create_month_shudle_v2(
             dict_pages=dict_pages,
             dict_lineups=dict_lineups,
             dict_intervals=dict_intervals,
+            current_page_interval_id=current_page_interval_id,
         )
     )
     # row weekday
@@ -367,6 +380,7 @@ async def create_month_shudle_v2(
                     page_id=dict_pages["current"].id,
                     lineup=dict_lineups["current"],
                     interval_id=dict_intervals["current"].id,
+                    current_page_interval_id=current_page_interval_id,
                     apply=0,
                 ).pack(),
             )
@@ -405,6 +419,7 @@ async def create_month_shudle_v2(
                         page_id=dict_pages["current"].id,
                         lineup=dict_lineups["current"],
                         interval_id=dict_intervals["current"].id,
+                        current_page_interval_id=current_page_interval_id,
                         apply=0,
                     ).pack(),
                 )
@@ -419,6 +434,7 @@ async def create_month_shudle_v2(
                 dict_pages=dict_pages,
                 dict_lineups=dict_lineups,
                 dict_intervals=dict_intervals,
+                current_page_interval_id=current_page_interval_id,
             )
         )
     # row page
@@ -428,6 +444,7 @@ async def create_month_shudle_v2(
             dict_pages=dict_pages,
             dict_lineups=dict_lineups,
             dict_intervals=dict_intervals,
+            current_page_interval_id=current_page_interval_id,
         )
     )
     # row interval
@@ -438,6 +455,7 @@ async def create_month_shudle_v2(
             dict_lineups=dict_lineups,
             dict_intervals=dict_intervals,
             defult_tz=defult_tz,
+            current_page_interval_id=current_page_interval_id,
         )
     )
 
@@ -467,6 +485,7 @@ async def create_month_shudle_v2(
                     page_id=dict_pages["current"].id,
                     lineup=dict_lineups["current"],
                     interval_id=dict_intervals["current"].id,
+                    current_page_interval_id=current_page_interval_id,
                     apply=0,
                 ).pack(),
             ),

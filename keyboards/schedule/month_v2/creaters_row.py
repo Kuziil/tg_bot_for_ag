@@ -14,6 +14,7 @@ async def create_row_month_year(
     dict_pages: dict[str, PagesORM],
     dict_lineups: dict[str, int],
     dict_intervals: dict[str, IntervalsORM],
+    current_page_interval_id: int,
 ):
     buttons: list[InlineKeyboardButton] = []
     dict_for_ikb: list[dict[str, str]] = [
@@ -46,6 +47,7 @@ async def create_row_month_year(
                         page_id=dict_pages["current"].id,
                         lineup=dict_lineups["current"],
                         interval_id=dict_intervals["current"].id,
+                        current_page_interval_id=current_page_interval_id,
                         apply=0,
                     ).pack(),
                 )
@@ -58,6 +60,7 @@ async def create_row_pages(
     dict_pages: dict[str, PagesORM],
     dict_lineups: dict[str, int],
     dict_intervals: dict[str, IntervalsORM],
+    current_page_interval_id: int,
 ):
     buttons: list[InlineKeyboardButton] = []
     dict_for_ikb: list[dict[str, str]] = [
@@ -90,6 +93,7 @@ async def create_row_pages(
                         page_id=dict_pages[button["sequence_item"]].id,
                         lineup=dict_lineups["current"],
                         interval_id=dict_intervals["current"].id,
+                        current_page_interval_id=current_page_interval_id,
                         apply=0,
                     ).pack(),
                 )
@@ -111,6 +115,7 @@ async def create_row_inervals(
     dict_lineups: dict[str, int],
     dict_intervals: dict[str, IntervalsORM],
     defult_tz: ZoneInfo,
+    current_page_interval_id: int,
 ):
     buttons: list[InlineKeyboardButton] = []
     dict_for_ikb: list[dict[str, str]] = [
@@ -149,6 +154,7 @@ async def create_row_inervals(
                         page_id=dict_pages["current"].id,
                         lineup=dict_lineups["current"],
                         interval_id=dict_intervals[button["sequence_item"]].id,
+                        current_page_interval_id=current_page_interval_id,
                         apply=0,
                     ).pack(),
                 )
@@ -161,6 +167,7 @@ async def create_row_lineups(
     dict_pages: dict[str, PagesORM],
     dict_lineups: dict[str, int],
     dict_intervals: dict[str, IntervalsORM],
+    current_page_interval_id: int,
 ):
     buttons: list[InlineKeyboardButton] = []
     dict_for_ikb: list[dict[str, str]] = [
@@ -189,6 +196,7 @@ async def create_row_lineups(
                         page_id=dict_pages["current"].id,
                         lineup=dict_lineups[button["sequence_item"]],
                         interval_id=dict_intervals["current"].id,
+                        current_page_interval_id=current_page_interval_id,
                         apply=0,
                     ).pack(),
                 )
