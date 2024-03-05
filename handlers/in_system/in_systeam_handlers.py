@@ -4,6 +4,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
+from aiogram.filters import or_f
 
 from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.schedule.month.kb_month_schedule import create_schedule
@@ -12,6 +13,7 @@ from handlers.in_system.schedules.month_handlers import schedule_router
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
 from keyboards.schedule.month_v2.bilder import create_month_shudle_v2
 from sqlalchemy.ext.asyncio import AsyncSession
+from callback_factories.back import BackCallbackData
 
 
 in_systeam_router = Router()
@@ -21,8 +23,11 @@ in_systeam_router.include_router(month_v2_router)
 
 
 @in_systeam_router.callback_query(
-    F.data == "schedule",
     StateFilter(default_state),
+    or_f(
+        F.data == "schedule",
+        BackCallbackData.filter(F.handler == "process_schedule_press"),
+    ),
 )
 async def process_schedule_press(
     callback: CallbackQuery,

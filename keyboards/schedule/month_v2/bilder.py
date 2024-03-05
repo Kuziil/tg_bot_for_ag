@@ -30,6 +30,7 @@ from keyboards.schedule.month_v2.creaters_row import (
     create_row_month_year,
     create_row_pages,
 )
+from callback_factories.back import BackCallbackData
 
 logger = logging.getLogger(__name__)
 
@@ -504,7 +505,9 @@ async def create_month_shudle_v2(
         kb_builder.row(
             InlineKeyboardButton(
                 text="назад",
-                callback_data="back_button",
+                callback_data=BackCallbackData(
+                    handler="process_schedule_press",
+                ).pack(),
             ),
             InlineKeyboardButton(
                 text="обновить",
