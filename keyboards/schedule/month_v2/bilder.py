@@ -132,6 +132,7 @@ async def is_dict_in_list(dictionary, list_of_dicts):
             d["day"] == dictionary["day"]
             and d["month"] == dictionary["month"]
             and d["year"] == dictionary["year"]
+            and d["page_interval_id"] == dictionary["page_interval_id"]
         ):
             return True
     return False
@@ -240,6 +241,7 @@ async def process_intervals_lineups_emojis(
                 dict_shift["day"] = shift.date_shift.day
                 dict_shift["month"] = shift.date_shift.month
                 dict_shift["year"] = shift.date_shift.year
+                dict_shift["page_interval_id"] = shift.page_interval_id
                 # если пользователь существует и у смены нет замены, то выведется эмодзи пользователя, чья смена сейчас
                 if shift.replacement_id is None and user is not None:
                     dict_shift["emoji"] = user.emoji
@@ -259,13 +261,17 @@ async def process_intervals_lineups_emojis(
         # данный цикл нужен для отображения новых данных, до отправки их в бд
         logger.debug(f"st_shifts: {st_shifts}")
         for st_shift in st_shifts:
-            if not await is_dict_in_list(
-                dictionary=st_shift, list_of_dicts=list_of_dict_shifts
+            if (
+                not await is_dict_in_list(
+                    dictionary=st_shift, list_of_dicts=list_of_dict_shifts
+                )
+                and st_shift["page_interval_id"] in available_pages_intervals_id
             ):
                 dict_shift_from_st = {}
                 dict_shift_from_st["day"] = st_shift["day"]
                 dict_shift_from_st["month"] = st_shift["month"]
                 dict_shift_from_st["year"] = st_shift["year"]
+                dict_shift_from_st["page_interval_id"] = st_shift["page_interval_id"]
                 dict_shift_from_st["emoji"] = "🟢"
                 list_of_dict_shifts.append(dict_shift_from_st)
             else:
@@ -403,6 +409,7 @@ async def create_month_shudle_v2(
                         dict_shift["day"] == day
                         and dict_shift["month"] == dict_datetimes["current"].month
                         and dict_shift["year"] == dict_datetimes["current"].year
+                        and dict_shift["page_interval_id"] == current_page_interval_id
                     ):
                         day_str = dict_shift["emoji"]
                         break

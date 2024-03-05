@@ -64,6 +64,7 @@ class IsStShiftInStShifts(BaseFilter):
             "page_id": callback_data.page_id,
             "interval_id": callback_data.interval_id,
             "lineup": callback_data.lineup,
+            "page_interval_id": callback_data.page_interval_id,
         }
         if st_shift in st_shifts:
             return False
