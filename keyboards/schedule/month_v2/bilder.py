@@ -126,6 +126,17 @@ async def create_dict_lineups(
     return dict_lineups
 
 
+async def is_dict_in_list(dictionary, list_of_dicts):
+    for d in list_of_dicts:
+        if (
+            d["day"] == dictionary["day"]
+            and d["month"] == dictionary["month"]
+            and d["year"] == dictionary["year"]
+        ):
+            return True
+    return False
+
+
 async def process_intervals_lineups_emojis(
     current_interval_id: int | None,
     current_lineup: int | None,
@@ -155,7 +166,7 @@ async def process_intervals_lineups_emojis(
     intervals: list[IntervalsORM] = []  # список с упорядочеными уникальными интервалами
     lineups: list[int] = []  # список с уникальными составами
     # словарь с днями и соответсвующими им эмодзи для отображения в расписании
-    days_emojis: list[dict[str, str | int]] = []
+    list_of_dict_shifts: list[dict[str, str | int]] = []
     shifts_packed: bool = False  # указатель на то что days_emojis упакован
 
     current_interval_key: int | None = (
@@ -211,9 +222,6 @@ async def process_intervals_lineups_emojis(
                         current_lineup = lineup
         # Данная проверка нужна для того чтобы паковать days_emojis в момент когда определен нужный интервал,
         # а также состав и соответсвенно страница
-        logger.debug(
-            f"current_interval_key: {current_interval_key}, interval.id: {interval.id}, current_interval_id: {current_interval_id}"
-        )
         if (
             current_interval_key is not None
             and current_lineup is not None
@@ -233,23 +241,12 @@ async def process_intervals_lineups_emojis(
                 # если же замена указана, то выведется эмодзи замены, для данной смены
                 elif shift.replacement_id is not None:
                     dict_shift["emoji"] = shift.replacement.emoji
-                days_emojis.append(dict_shift)
+                list_of_dict_shifts.append(dict_shift)
             shifts_packed = True
 
     # в данной проверке оценивается, был ле передан st_shifts, для того чтобы в дальнейшем отобразить смены на расписании
-    # FIXME: current_user может не определится вовремя, так же в виду хранения только дня в days_emojis,
-    # не происходит фильтрайия данных на основе месяца, года, страницы, интервала, состава,
-    # но при этом если внести изменения в другую секцию расписания в которой нет пользователя,
-    # она там не отобразится, но при этом, если вернуться в предыдущую секцию, то изменения не отобразившиеся,
-    # появятся в секции в которой есть пользователь
-    if (
-        # current_datetime is not None
-        # and current_day is not None
-        # and current_day != 0
-        # and current_day not in days_emojis
-        st_shifts is not None
-        and current_user is not None
-    ):
+    logger.debug(f"!!!!!st_shifts: {st_shifts}")
+    if st_shifts is not None and current_user is not None:
         # FIXME: Данная проверка работает корректно при условии что данные вносятся в секции
         # в которой есть пользователь и удаляет уже занятый день в st_shift чтобы избежать конфликта FSM и бд,
         # но она перестает работать корректно, если пользователь внес изменения в другой секции
@@ -257,9 +254,15 @@ async def process_intervals_lineups_emojis(
         # данный цикл нужен для отображения новых данных, до отправки их в бд
         logger.debug(f"st_shifts: {st_shifts}")
         for st_shift in st_shifts:
-            if st_shift["day"] not in days_emojis:
-                st_day = st_shift["day"]
-                days_emojis[st_day] = "🟢"
+            if not await is_dict_in_list(
+                dictionary=st_shift, list_of_dicts=list_of_dict_shifts
+            ):
+                dict_shift_from_st = {}
+                dict_shift_from_st["day"] = st_shift["day"]
+                dict_shift_from_st["month"] = st_shift["month"]
+                dict_shift_from_st["year"] = st_shift["year"]
+                dict_shift_from_st["emoji"] = "🟢"
+                list_of_dict_shifts.append(dict_shift_from_st)
             else:
                 st_shifts.remove(st_shift)
         logger.debug(f"st_shifts: {st_shifts}")
@@ -272,7 +275,7 @@ async def process_intervals_lineups_emojis(
         lineups=lineups,
         current_lineup=current_lineup,
     )
-    return dict_intervals, dict_lineups, days_emojis, st_shifts
+    return dict_intervals, dict_lineups, list_of_dict_shifts, st_shifts
 
 
 async def create_month_shudle_v2(
@@ -300,6 +303,7 @@ async def create_month_shudle_v2(
         user_tg_id=user_tg_id,
         current_month=dict_datetimes["current"].month,
     )
+    # NOTE: в pages, находятся только те смены которые соответствуют переданому месяцу
     pages = sorted(pages, key=lambda x: (x.model.title, x.type_in_agency))
     # for page_t in pages:
     #     logger.debug(f"{page_t}")

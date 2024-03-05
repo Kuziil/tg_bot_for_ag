@@ -41,7 +41,9 @@ async def process_first_day_press(
         "day": callback_data.day,
         "month": callback_data.month,
         "year": callback_data.year,
+        "page_id": callback_data.page_id,
         "interval_id": callback_data.interval_id,
+        "lineup": callback_data.lineup,
     }
     st_shifts.append(st_shift)
     logger.debug(f"st_shifts: {st_shifts}")
