@@ -385,7 +385,11 @@ async def create_month_shudle_v2(
             if day > 0:
                 day_str = f"{day}"
                 for dict_shift in dict_days_emojis:
-                    if dict_shift["day"] == day:
+                    if (
+                        dict_shift["day"] == day
+                        and dict_shift["month"] == dict_datetimes["current"].month
+                        and dict_shift["year"] == dict_datetimes["current"].year
+                    ):
                         day_str = dict_shift["emoji"]
                         break
             else:
