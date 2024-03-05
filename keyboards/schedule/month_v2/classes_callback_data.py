@@ -12,5 +12,5 @@ class MonthShudleCallbackData(
     page_id: int
     lineup: int
     interval_id: int
-    current_page_interval_id: int
+    page_interval_id: int
     apply: int

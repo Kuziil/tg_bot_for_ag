@@ -380,7 +380,7 @@ async def create_month_shudle_v2(
                     page_id=dict_pages["current"].id,
                     lineup=dict_lineups["current"],
                     interval_id=dict_intervals["current"].id,
-                    current_page_interval_id=current_page_interval_id,
+                    page_interval_id=current_page_interval_id,
                     apply=0,
                 ).pack(),
             )
@@ -419,7 +419,7 @@ async def create_month_shudle_v2(
                         page_id=dict_pages["current"].id,
                         lineup=dict_lineups["current"],
                         interval_id=dict_intervals["current"].id,
-                        current_page_interval_id=current_page_interval_id,
+                        page_interval_id=current_page_interval_id,
                         apply=0,
                     ).pack(),
                 )
@@ -485,7 +485,7 @@ async def create_month_shudle_v2(
                     page_id=dict_pages["current"].id,
                     lineup=dict_lineups["current"],
                     interval_id=dict_intervals["current"].id,
-                    current_page_interval_id=current_page_interval_id,
+                    page_interval_id=current_page_interval_id,
                     apply=0,
                 ).pack(),
             ),
