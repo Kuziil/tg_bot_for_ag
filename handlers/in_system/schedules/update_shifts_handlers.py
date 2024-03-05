@@ -118,7 +118,6 @@ async def process_apply_in_st(
             st_shifts=st_shifts,
         )
         await state.clear()
-        st_shifts = None
         markup = await create_month_shudle_v2(
             user_tg_id=callback.from_user.id,
             session=session,
@@ -130,7 +129,6 @@ async def process_apply_in_st(
             current_page_id=callback_data.page_id,
             current_interval_id=callback_data.interval_id,
             current_lineup=callback_data.lineup,
-            st_shifts=st_shifts,
         )
         await callback.message.edit_text(
             text="5",
@@ -141,6 +139,37 @@ async def process_apply_in_st(
             text="6",
             reply_markup=markup,
         )
+
+
+@update_shifts_router.callback_query(
+    StateFilter(FSMSetShifts),
+    MonthShudleCallbackData.filter(F.apply == 2),
+)
+async def process_cancel_press(
+    callback: CallbackQuery,
+    callback_data: MonthShudleCallbackData,
+    session: AsyncSession,
+    defult_tz: ZoneInfo,
+    i18n: dict[dict[str, str]],
+    state: FSMContext,
+):
+    await state.clear()
+    markup = await create_month_shudle_v2(
+        user_tg_id=callback.from_user.id,
+        session=session,
+        i18n=i18n,
+        defult_tz=defult_tz,
+        current_month=callback_data.month,
+        current_year=callback_data.year,
+        current_day=callback_data.day,
+        current_page_id=callback_data.page_id,
+        current_interval_id=callback_data.interval_id,
+        current_lineup=callback_data.lineup,
+    )
+    await callback.message.edit_text(
+        text="3",
+        reply_markup=markup,
+    )
 
 
 @update_shifts_router.callback_query(
