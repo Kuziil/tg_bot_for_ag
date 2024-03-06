@@ -44,34 +44,46 @@ async def create_row_month_year(
                 and button["sequence_item"] != "after"
                 and button["sequence_item"] in dict_datetimes
             ):
+                month = dict_datetimes[button["sequence_item"]].month
+                year = dict_datetimes[button["sequence_item"]].year
+                page_id = dict_pages["current"].id
+                lineup = dict_lineups["current"]
+                interval_id = dict_intervals["current"].id
+                page_interval_id = current_page_interval_id
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
                         callback_data=MonthScheduleCallbackData(
                             day=0,
-                            month=dict_datetimes[button["sequence_item"]].month,
-                            year=dict_datetimes[button["sequence_item"]].year,
-                            page_id=dict_pages["current"].id,
-                            lineup=dict_lineups["current"],
-                            interval_id=dict_intervals["current"].id,
-                            page_interval_id=current_page_interval_id,
+                            month=month,
+                            year=year,
+                            page_id=page_id,
+                            lineup=lineup,
+                            interval_id=interval_id,
+                            page_interval_id=page_interval_id,
                             apply=0,
                         ).pack(),
                     )
                 )
         else:
             if button["sequence_item"] in dict_datetimes:
+                month = dict_datetimes[button["sequence_item"]].month
+                year = dict_datetimes[button["sequence_item"]].year
+                page_id = dict_pages["current"].id
+                lineup = dict_lineups["current"]
+                interval_id = dict_intervals["current"].id
+                page_interval_id = current_page_interval_id
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
                         callback_data=MonthScheduleCallbackData(
                             day=0,
-                            month=dict_datetimes[button["sequence_item"]].month,
-                            year=dict_datetimes[button["sequence_item"]].year,
-                            page_id=dict_pages["current"].id,
-                            lineup=dict_lineups["current"],
-                            interval_id=dict_intervals["current"].id,
-                            page_interval_id=current_page_interval_id,
+                            month=month,
+                            year=year,
+                            page_id=page_id,
+                            lineup=lineup,
+                            interval_id=interval_id,
+                            page_interval_id=page_interval_id,
                             apply=0,
                         ).pack(),
                     )
@@ -197,34 +209,46 @@ async def create_row_intervals(
                 and button["sequence_item"] != "after"
                 and button["sequence_item"] in dict_intervals
             ):
+                month = dict_datetimes["current"].month
+                year = dict_datetimes["current"].year
+                page_id = dict_pages["current"].id
+                lineup = dict_lineups["current"]
+                interval_id = dict_intervals[button["sequence_item"]].id
+                page_interval_id = current_page_interval_id
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
                         callback_data=MonthScheduleCallbackData(
                             day=0,
-                            month=dict_datetimes["current"].month,
-                            year=dict_datetimes["current"].year,
-                            page_id=dict_pages["current"].id,
-                            lineup=dict_lineups["current"],
-                            interval_id=dict_intervals[button["sequence_item"]].id,
-                            page_interval_id=current_page_interval_id,
+                            month=month,
+                            year=year,
+                            page_id=page_id,
+                            lineup=lineup,
+                            interval_id=interval_id,
+                            page_interval_id=page_interval_id,
                             apply=0,
                         ).pack(),
                     )
                 )
         else:
             if button["sequence_item"] in dict_intervals:
+                month = dict_datetimes["current"].month
+                year = dict_datetimes["current"].year
+                page_id = dict_pages["current"].id
+                lineup = dict_lineups["current"]
+                interval_id = dict_intervals[button["sequence_item"]].id
+                page_interval_id = current_page_interval_id
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
                         callback_data=MonthScheduleCallbackData(
                             day=0,
-                            month=dict_datetimes["current"].month,
-                            year=dict_datetimes["current"].year,
-                            page_id=dict_pages["current"].id,
-                            lineup=dict_lineups["current"],
-                            interval_id=dict_intervals[button["sequence_item"]].id,
-                            page_interval_id=current_page_interval_id,
+                            month=month,
+                            year=year,
+                            page_id=page_id,
+                            lineup=lineup,
+                            interval_id=interval_id,
+                            page_interval_id=page_interval_id,
                             apply=0,
                         ).pack(),
                     )

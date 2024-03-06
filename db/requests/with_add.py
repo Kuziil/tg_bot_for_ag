@@ -90,11 +90,11 @@ async def add_user(
     session.add(user)
     await session.commit()
 
-    user_tg_id = TgsORM(
+    tgs: TgsORM = TgsORM(
         user_tg_id=user_tg_id,
         user_id=user.id,
     )
-    session.add(user_tg_id)
+    session.add(tgs)
     await session.commit()
 
     agency_user = AgenciesUsersORM(

@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.models import PagesORM, PagesIntervalsORM, UsersORM, ShiftsORM
 
 
-async def get_pages_with_inter_users_tgs_shifts_by_user_tg_id(
+async def get_pages_by_user_tg_id(
     session: AsyncSession,
     user_tg_id: int,
     current_month: int,

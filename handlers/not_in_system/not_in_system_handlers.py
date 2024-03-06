@@ -82,7 +82,10 @@ async def warning_busy_emoji(
     await message.answer(emojis)
 
 
-@not_in_system_router.message(StateFilter(FSMFillForm.fill_emoticon), IsEmoji())
+@not_in_system_router.message(
+    StateFilter(FSMFillForm.fill_emoticon),
+    IsEmoji(),
+)
 async def process_emoticon_sent(
     message: Message,
     state: FSMContext,

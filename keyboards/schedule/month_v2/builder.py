@@ -9,7 +9,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.requests.with_page import (
-    get_pages_with_inter_users_tgs_shifts_by_user_tg_id,
+    get_pages_by_user_tg_id,
 )
 from db.models import (
     PagesORM,
@@ -44,7 +44,6 @@ async def process_datetime(
     if current_year is None or current_month is None or current_day is None:
         current_datetime: dt.datetime = current_datetime_now
     else:
-        current_datetime: dt.datetime = None
         if current_day == 0:
             current_datetime = dt.datetime(
                 year=current_year,
@@ -147,32 +146,40 @@ async def process_intervals_lineups_emojis(
     """_summary_
 
     Args:
-        current_interval_id (int | None): данный параметр = None если расписание только открыли,
+        current_interval_id (int | None): данный параметр = None
+        если расписание только открыли,
         в ином случае указывает на то какой интервал отобразить
 
-        current_lineup (int | None): данный параметр = None если расписание только открыли,
+        current_lineup (int | None): данный параметр = None
+        если расписание только открыли,
         в ином случае указывает на то какой состав отобразить
 
-        current_day (int | None): данный параметр = None если расписание только открыли,
-        в ином случае может быть равен числу в месяце или 0, если были нажаты кнопки не ответственные за наполнение смен
+        current_day (int | None): данный параметр = None
+        если расписание только открыли,
+        в ином случае может быть равен числу в месяце или 0,
+        если были нажаты кнопки не ответственные за наполнение смен
 
-        pages_intervals (list[PagesIntervalsORM]): список всех PagesIntervalsORM которые доступны Pages, в которых есть текущий пользователь
+        pages_intervals (list[PagesIntervalsORM]):
+        список всех PagesIntervalsORM которые доступны Pages,
+        в которых есть текущий пользователь
         user_tg_id (int): телеграмм id пользователя
-        st_shifts (list[dict[str, str]] | None): список смен которые наполняются с помощью FSM
+        st_shifts (list[dict[str, str]] | None):
+        список смен которые наполняются с помощью FSM
 
     Returns:
-        tuple[dict[str, IntervalsORM], dict[str, int], dict[int, str]]: _description_
+        tuple[dict[str, IntervalsORM], dict[str, int], dict[int, str]]:
+        _description_
     """
-    intervals: list[IntervalsORM] = [
-    ]  # список с упорядоченными уникальными интервалами
-    lineups: list[int] = []  # список с уникальными составами
+    # список с упорядоченными уникальными интервалами
+    intervals: list[IntervalsORM] = []
+    # список с уникальными составами
+    lineups: list[int] = []
     # словарь с днями и соответствующими им эмодзи для отображения в расписании
     list_of_dict_shifts: list[dict[str, str | int]] = []
-    shifts_packed: bool = False  # указатель на то что days_emojis упакован
-
-    current_interval_key: int | None = (
-        None  # ключ интервала в intervals который отобразить
-    )
+    # указатель на то что days_emojis упакован
+    shifts_packed: bool = False
+    # ключ интервала в intervals который отобразить
+    current_interval_key: int | None = None
     current_user: UsersORM | None = None
 
     available_pages_intervals_id: list[int] = []
@@ -192,8 +199,10 @@ async def process_intervals_lineups_emojis(
         # Сбор уникальных составов
         if lineup not in lineups:
             lineups.append(lineup)
-        # если существует current_interval_id и current_lineup, то сравнивать их с текущими значениями
-        # это сделано для того чтобы получать новые current_interval_key после первой инициализации
+        # если существует current_interval_id и current_lineup,
+        # то сравнивать их с текущими значениями
+        # это сделано для того
+        # чтобы получать новые current_interval_key после первой инициализации
         if (
             current_interval_id
             and current_lineup
@@ -213,20 +222,24 @@ async def process_intervals_lineups_emojis(
             # TgsORM не может существовать без пользователя
             # TODO: указать данное условие в ORM
             tgs: list[TgsORM] = user.tgs
-            # Т.к. у пользователя может быть несколько TgsORM, то проходимся по каждому
+            # Т.к. у пользователя может быть несколько TgsORM,
+            # то проходимся по каждому
             for tg in tgs:
                 # Ищем тот id, который будет совпадать
                 if tg.user_tg_id == user_tg_id:
                     # Если он нашелся, то записываем его в current_user
                     current_user = user
                     available_pages_intervals_id.append(page_interval.id)
-                    # если значения по умолчанию не были переданы, следовательно это первый запуск расписания,
-                    # то передаем заполняем current_interval_key и current_lineup
+                    # если значения по умолчанию не были переданы,
+                    # следовательно это первый запуск расписания,
+                    # то передаем заполняем
+                    # current_interval_key и current_lineup
                     if current_interval_id is None and current_lineup is None:
                         current_page_interval_id = page_interval.id
                         current_interval_key = len(intervals) - 1
                         current_lineup = lineup
-        # Данная проверка нужна для того чтобы паковать days_emojis в момент когда определен нужный интервал,
+        # Данная проверка нужна для того чтобы паковать days_emojis
+        # в момент когда определен нужный интервал,
         # а также состав и соответственно страница
         if (
             current_interval_key is not None
@@ -234,29 +247,31 @@ async def process_intervals_lineups_emojis(
             and shifts_packed is False
         ):
             shifts: list[ShiftsORM] = page_interval.shifts
-            # перебор всех смен для данной page_interval, где определен cuurent_interval_key, а так же состав
+            # перебор всех смен для данной page_interval,
+            # где определен current_interval_key, а так же состав
             for shift in shifts:
-                # наполняем days_emojis днем и соответствующим ему эмодзи для отображения в расписании
+                # наполняем days_emojis днем и соответствующим ему эмодзи
+                # для отображения в расписании
                 dict_shift: dict[str, str | int] = {}
                 dict_shift["day"] = shift.date_shift.day
                 dict_shift["month"] = shift.date_shift.month
                 dict_shift["year"] = shift.date_shift.year
                 dict_shift["page_interval_id"] = shift.page_interval_id
-                # если пользователь существует и у смены нет замены, то выведется эмодзи пользователя, чья смена сейчас
+                # если пользователь существует и у смены нет замены,
+                # то выведется эмодзи пользователя, чья смена сейчас
                 if shift.replacement_id is None and user is not None:
                     dict_shift["emoji"] = user.emoji
-                # если же замена указана, то выведется эмодзи замены, для данной смены
+                # если же замена указана, то выведется эмодзи замены,
+                # для данной смены
                 elif shift.replacement_id is not None:
                     dict_shift["emoji"] = shift.replacement.emoji
                 list_of_dict_shifts.append(dict_shift)
             shifts_packed = True
 
-    # в данной проверке оценивается, был ле передан st_shifts, для того чтобы в дальнейшем отобразить смены на расписании
+    # в данной проверке оценивается, был ле передан st_shifts,
+    # для того чтобы в дальнейшем отобразить смены на расписании
     logger.debug(f"!!!!!st_shifts: {st_shifts}")
     if st_shifts is not None and current_user is not None:
-        # FIXME: Данная проверка работает корректно при условии что данные вносятся в секции
-        # в которой есть пользователь и удаляет уже занятый день в st_shift чтобы избежать конфликта FSM и бд,
-        # но она перестает работать корректно, если пользователь внес изменения в другой секции
 
         # данный цикл нужен для отображения новых данных, до отправки их в бд
         logger.debug(f"st_shifts: {st_shifts}")
@@ -265,14 +280,16 @@ async def process_intervals_lineups_emojis(
                 not await is_dict_in_list(
                     dictionary=st_shift, list_of_dicts=list_of_dict_shifts
                 )
-                and st_shift["page_interval_id"] in available_pages_intervals_id
+                and st_shift["page_interval_id"]
+                in available_pages_intervals_id
             ):
-                dict_shift_from_st = {}
-                dict_shift_from_st["day"] = st_shift["day"]
-                dict_shift_from_st["month"] = st_shift["month"]
-                dict_shift_from_st["year"] = st_shift["year"]
-                dict_shift_from_st["page_interval_id"] = st_shift["page_interval_id"]
-                dict_shift_from_st["emoji"] = "🟢"
+                dict_shift_from_st = {
+                    "day": st_shift["day"],
+                    "month": st_shift["month"],
+                    "year": st_shift["year"],
+                    "page_interval_id": st_shift["page_interval_id"],
+                    "emoji": "🟢"
+                }
                 list_of_dict_shifts.append(dict_shift_from_st)
             else:
                 st_shifts.remove(st_shift)
@@ -315,12 +332,13 @@ async def create_month_schedule_v2(
         current_month=current_month,
         current_year=current_year,
     )
-    pages: list[PagesORM] = await get_pages_with_inter_users_tgs_shifts_by_user_tg_id(
+    pages: list[PagesORM] = await get_pages_by_user_tg_id(
         session=session,
         user_tg_id=user_tg_id,
         current_month=dict_datetimes["current"].month,
     )
-    # NOTE: в pages, находятся только те смены которые соответствуют переданому месяцу
+    # NOTE: в pages, находятся только те смены которые
+    # соответствуют переданному месяцу
     pages = sorted(pages, key=lambda x: (x.model.title, x.type_in_agency))
     # for page_t in pages:
     #     logger.debug(f"{page_t}")
@@ -338,7 +356,7 @@ async def create_month_schedule_v2(
     #         for shift_t in page_interval_t.shifts:
     #             logger.debug(f"        {shift_t}")
     #             if shift_t.replacement_id is not None:
-    #                 logger.debug(f"                     {shift_t.replacement.emoji}")
+    #                 logger.debug(f"           {shift_t.replacement.emoji}")
     dict_pages: dict[str, PagesORM] = await process_page(
         pages=pages,
         current_page_id=current_page_id,
@@ -406,16 +424,20 @@ async def create_month_schedule_v2(
             if day > 0:
                 day_str = f"{day}"
                 for dict_shift in dict_days_emojis:
+                    d_s_month = dict_shift["month"]
+                    d_s_year = dict_shift["year"]
+                    d_s_day = dict_shift["day"]
+                    d_s_page_interval_id = dict_shift["page_interval_id"]
                     if (
-                        dict_shift["day"] == day
-                        and dict_shift["month"] == dict_datetimes["current"].month
-                        and dict_shift["year"] == dict_datetimes["current"].year
-                        and dict_shift["page_interval_id"] == current_page_interval_id
+                        d_s_day == day
+                        and d_s_month == dict_datetimes["current"].month
+                        and d_s_year == dict_datetimes["current"].year
+                        and d_s_page_interval_id == current_page_interval_id
                     ):
                         day_str = dict_shift["emoji"]
                         break
             else:
-                day_str = f" "
+                day_str = " "
 
             week_ikb.append(
                 InlineKeyboardButton(

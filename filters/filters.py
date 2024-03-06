@@ -6,7 +6,8 @@ from aiogram.fsm.context import FSMContext
 
 from db.requests.with_user import is_user_in_agency
 from db.requests.with_emoji import is_busy_emoji_in_agency
-from keyboards.schedule.month_v2.classes_callback_data import MonthScheduleCallbackData
+from keyboards.schedule.month_v2.classes_callback_data import (
+    MonthScheduleCallbackData)
 
 
 class IsEmoji(BaseFilter):

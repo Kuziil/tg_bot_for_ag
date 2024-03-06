@@ -33,12 +33,12 @@ async def process_first_day_press(
     callback_data: MonthScheduleCallbackData,
     session: AsyncSession,
     default_tz: ZoneInfo,
-    i18n: dict[dict[str, str]],
+    i18n: dict[str, dict[str, str]],
     state: FSMContext,
 ):
     logger.debug("process_first_day_press - start")
-    st_shifts: list[dict[str, str]] = []
-    st_shift: dict[str, str] = {
+    st_shifts: list[dict[str, str | int]] = []
+    st_shift: dict[str, str | int] = {
         "day": callback_data.day,
         "month": callback_data.month,
         "year": callback_data.year,
@@ -49,8 +49,6 @@ async def process_first_day_press(
     }
     st_shifts.append(st_shift)
     logger.debug(f"st_shifts: {st_shifts}")
-    # st: dict[str, str] = await state.get_data()
-    # await callback.message.answer(text=f'{st["shifts"][0]["day"]}')
     markup, st_shifts = await create_month_schedule_v2(
         user_tg_id=callback.from_user.id,
         session=session,

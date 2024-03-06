@@ -15,12 +15,20 @@ def create_menu_keyboard(
     # Инициализируем билдер
     kb_builder = InlineKeyboardBuilder()
     for button in buttons:
-        kb_builder.row(
-            InlineKeyboardButton(
+        if button in LEXICON_BUTTON_RU:
+            ikb = InlineKeyboardButton(
                 text=(
-                    LEXICON_BUTTON_RU[button] if button in LEXICON_BUTTON_RU else button
+                    LEXICON_BUTTON_RU[button]
                 ),
                 callback_data=button,
             )
-        )
+            kb_builder.row(ikb)
+        else:
+            ikb = InlineKeyboardButton(
+                text=(
+                    button
+                ),
+                callback_data=button,
+            )
+            kb_builder.row(ikb)
     return kb_builder.as_markup()

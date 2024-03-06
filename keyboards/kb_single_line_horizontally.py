@@ -14,17 +14,27 @@ def create_start_keyboard(
     """
     # Инициализируем билдер
     kb_builder = InlineKeyboardBuilder()
-    # Добавляем в билдер ряд с кнопками
-    kb_builder.row(
-        *[
-            InlineKeyboardButton(
+    ikb_buttons = []
+    for button in buttons:
+        if button in LEXICON_BUTTON_RU:
+            ikb = InlineKeyboardButton(
                 text=(
-                    LEXICON_BUTTON_RU[button] if button in LEXICON_BUTTON_RU else button
+                    LEXICON_BUTTON_RU[button]
                 ),
                 callback_data=button,
             )
-            for button in buttons
-        ]
+        else:
+            ikb = InlineKeyboardButton(
+                text=(
+                    button
+                ),
+                callback_data=button,
+            )
+        ikb_buttons.append(ikb)
+
+    # Добавляем в билдер ряд с кнопками
+    kb_builder.row(
+        *ikb_buttons
     )
     # Возвращаем объект инлайн-клавиатуры
     return kb_builder.as_markup()
