@@ -26,7 +26,8 @@ def parse_settings(
     file_path = getenv("BOT_CONFIG_PATH")
     if file_path is not None:
         if not Path(file_path).is_file():
-            raise ValueError("Path %s is not a file or doesn't exist", file_path)
+            raise ValueError(
+                "Path %s is not a file or doesn't exist", file_path)
 
     # В противном случае ищем рядом с config_reader.py файл <local_file_name>
     else:
@@ -38,7 +39,8 @@ def parse_settings(
             )
         )
         if not Path(settings_file).is_file():
-            raise ValueError("Path %s is not a file or doesn't exist", settings_file)
+            raise ValueError(
+                "Path %s is not a file or doesn't exist", settings_file)
         file_path = settings_file.absolute()
     with open(
         file_path,

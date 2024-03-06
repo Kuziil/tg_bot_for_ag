@@ -14,10 +14,10 @@ from keyboards.kb_single_line_vertically import create_menu_keyboard
 from db.requests.with_add import add_user
 
 logger = logging.getLogger(__name__)
-not_in_systeam_router = Router()
+not_in_system_router = Router()
 
 
-@not_in_systeam_router.message(
+@not_in_system_router.message(
     StateFilter(FSMFillForm.fill_username),
     F.text.isalpha(),
 )
@@ -25,7 +25,7 @@ async def process_name_sent(
     message: Message,
     state: FSMContext,
 ):
-    # Cохраняем введенное имя в хранилище по ключу "name"
+    # Сохраняем введенное имя в хранилище по ключу "name"
     await state.update_data(username=message.text)
     await message.answer(
         text=LEXICON_RU["enter_emoticon"],
@@ -34,7 +34,7 @@ async def process_name_sent(
     await state.set_state(FSMFillForm.fill_emoticon)
 
 
-@not_in_systeam_router.message(
+@not_in_system_router.message(
     StateFilter(FSMFillForm.fill_username),
 )
 async def warning_not_name(
@@ -45,7 +45,7 @@ async def warning_not_name(
     )
 
 
-@not_in_systeam_router.callback_query(
+@not_in_system_router.callback_query(
     StateFilter(FSMFillForm.fill_emoticon),
     F.data == "busy_emojis",
 )
@@ -64,7 +64,7 @@ async def process_show_busy_emojis(
     await state.set_state(FSMFillForm.fill_emoticon)
 
 
-@not_in_systeam_router.message(
+@not_in_system_router.message(
     StateFilter(FSMFillForm.fill_emoticon),
     IsEmoji(),
     IsBusyEmoji(),
@@ -82,7 +82,7 @@ async def warning_busy_emoji(
     await message.answer(emojis)
 
 
-@not_in_systeam_router.message(StateFilter(FSMFillForm.fill_emoticon), IsEmoji())
+@not_in_system_router.message(StateFilter(FSMFillForm.fill_emoticon), IsEmoji())
 async def process_emoticon_sent(
     message: Message,
     state: FSMContext,
@@ -103,7 +103,7 @@ async def process_emoticon_sent(
     await state.clear()
     await message.answer(
         text=LEXICON_RU["registration_done"]
-        + f"Приветсвую {db.user_database[message.from_user.id]['username']}"
+        + f"Приветствую {db.user_database[message.from_user.id]['username']}"
         f"{db.user_database[message.from_user.id]['emoticon']}\n\n"
         + LEXICON_RU["main_menu_junior"],
         reply_markup=create_menu_keyboard(
@@ -118,7 +118,7 @@ async def process_emoticon_sent(
     )
 
 
-@not_in_systeam_router.message(
+@not_in_system_router.message(
     StateFilter(FSMFillForm.fill_emoticon),
 )
 async def warning_not_emoticon(

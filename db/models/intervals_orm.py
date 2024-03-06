@@ -6,7 +6,6 @@ from db.models.base import Base
 from db.models.types import intpk, dtdatetime
 
 if TYPE_CHECKING:
-    from .users_orm import UsersORM
     from .pages_intervals_orm import PagesIntervalsORM
 
 
@@ -19,10 +18,6 @@ class IntervalsORM(Base):
     end_at: Mapped[dtdatetime]
 
     # relationships
-    # pages: Mapped[list["PagesORM"]] = relationship(
-    #     secondary="pages_intervals",
-    #     back_populates="intervals",
-    # )
     pages_details: Mapped[list["PagesIntervalsORM"]] = relationship(
         back_populates="interval",
     )

@@ -6,7 +6,6 @@ from db.models.base import Base
 from db.models.types import intpk, strtext
 
 if TYPE_CHECKING:
-    from db.models.roles_orm import RolesORM
     from db.models.roles_permissions_orm import RolesPermissionsORM
 
     pass
@@ -20,10 +19,6 @@ class PermissionsORM(Base):
     title: Mapped[strtext] = mapped_column(unique=True)
 
     # relationships
-    # roles: Mapped[list["RolesORM"]] = relationship(
-    #     secondary="roles_permissions",
-    #     back_populates="permissions",
-    # )
     roles_details: Mapped[list["RolesPermissionsORM"]] = relationship(
         back_populates="permission",
     )

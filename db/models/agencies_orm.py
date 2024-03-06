@@ -20,17 +20,9 @@ class AgenciesORM(Base):
     test_tg_bot: Mapped[intbigint]
 
     # relationships
-    # models: Mapped[list["ModelsORM"]] = relationship(
-    #     secondary="agencies_models",
-    #     back_populates="agencies",
-    # )
     pages_details: Mapped[list["AgenciesPagesORM"]] = relationship(
         back_populates="agency",
     )
     users_details: Mapped[list["AgenciesUsersORM"]] = relationship(
         back_populates="agency",
     )
-    # users: Mapped[list["UsersORM"]] = relationship(
-    #     secondary="agencies_users",
-    #     back_populates="agencies",
-    # )

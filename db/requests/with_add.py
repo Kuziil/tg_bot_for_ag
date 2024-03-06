@@ -2,7 +2,6 @@ import logging
 import datetime as dt
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import (
@@ -121,7 +120,7 @@ async def add_page_interval(
 
 async def add_interval(
     session: AsyncSession,
-    defult_tz: ZoneInfo,
+    default_tz: ZoneInfo,
     start_at: dt.time,
     end_at: dt.time,
 ):
@@ -131,7 +130,7 @@ async def add_interval(
         day=1,
         hour=start_at.hour,
         minute=start_at.minute,
-        tzinfo=defult_tz,
+        tzinfo=default_tz,
     )
     end_at_1 = dt.datetime(
         year=1970,
@@ -139,7 +138,7 @@ async def add_interval(
         day=1,
         hour=end_at.hour,
         minute=end_at.minute,
-        tzinfo=defult_tz,
+        tzinfo=default_tz,
     )
     interval = IntervalsORM(
         start_at=start_at_1,
@@ -147,20 +146,6 @@ async def add_interval(
     )
     session.add(interval)
     await session.commit()
-
-
-# async def add_interval(
-#     session: AsyncSession,
-# ):
-#     interval = IntervalsORM(
-#         start_at=datetime.now(timezone.utc).replace(
-#             tzinfo=zoneinfo.ZoneInfo("America/Los_Angeles")
-#         ),
-#         end_at=datetime.now(tz=zoneinfo.ZoneInfo("America/Los_Angeles"))
-#         + timedelta(minutes=1),
-#     )
-#     session.add(interval)
-#     await session.commit()
 
 
 async def add_shifts(

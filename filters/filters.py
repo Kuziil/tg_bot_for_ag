@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from db.requests.with_user import is_user_in_agency
 from db.requests.with_emoji import is_busy_emoji_in_agency
-from keyboards.schedule.month_v2.classes_callback_data import MonthShudleCallbackData
+from keyboards.schedule.month_v2.classes_callback_data import MonthScheduleCallbackData
 
 
 class IsEmoji(BaseFilter):
@@ -52,7 +52,7 @@ class IsStShiftInStShifts(BaseFilter):
     async def __call__(
         self,
         callback: CallbackQuery,  # нельзя удалять т.к. callback_data связана
-        callback_data: MonthShudleCallbackData,
+        callback_data: MonthScheduleCallbackData,
         state: FSMContext,
     ) -> bool:
         st: dict[str, str] = await state.get_data()

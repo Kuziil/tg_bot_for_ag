@@ -48,11 +48,11 @@ async def get_all_users_in_agency(
     return users
 
 
-async def get_user_and_availible_pages_intervals_by_tg_id(
+async def get_user_and_available_pages_intervals_by_tg_id(
     session: AsyncSession,
     user_tg_id: int,
 ) -> UsersORM:
-    # нужна проврка на скорость и поиграться с размешением
+    # нужна проверка на скорость и поиграться с последовательностью
     result: Result = await session.execute(
         select(UsersORM)
         .join(UsersORM.tgs)
@@ -61,7 +61,8 @@ async def get_user_and_availible_pages_intervals_by_tg_id(
             selectinload(UsersORM.pages_intervals).joinedload(
                 PagesIntervalsORM.interval
             ),
-            selectinload(UsersORM.pages_intervals).joinedload(PagesIntervalsORM.page),
+            selectinload(UsersORM.pages_intervals).joinedload(
+                PagesIntervalsORM.page),
         )
         .where(TgsORM.user_tg_id == user_tg_id)
     )

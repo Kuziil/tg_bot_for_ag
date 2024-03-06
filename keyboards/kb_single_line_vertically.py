@@ -7,7 +7,7 @@ def create_menu_keyboard(
     *buttons: str,
 ) -> InlineKeyboardMarkup:
     """_summary_
-    Данная функция служит констрктором для вертикальной клавиатуры
+    Данная функция служит конструктором для вертикальной клавиатуры
     на вход получающая теги кнопок
     Returns:
         InlineKeyboardMarkup: _description_

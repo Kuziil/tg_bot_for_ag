@@ -8,7 +8,6 @@ from db.models.base import Base
 from db.models.types import (
     intpk,
     strtext,
-    boolbool,
     intbigint,
 )
 
@@ -54,10 +53,6 @@ class PagesORM(Base):
     model: Mapped["ModelsORM"] = relationship(
         back_populates="pages",
     )
-    # intervals: Mapped[list["IntervalsORM"]] = relationship(
-    #     secondary="pages_intervals",
-    #     back_populates="pages",
-    # )
     intervals_details: Mapped[list["PagesIntervalsORM"]] = relationship(
         back_populates="page",
     )

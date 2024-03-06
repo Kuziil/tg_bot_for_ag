@@ -1,16 +1,12 @@
-import datetime as dt
-
-from sqlalchemy import select, or_, extract
+from sqlalchemy import select, extract
 from sqlalchemy.engine import Result
 from sqlalchemy.orm import (
     selectinload,
     joinedload,
-    contains_eager,
-    with_loader_criteria,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.models import PagesORM, PagesIntervalsORM, UsersORM, TgsORM, ShiftsORM
+from db.models import PagesORM, PagesIntervalsORM, UsersORM, ShiftsORM
 
 
 async def get_pages_with_inter_users_tgs_shifts_by_user_tg_id(
@@ -46,8 +42,6 @@ async def test_123(
     session: AsyncSession,
     user_tg_id: int,
 ):
-    month = dt.date.today().month
-
     result = await session.execute(
         select(PagesORM)
         .join(PagesORM.intervals_details)
@@ -70,42 +64,3 @@ async def test_123(
     )
     pages_intervals: list[PagesIntervalsORM] = result.scalars().all()
     return pages_intervals
-
-
-# async def test_123(
-#     session: AsyncSession,
-# ):
-#     month = dt.date.today().month
-
-#     result = await session.execute(
-#         select(PagesIntervalsORM)
-#         .options(
-#             selectinload(
-#                 PagesIntervalsORM.shifts.and_(
-#                     extract("month", ShiftsORM.date_shift) == 1
-#                 )
-#             )
-#         )
-#         .where(PagesIntervalsORM.id < 9)
-#     )
-#     pages_intervals: list[PagesIntervalsORM] = result.scalars().all()
-#     return pages_intervals
-
-
-# async def test_123(
-#     session: AsyncSession,
-# ):
-#     month = dt.date.today().month
-
-#     result = await session.execute(
-#         select(PagesIntervalsORM)
-#         .outerjoin(PagesIntervalsORM.shifts)
-#         .where(
-#             (extract("month", ShiftsORM.date_shift) == 1)
-#             | (ShiftsORM.date_shift == None)
-#         )
-#         .options(contains_eager(PagesIntervalsORM.shifts))
-#         .filter(PagesIntervalsORM.user_id < 5)  # добавили фильтр по user_id
-#     )
-#     pages_intervals: list[PagesIntervalsORM] = result.scalars().unique().all()
-#     return pages_intervals

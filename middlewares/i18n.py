@@ -17,7 +17,7 @@ class TranslatorMiddleware(BaseMiddleware):
         if user is None:
             return await handler(event, data)
 
-        user_lang = user.language_code
+        # user_lang = user.language_code
         translations: dict[str, dict[str, str]] = data.get("_translations")
         # вернуть эту строчку если понадобиться локализация
         # i18n = translations.get(user_lang)

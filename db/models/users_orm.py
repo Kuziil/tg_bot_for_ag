@@ -25,8 +25,8 @@ class UsersORM(Base):
     username: Mapped[strtext | None]
     emoji: Mapped[strtext | None]
     status: Mapped[strtext] = mapped_column(
-        server_default="AppliedWating",
-        default="AppliedWating",
+        server_default="AppliedWaiting",
+        default="AppliedWaiting",
     )
     work_now: Mapped[boolbool] = mapped_column(
         server_default=false(),
@@ -47,7 +47,6 @@ class UsersORM(Base):
     )
 
     # relationships
-
     role: Mapped["RolesORM"] = relationship(
         back_populates="users",
     )
@@ -64,24 +63,12 @@ class UsersORM(Base):
     pages: Mapped["PagesORM"] = relationship(
         back_populates="seniors",
     )
-    # shifts: Mapped[list["ShiftsORM"]] = relationship(
-    #     secondary="shifts_users",
-    #     back_populates="users",
-    # )
     fines: Mapped[list["FinesORM"]] = relationship(
         back_populates="user",
     )
     agencies_details: Mapped[list["AgenciesUsersORM"]] = relationship(
         back_populates="user",
     )
-    # agencies: Mapped[list["AgenciesORM"]] = relationship(
-    #     secondary="agencies_users",
-    #     back_populates="users",
-    # )
-    # models: Mapped[list["ModelsORM"]] = relationship(
-    #     secondary="models_users",
-    #     back_populates="users",
-    # )
     pages_intervals: Mapped[list["PagesIntervalsORM"]] = relationship(
         back_populates="user",
     )

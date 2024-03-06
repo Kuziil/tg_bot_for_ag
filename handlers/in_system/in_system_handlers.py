@@ -6,20 +6,19 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
 from aiogram.filters import or_f
 
-from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
-from keyboards.schedule.month_v2.bilder import create_month_shudle_v2
+from keyboards.schedule.month_v2.builder import create_month_schedule_v2
 from sqlalchemy.ext.asyncio import AsyncSession
 from callback_factories.back import BackCallbackData
 
 
-in_systeam_router = Router()
+in_system_router = Router()
 
-in_systeam_router.include_router(month_v2_router)
+in_system_router.include_router(month_v2_router)
 
 
-@in_systeam_router.callback_query(
+@in_system_router.callback_query(
     StateFilter(default_state),
     or_f(
         F.data == "schedule",
@@ -39,52 +38,30 @@ async def process_schedule_press(
     await callback.message.edit_text(
         text=i18n["lexicon"]["schedule_type"],
         reply_markup=create_menu_keyboard(
-            "mounth_schedule",
+            "month_schedule",
             "week_schedule",
         ),
     )
     await callback.answer()
 
 
-@in_systeam_router.callback_query(
+@in_system_router.callback_query(
     F.data == "week_schedule",
     StateFilter(default_state),
 )
-async def process_mounth_schedule_press(
+async def process_month_schedule_press(
     callback: CallbackQuery,
     session: AsyncSession,
     i18n: dict[str, dict[str, str]],
-    defult_tz: ZoneInfo,
+    default_tz: ZoneInfo,
 ):
     await callback.message.edit_text(
         text=i18n["lexicon"]["week_schedule"],
-        reply_markup=await create_month_shudle_v2(
+        reply_markup=await create_month_schedule_v2(
             session=session,
             user_tg_id=callback.from_user.id,
             i18n=i18n,
-            defult_tz=defult_tz,
+            default_tz=default_tz,
         ),
     )
     await callback.answer()
-
-
-# @in_systeam_router.callback_query(
-#     F.data == "week_schedule",
-#     StateFilter(default_state),
-# )
-# async def process_mounth_schedule_press(
-#     callback: CallbackQuery,
-#     session: AsyncSession,
-#     i18n: dict[str, dict[str, str]],
-#     deafult_tz: ZoneInfo,
-# ):
-#     await callback.message.edit_text(
-#         text=i18n["lexicon"]["week_schedule"],
-#         reply_markup=await create_week_shudle(
-#             session=session,
-#             user_tg_id=callback.from_user.id,
-#             i18n=i18n,
-#             deafult_tz=deafult_tz,
-#         ),
-#     )
-#     await callback.answer()

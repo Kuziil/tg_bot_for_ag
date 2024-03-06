@@ -8,17 +8,16 @@ from aiogram.fsm.context import FSMContext
 from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
 from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
-from handlers.in_system.in_systeam_handlers import in_systeam_router
-from handlers.not_in_system.not_in_system_handlers import not_in_systeam_router
+from handlers.in_system.in_system_handlers import in_system_router
+from handlers.not_in_system.not_in_system_handlers import not_in_system_router
 from FSMs.FSMs import FSMFillForm
 from filters.filters import IsUserInSystem
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 main_router = Router()
 
-main_router.include_router(not_in_systeam_router)
-main_router.include_router(in_systeam_router)
+main_router.include_router(not_in_system_router)
+main_router.include_router(in_system_router)
 
 
 @main_router.message(
@@ -53,7 +52,6 @@ async def process_start_command(
 )
 async def process_start_command_for_new_id(
     message: Message,
-    session: AsyncSession,
 ):
     """Данный хэндлер отвечает на команду /start
     и возвращает текст с кнопками позволяющие пользователю выбрать
@@ -62,10 +60,10 @@ async def process_start_command_for_new_id(
         message (Message): _description_
     """
     text = LEXICON_COMMANDS_RU[message.text]
-    # await add_user(session=session, name=message.from_user.username)
     await message.answer(
         text=text,
-        reply_markup=create_start_keyboard("not_in_the_system", "in_the_system"),
+        reply_markup=create_start_keyboard(
+            "not_in_the_system", "in_the_system"),
     )
 
 

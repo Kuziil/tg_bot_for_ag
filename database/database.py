@@ -13,13 +13,13 @@ class DBManager:
 
         # Создаем пустой словарь для базы данных
         bot_id = self.config.tg_bot.id
-        self.user_databases: dict[int, dict[int, dict[str, str | list[str]]]] = {
+        self.user_databases = {
             bot_id: dict()
         }
 
         self.shifts: dict[str, int] = {}
 
-        self.user_database: dict[int, dict[str, str | list[str]]] = self.user_databases[
+        self.user_database = self.user_databases[
             bot_id
         ]
 
@@ -55,7 +55,7 @@ class DBManager:
         else:
             return LEXICON_BUTTON_RU["user_not_in_system"]
 
-    def get_emot_by_day_call_back(self, shift) -> str:
+    def get_emotion_by_day_call_back(self, shift) -> str:
         return self.user_database[self.shifts[shift]]["emoticon"]
 
 

@@ -1,5 +1,5 @@
 from typing import Annotated
-from datetime import datetime, time, date
+from datetime import datetime, date
 
 from sqlalchemy import Identity, func
 from sqlalchemy.orm import mapped_column
@@ -7,7 +7,6 @@ from sqlalchemy.dialects.postgresql import (
     TEXT,
     BIGINT,
     BOOLEAN,
-    TIME,
     TIMESTAMP,
     DATE,
 )

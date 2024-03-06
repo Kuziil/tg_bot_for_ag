@@ -1,7 +1,7 @@
 from aiogram.filters.callback_data import CallbackData
 
 
-class MonthShudleCallbackData(
+class MonthScheduleCallbackData(
     CallbackData,
     prefix="shu",
     sep="-",

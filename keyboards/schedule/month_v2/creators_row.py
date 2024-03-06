@@ -1,6 +1,7 @@
 from zoneinfo import ZoneInfo
 from db.models import IntervalsORM, PagesORM
-from keyboards.schedule.month_v2.classes_callback_data import MonthShudleCallbackData
+from keyboards.schedule.month_v2.classes_callback_data import (
+    MonthScheduleCallbackData)
 
 
 from aiogram.types import InlineKeyboardButton
@@ -21,7 +22,7 @@ async def create_row_month_year(
     dict_for_ikb: list[dict[str, str]] = [
         {
             "sequence_item": "before",
-            "text": f"<",
+            "text": "<",
         },
         {
             "sequence_item": "current",
@@ -33,7 +34,7 @@ async def create_row_month_year(
         },
         {
             "sequence_item": "after",
-            "text": f">",
+            "text": ">",
         },
     ]
     for button in dict_for_ikb:
@@ -46,7 +47,7 @@ async def create_row_month_year(
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
-                        callback_data=MonthShudleCallbackData(
+                        callback_data=MonthScheduleCallbackData(
                             day=0,
                             month=dict_datetimes[button["sequence_item"]].month,
                             year=dict_datetimes[button["sequence_item"]].year,
@@ -63,7 +64,7 @@ async def create_row_month_year(
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
-                        callback_data=MonthShudleCallbackData(
+                        callback_data=MonthScheduleCallbackData(
                             day=0,
                             month=dict_datetimes[button["sequence_item"]].month,
                             year=dict_datetimes[button["sequence_item"]].year,
@@ -115,7 +116,7 @@ async def create_row_pages(
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
-                        callback_data=MonthShudleCallbackData(
+                        callback_data=MonthScheduleCallbackData(
                             day=0,
                             month=dict_datetimes["current"].month,
                             year=dict_datetimes["current"].year,
@@ -132,7 +133,7 @@ async def create_row_pages(
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
-                        callback_data=MonthShudleCallbackData(
+                        callback_data=MonthScheduleCallbackData(
                             day=0,
                             month=dict_datetimes["current"].month,
                             year=dict_datetimes["current"].year,
@@ -148,19 +149,19 @@ async def create_row_pages(
 
 
 async def convert_datetime_to_time_str(
-    defult_tz: ZoneInfo,
+    default_tz: ZoneInfo,
     time: dt.datetime,
 ) -> str:
-    time_str: str = time.astimezone(defult_tz).strftime("%H:%M")
+    time_str: str = time.astimezone(default_tz).strftime("%H:%M")
     return time_str
 
 
-async def create_row_inervals(
+async def create_row_intervals(
     dict_datetimes: dict[str, dt.datetime],
     dict_pages: dict[str, PagesORM],
     dict_lineups: dict[str, int],
     dict_intervals: dict[str, IntervalsORM],
-    defult_tz: ZoneInfo,
+    default_tz: ZoneInfo,
     current_page_interval_id: int,
     st_shifts: list[dict[str, str | int]] | None = None,
 ):
@@ -174,14 +175,14 @@ async def create_row_inervals(
             "sequence_item": "current",
             "text": await convert_datetime_to_time_str(
                 time=dict_intervals["current"].start_at,
-                defult_tz=defult_tz,
+                default_tz=default_tz,
             ),
         },
         {
             "sequence_item": "current",
             "text": await convert_datetime_to_time_str(
                 time=dict_intervals["current"].end_at,
-                defult_tz=defult_tz,
+                default_tz=default_tz,
             ),
         },
         {
@@ -199,7 +200,7 @@ async def create_row_inervals(
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
-                        callback_data=MonthShudleCallbackData(
+                        callback_data=MonthScheduleCallbackData(
                             day=0,
                             month=dict_datetimes["current"].month,
                             year=dict_datetimes["current"].year,
@@ -216,7 +217,7 @@ async def create_row_inervals(
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
-                        callback_data=MonthShudleCallbackData(
+                        callback_data=MonthScheduleCallbackData(
                             day=0,
                             month=dict_datetimes["current"].month,
                             year=dict_datetimes["current"].year,
@@ -264,7 +265,7 @@ async def create_row_lineups(
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
-                        callback_data=MonthShudleCallbackData(
+                        callback_data=MonthScheduleCallbackData(
                             day=0,
                             month=dict_datetimes["current"].month,
                             year=dict_datetimes["current"].year,
@@ -281,7 +282,7 @@ async def create_row_lineups(
                 buttons.append(
                     InlineKeyboardButton(
                         text=button["text"],
-                        callback_data=MonthShudleCallbackData(
+                        callback_data=MonthScheduleCallbackData(
                             day=0,
                             month=dict_datetimes["current"].month,
                             year=dict_datetimes["current"].year,

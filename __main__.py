@@ -20,9 +20,6 @@ from lexicon.lexicon_ru import (
     LEXICON_COMMANDS_RU,
     LEXICON_COMMANDS_DESC_RU,
     LEXICON_BUTTON_RU,
-    LEXICON_MODELS_RU,
-    LEXICON_SHIFTS_RU,
-    LEXICON_SCHEDULE_RU,
 )
 from lexicon.lexicon_en import (
     LEXICON_EN,
@@ -47,9 +44,6 @@ translations = {
         "commands": LEXICON_COMMANDS_RU,
         "commands_desc": LEXICON_COMMANDS_DESC_RU,
         "button": LEXICON_BUTTON_RU,
-        "models": LEXICON_MODELS_RU,
-        "shifts": LEXICON_SHIFTS_RU,
-        "schedule": LEXICON_SCHEDULE_RU,
     },
 }
 
@@ -86,7 +80,7 @@ async def main():
     # Инициализируем диспетчер
     dp = Dispatcher(storage=storage)
 
-    # Регистрируем мидлвары в диспетчере
+    # Регистрируем мидлвари в диспетчере
     dp.update.middleware(
         DbSessionMiddleware(
             session_pool=db_helper.sessionmaker,
@@ -96,7 +90,7 @@ async def main():
         TranslatorMiddleware(),
     )
 
-    # Регистриуем роутеры в диспетчере
+    # Регистрируем роутеры в диспетчере
     dp.include_router(main_handlers.main_router)
     dp.include_router(other_handlers.router)
 
@@ -109,7 +103,7 @@ async def main():
     # Проверяем действительный ли бот
     info: User = await bot.get_me()
     async with db_helper.sessionmaker() as session:
-        agenсy: tuple[int, str] = await check_for_bot_id_in_db(
+        agency: tuple[int, str] = await check_for_bot_id_in_db(
             session=session, bot_id=info.id
         )
 
@@ -120,11 +114,11 @@ async def main():
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(
         bot,
-        agency_id=agenсy[0],
-        agency_title=agenсy[1],
+        agency_id=agency[0],
+        agency_title=agency[1],
         _translations=translations,
         # TODO: подтянуть из бд
-        defult_tz=ZoneInfo("Europe/Moscow"),
+        default_tz=ZoneInfo("Europe/Moscow"),
     )
 
 

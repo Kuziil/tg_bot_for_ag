@@ -7,7 +7,7 @@ def create_start_keyboard(
     *buttons: str,
 ) -> InlineKeyboardMarkup:
     """_summary_
-    Данная функция служит констрктором для горизонтальной клавиатуры
+    Данная функция служит конструктором для горизонтальной клавиатуры
     на вход получающая теги кнопок
     Returns:
         InlineKeyboardMarkup: _description_

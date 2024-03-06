@@ -4,28 +4,26 @@ from typing import Any
 from zoneinfo import ZoneInfo
 import logging
 
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.requests.with_page import (
     get_pages_with_inter_users_tgs_shifts_by_user_tg_id,
 )
-from db.requests.with_add import add_shift
 from db.models import (
     PagesORM,
     PagesIntervalsORM,
     IntervalsORM,
     UsersORM,
     TgsORM,
-    ModelsORM,
     ShiftsORM,
 )
 from keyboards.schedule.month_v2.classes_callback_data import (
-    MonthShudleCallbackData,
+    MonthScheduleCallbackData,
 )
-from keyboards.schedule.month_v2.creaters_row import (
-    create_row_inervals,
+from keyboards.schedule.month_v2.creators_row import (
+    create_row_intervals,
     create_row_lineups,
     create_row_month_year,
     create_row_pages,
@@ -36,13 +34,13 @@ logger = logging.getLogger(__name__)
 
 
 async def process_datetime(
-    defult_tz: ZoneInfo,
+    default_tz: ZoneInfo,
     current_day: int | None,
     current_month: int | None,
     current_year: int | None,
 ) -> dict[str, dt.datetime]:
     dict_datetimes: dict[str, dt.datetime] = {}
-    current_datetime_now: dt.datetime = dt.datetime.now(tz=defult_tz)
+    current_datetime_now: dt.datetime = dt.datetime.now(tz=default_tz)
     if current_year is None or current_month is None or current_day is None:
         current_datetime: dt.datetime = current_datetime_now
     else:
@@ -52,14 +50,14 @@ async def process_datetime(
                 year=current_year,
                 month=current_month,
                 day=current_datetime_now.day,
-                tzinfo=defult_tz,
+                tzinfo=default_tz,
             )
         else:
             current_datetime = dt.datetime(
                 year=current_year,
                 month=current_month,
                 day=current_day,
-                tzinfo=defult_tz,
+                tzinfo=default_tz,
             )
 
     dict_datetimes["current"] = current_datetime
@@ -158,16 +156,17 @@ async def process_intervals_lineups_emojis(
         current_day (int | None): данный параметр = None если расписание только открыли,
         в ином случае может быть равен числу в месяце или 0, если были нажаты кнопки не ответственные за наполнение смен
 
-        pages_intervals (list[PagesIntervalsORM]): список всех PagesIntervalsORM которые доступны Pages, в котороых есть текущий пользователь
+        pages_intervals (list[PagesIntervalsORM]): список всех PagesIntervalsORM которые доступны Pages, в которых есть текущий пользователь
         user_tg_id (int): телеграмм id пользователя
         st_shifts (list[dict[str, str]] | None): список смен которые наполняются с помощью FSM
 
     Returns:
         tuple[dict[str, IntervalsORM], dict[str, int], dict[int, str]]: _description_
     """
-    intervals: list[IntervalsORM] = []  # список с упорядочеными уникальными интервалами
+    intervals: list[IntervalsORM] = [
+    ]  # список с упорядоченными уникальными интервалами
     lineups: list[int] = []  # список с уникальными составами
-    # словарь с днями и соответсвующими им эмодзи для отображения в расписании
+    # словарь с днями и соответствующими им эмодзи для отображения в расписании
     list_of_dict_shifts: list[dict[str, str | int]] = []
     shifts_packed: bool = False  # указатель на то что days_emojis упакован
 
@@ -205,13 +204,13 @@ async def process_intervals_lineups_emojis(
             current_interval_key = len(intervals) - 1
             current_lineup = lineup
 
-        # Проверка на наличее user в данном page_interval, это нужно
-        # т.к. не у каждого page_interval может быть пльзователь,
-        # например в случае открытя новой страницы или увольнения пользователя
+        # Проверка на наличе user в данном page_interval, это нужно
+        # т.к. не у каждого page_interval может быть пользователь,
+        # например в случае открытия новой страницы или увольнения пользователя
         if user is not None:
             # получаем список TgsORM, если пользователь существует,
             # Пользователь не может существовать без TgsORM так и
-            # TgsORM не может существоваь без пользователя
+            # TgsORM не может существовать без пользователя
             # TODO: указать данное условие в ORM
             tgs: list[TgsORM] = user.tgs
             # Т.к. у пользователя может быть несколько TgsORM, то проходимся по каждому
@@ -228,7 +227,7 @@ async def process_intervals_lineups_emojis(
                         current_interval_key = len(intervals) - 1
                         current_lineup = lineup
         # Данная проверка нужна для того чтобы паковать days_emojis в момент когда определен нужный интервал,
-        # а также состав и соответсвенно страница
+        # а также состав и соответственно страница
         if (
             current_interval_key is not None
             and current_lineup is not None
@@ -237,7 +236,7 @@ async def process_intervals_lineups_emojis(
             shifts: list[ShiftsORM] = page_interval.shifts
             # перебор всех смен для данной page_interval, где определен cuurent_interval_key, а так же состав
             for shift in shifts:
-                # наполняем days_emojis днем и соответсвующим ему эмодзи для отображения в расписании
+                # наполняем days_emojis днем и соответствующим ему эмодзи для отображения в расписании
                 dict_shift: dict[str, str | int] = {}
                 dict_shift["day"] = shift.date_shift.day
                 dict_shift["month"] = shift.date_shift.month
@@ -296,11 +295,11 @@ async def process_intervals_lineups_emojis(
     )
 
 
-async def create_month_shudle_v2(
+async def create_month_schedule_v2(
     user_tg_id: int,
     session: AsyncSession,
     i18n: dict[dict[str, str]],
-    defult_tz: ZoneInfo,
+    default_tz: ZoneInfo,
     current_page_id: int | None = None,
     current_year: int | None = None,
     current_month: int | None = None,
@@ -311,7 +310,7 @@ async def create_month_shudle_v2(
 ):
     kb_builder = InlineKeyboardBuilder()
     dict_datetimes: dict[str, dt.datetime] = await process_datetime(
-        defult_tz=defult_tz,
+        default_tz=default_tz,
         current_day=current_day,
         current_month=current_month,
         current_year=current_year,
@@ -381,7 +380,7 @@ async def create_month_shudle_v2(
         *[
             InlineKeyboardButton(
                 text=weekday,
-                callback_data=MonthShudleCallbackData(
+                callback_data=MonthScheduleCallbackData(
                     day=0,
                     month=dict_datetimes["current"].month,
                     year=dict_datetimes["current"].year,
@@ -421,7 +420,7 @@ async def create_month_shudle_v2(
             week_ikb.append(
                 InlineKeyboardButton(
                     text=day_str,
-                    callback_data=MonthShudleCallbackData(
+                    callback_data=MonthScheduleCallbackData(
                         day=day,
                         month=dict_datetimes["current"].month,
                         year=dict_datetimes["current"].year,
@@ -460,12 +459,12 @@ async def create_month_shudle_v2(
     )
     # row interval
     kb_builder.row(
-        *await create_row_inervals(
+        *await create_row_intervals(
             dict_datetimes=dict_datetimes,
             dict_pages=dict_pages,
             dict_lineups=dict_lineups,
             dict_intervals=dict_intervals,
-            defult_tz=defult_tz,
+            default_tz=default_tz,
             current_page_interval_id=current_page_interval_id,
             st_shifts=st_shifts,
         )
@@ -475,7 +474,7 @@ async def create_month_shudle_v2(
         kb_builder.row(
             InlineKeyboardButton(
                 text="Отменить",
-                callback_data=MonthShudleCallbackData(
+                callback_data=MonthScheduleCallbackData(
                     day=0,
                     month=dict_datetimes["current"].month,
                     year=dict_datetimes["current"].year,
@@ -488,7 +487,7 @@ async def create_month_shudle_v2(
             ),
             InlineKeyboardButton(
                 text="Применить",
-                callback_data=MonthShudleCallbackData(
+                callback_data=MonthScheduleCallbackData(
                     day=0,
                     month=dict_datetimes["current"].month,
                     year=dict_datetimes["current"].year,
@@ -511,7 +510,7 @@ async def create_month_shudle_v2(
             ),
             InlineKeyboardButton(
                 text="обновить",
-                callback_data=MonthShudleCallbackData(
+                callback_data=MonthScheduleCallbackData(
                     day=0,
                     month=dict_datetimes["current"].month,
                     year=dict_datetimes["current"].year,
