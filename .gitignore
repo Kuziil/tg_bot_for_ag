@@ -5,3 +5,5 @@ settings.yml
 .vscode/
 venv/
 __pycache__/
+
+.idea/
