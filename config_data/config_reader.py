@@ -2,7 +2,7 @@ from os import getenv
 from pathlib import Path
 
 from pydantic import BaseModel, SecretStr, PostgresDsn
-from yaml import load
+from yaml import safe_load
 
 try:
     from yaml import CSafeLoader as SafeLoader
@@ -45,9 +45,8 @@ def parse_settings(
             file_path,
             "rt",
     ) as file:
-        config_data = load(
+        config_data = safe_load(
             file,
-            SafeLoader,
         )
     # После прочтения файла накладываем его на
     # модель и получаем объект Settings
