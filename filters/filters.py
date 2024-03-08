@@ -52,7 +52,7 @@ class IsUserInSystem(BaseFilter):
 class IsStShiftInStShifts(BaseFilter):
     async def __call__(
             self,
-            callback: CallbackQuery,  # нельзя удалять т.к. callback_data связана
+            callback: CallbackQuery,  # Нельзя удалять т.к. callback_data связана
             callback_data: MonthScheduleCallbackData,
             state: FSMContext,
     ) -> bool:
