@@ -1,7 +1,6 @@
-from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, func
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from db.models.base import Base
@@ -18,10 +17,7 @@ class FinesORM(Base):
 
     # columns
     id: Mapped[intpk]
-    date_fine: Mapped[dtdate] = mapped_column(
-        server_default=func.now(),
-        default=datetime.utcnow,
-    )
+    date_fine: Mapped[dtdate]
     description: Mapped[strtext | None]
     amount: Mapped[intbigint]
     user_id: Mapped[intbigint] = mapped_column(
