@@ -1,6 +1,5 @@
 from zoneinfo import ZoneInfo
 
-
 from aiogram import F, Router
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
@@ -8,12 +7,11 @@ from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMSetShifts
+from db.requests.with_add import add_shifts
 from filters.filters import IsStShiftInStShifts
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
 from keyboards.schedule.month_v2.classes_callback_data import (
     MonthScheduleCallbackData)
-from db.requests.with_add import add_shifts
-
 
 update_shifts_router = Router()
 
@@ -24,13 +22,13 @@ update_shifts_router = Router()
     IsStShiftInStShifts(),
 )
 async def process_days_press(
-    callback: CallbackQuery,
-    callback_data: MonthScheduleCallbackData,
-    session: AsyncSession,
-    default_tz: ZoneInfo,
-    i18n: dict[dict[str, str]],
-    state: FSMContext,
-    st_shifts: list[dict[str, str]],
+        callback: CallbackQuery,
+        callback_data: MonthScheduleCallbackData,
+        session: AsyncSession,
+        default_tz: ZoneInfo,
+        i18n: dict[dict[str, str]],
+        state: FSMContext,
+        st_shifts: list[dict[str, str]],
 ):
     markup, st_shifts = await create_month_schedule_v2(
         user_tg_id=callback.from_user.id,
@@ -57,12 +55,12 @@ async def process_days_press(
     MonthScheduleCallbackData.filter(F.day > 0),
 )
 async def process_busy_days_press(
-    callback: CallbackQuery,
-    callback_data: MonthScheduleCallbackData,
-    session: AsyncSession,
-    default_tz: ZoneInfo,
-    i18n: dict[dict[str, str]],
-    state: FSMContext,
+        callback: CallbackQuery,
+        callback_data: MonthScheduleCallbackData,
+        session: AsyncSession,
+        default_tz: ZoneInfo,
+        i18n: dict[dict[str, str]],
+        state: FSMContext,
 ):
     st: dict[str, str] = await state.get_data()
     st_shifts: list[dict[str, str]] = st["shifts"]
@@ -91,12 +89,12 @@ async def process_busy_days_press(
     MonthScheduleCallbackData.filter(F.apply == 1),
 )
 async def process_apply_in_st(
-    callback: CallbackQuery,
-    callback_data: MonthScheduleCallbackData,
-    session: AsyncSession,
-    default_tz: ZoneInfo,
-    i18n: dict[dict[str, str]],
-    state: FSMContext,
+        callback: CallbackQuery,
+        callback_data: MonthScheduleCallbackData,
+        session: AsyncSession,
+        default_tz: ZoneInfo,
+        i18n: dict[dict[str, str]],
+        state: FSMContext,
 ):
     st: dict[str, str] = await state.get_data()
     st_shifts: list[dict[str, str]] = st["shifts"]
@@ -147,12 +145,12 @@ async def process_apply_in_st(
     MonthScheduleCallbackData.filter(F.apply == 2),
 )
 async def process_cancel_press(
-    callback: CallbackQuery,
-    callback_data: MonthScheduleCallbackData,
-    session: AsyncSession,
-    default_tz: ZoneInfo,
-    i18n: dict[dict[str, str]],
-    state: FSMContext,
+        callback: CallbackQuery,
+        callback_data: MonthScheduleCallbackData,
+        session: AsyncSession,
+        default_tz: ZoneInfo,
+        i18n: dict[dict[str, str]],
+        state: FSMContext,
 ):
     await state.clear()
     markup = await create_month_schedule_v2(
@@ -178,12 +176,12 @@ async def process_cancel_press(
     MonthScheduleCallbackData.filter(),
 )
 async def process_not_day_press_in_st(
-    callback: CallbackQuery,
-    callback_data: MonthScheduleCallbackData,
-    session: AsyncSession,
-    default_tz: ZoneInfo,
-    i18n: dict[dict[str, str]],
-    state: FSMContext,
+        callback: CallbackQuery,
+        callback_data: MonthScheduleCallbackData,
+        session: AsyncSession,
+        default_tz: ZoneInfo,
+        i18n: dict[dict[str, str]],
+        state: FSMContext,
 ):
     st: dict[str, str] = await state.get_data()
     st_shifts: list[dict[str, str]] = st["shifts"]

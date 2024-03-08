@@ -1,17 +1,18 @@
 import logging
+
 from aiogram import Router, F
 from aiogram.filters import StateFilter
-from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
+from aiogram.types import Message, CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMFillForm
+from database.database import db
+from db.requests.with_add import add_user
 from db.requests.with_emoji import get_str_emojis_in_agency
 from filters.filters import IsEmoji, IsBusyEmoji
-from database.database import db
-from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.kb_single_line_vertically import create_menu_keyboard
-from db.requests.with_add import add_user
+from lexicon.lexicon_ru import LEXICON_RU
 
 logger = logging.getLogger(__name__)
 not_in_system_router = Router()
@@ -22,8 +23,8 @@ not_in_system_router = Router()
     F.text.isalpha(),
 )
 async def process_name_sent(
-    message: Message,
-    state: FSMContext,
+        message: Message,
+        state: FSMContext,
 ):
     # Сохраняем введенное имя в хранилище по ключу "name"
     await state.update_data(username=message.text)
@@ -38,7 +39,7 @@ async def process_name_sent(
     StateFilter(FSMFillForm.fill_username),
 )
 async def warning_not_name(
-    message: Message,
+        message: Message,
 ):
     await message.answer(
         text=LEXICON_RU["entered_not_username"] + LEXICON_RU["enter_username"]
@@ -50,10 +51,10 @@ async def warning_not_name(
     F.data == "busy_emojis",
 )
 async def process_show_busy_emojis(
-    callback: CallbackQuery,
-    state: FSMContext,
-    session: AsyncSession,
-    agency_id: int,
+        callback: CallbackQuery,
+        state: FSMContext,
+        session: AsyncSession,
+        agency_id: int,
 ):
     emojis = await get_str_emojis_in_agency(
         session=session,
@@ -70,9 +71,9 @@ async def process_show_busy_emojis(
     IsBusyEmoji(),
 )
 async def warning_busy_emoji(
-    message: Message,
-    session: AsyncSession,
-    agency_id: int,
+        message: Message,
+        session: AsyncSession,
+        agency_id: int,
 ):
     emojis = await get_str_emojis_in_agency(
         session=session,
@@ -87,10 +88,10 @@ async def warning_busy_emoji(
     IsEmoji(),
 )
 async def process_emoticon_sent(
-    message: Message,
-    state: FSMContext,
-    session: AsyncSession,
-    agency_id,
+        message: Message,
+        state: FSMContext,
+        session: AsyncSession,
+        agency_id,
 ):
     await state.update_data(emoticon=message.text)
     logger.info(await state.get_data())
@@ -106,9 +107,9 @@ async def process_emoticon_sent(
     await state.clear()
     await message.answer(
         text=LEXICON_RU["registration_done"]
-        + f"Приветствую {db.user_database[message.from_user.id]['username']}"
-        f"{db.user_database[message.from_user.id]['emoticon']}\n\n"
-        + LEXICON_RU["main_menu_junior"],
+             + f"Приветствую {db.user_database[message.from_user.id]['username']}"
+               f"{db.user_database[message.from_user.id]['emoticon']}\n\n"
+             + LEXICON_RU["main_menu_junior"],
         reply_markup=create_menu_keyboard(
             "check_in",
             "clock_out",
@@ -125,6 +126,6 @@ async def process_emoticon_sent(
     StateFilter(FSMFillForm.fill_emoticon),
 )
 async def warning_not_emoticon(
-    message: Message,
+        message: Message,
 ):
     await message.answer(text=LEXICON_RU["entered_not_emoticon"])

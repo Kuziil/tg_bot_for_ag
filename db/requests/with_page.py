@@ -1,18 +1,18 @@
 from sqlalchemy import select, extract
 from sqlalchemy.engine import Result
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import (
     selectinload,
     joinedload,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import PagesORM, PagesIntervalsORM, UsersORM, ShiftsORM
 
 
 async def get_pages_by_user_tg_id(
-    session: AsyncSession,
-    user_tg_id: int,
-    current_month: int,
+        session: AsyncSession,
+        user_tg_id: int,
+        current_month: int,
 ):
     result: Result = await session.execute(
         select(PagesORM)
@@ -39,8 +39,8 @@ async def get_pages_by_user_tg_id(
 
 
 async def test_123(
-    session: AsyncSession,
-    user_tg_id: int,
+        session: AsyncSession,
+        user_tg_id: int,
 ):
     result = await session.execute(
         select(PagesORM)

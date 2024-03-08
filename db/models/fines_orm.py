@@ -1,12 +1,11 @@
-from typing import TYPE_CHECKING
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from db.models.base import Base
 from db.models.types import intpk, strtext, dtdate, intbigint
-
 
 if TYPE_CHECKING:
     from .users_orm import UsersORM

@@ -1,32 +1,30 @@
 import asyncio
-import logging
 import locale
+import logging
 from zoneinfo import ZoneInfo
-
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types.user import User
-from db.requests.with_test import test_connection
 
+from config_data.config_reader import settings
+from db.db_helper import DatabaseHelper
+from db.requests.with_test import check_for_bot_id_in_db
+from db.requests.with_test import test_connection
 from handlers import main_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
-from config_data.config_reader import settings
-from middlewares import DbSessionMiddleware, TranslatorMiddleware
-from db.requests.with_test import check_for_bot_id_in_db
-from db.db_helper import DatabaseHelper
+from lexicon.lexicon_en import (
+    LEXICON_EN,
+    LEXICON_COMMANDS_EN,
+    LEXICON_COMMANDS_DESC_EN,
+)
 from lexicon.lexicon_ru import (
     LEXICON_RU,
     LEXICON_COMMANDS_RU,
     LEXICON_COMMANDS_DESC_RU,
     LEXICON_BUTTON_RU,
 )
-from lexicon.lexicon_en import (
-    LEXICON_EN,
-    LEXICON_COMMANDS_EN,
-    LEXICON_COMMANDS_DESC_EN,
-)
-
+from middlewares import DbSessionMiddleware, TranslatorMiddleware
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -56,7 +54,7 @@ async def main():
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(filename)s:%(lineno)d #%(levelname)-8s "
-        "[%(asctime)s] - %(name)s - %(message)s",
+               "[%(asctime)s] - %(name)s - %(message)s",
     )
 
     # Выводим в консоль информацию о начале запуска бота

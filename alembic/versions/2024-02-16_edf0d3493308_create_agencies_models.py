@@ -6,9 +6,8 @@ Create Date: 2024-02-16 08:22:17.060173
 
 """
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 revision = "edf0d3493308"
 down_revision = "c2015e75525b"
@@ -17,7 +16,6 @@ depends_on = None
 
 
 def upgrade():
-
     op.create_table(
         "agencies_models",
         sa.Column("id", sa.BIGINT(), sa.Identity(always=True), nullable=False),
@@ -31,5 +29,4 @@ def upgrade():
 
 
 def downgrade():
-
     op.drop_table("agencies_models")

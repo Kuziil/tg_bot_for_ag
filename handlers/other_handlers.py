@@ -1,10 +1,9 @@
 from aiogram import Router
-from aiogram.types import Message
 from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
+from aiogram.types import Message
 
 from lexicon.lexicon_ru import LEXICON_RU
-
 
 router = Router()
 

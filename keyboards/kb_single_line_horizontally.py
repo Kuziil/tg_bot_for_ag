@@ -1,10 +1,11 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 from lexicon.lexicon_ru import LEXICON_BUTTON_RU
 
 
 def create_start_keyboard(
-    *buttons: str,
+        *buttons: str,
 ) -> InlineKeyboardMarkup:
     """_summary_
     Данная функция служит конструктором для горизонтальной клавиатуры

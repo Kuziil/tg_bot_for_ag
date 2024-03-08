@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from db.models.base import Base
 from db.models.types import intpk, dtdate, intbigint
-from sqlalchemy import ForeignKey
 
 if TYPE_CHECKING:
     from .pages_intervals_orm import PagesIntervalsORM

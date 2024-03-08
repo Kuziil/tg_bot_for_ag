@@ -1,22 +1,20 @@
+import datetime as dt
 from zoneinfo import ZoneInfo
+
+from aiogram.types import InlineKeyboardButton
+
 from db.models import IntervalsORM, PagesORM
 from keyboards.schedule.month_v2.classes_callback_data import (
     MonthScheduleCallbackData)
 
 
-from aiogram.types import InlineKeyboardButton
-
-
-import datetime as dt
-
-
 async def create_row_month_year(
-    dict_datetimes: dict[str, dt.datetime],
-    dict_pages: dict[str, PagesORM],
-    dict_lineups: dict[str, int],
-    dict_intervals: dict[str, IntervalsORM],
-    current_page_interval_id: int,
-    st_shifts: list[dict[str, str | int]] | None = None,
+        dict_datetimes: dict[str, dt.datetime],
+        dict_pages: dict[str, PagesORM],
+        dict_lineups: dict[str, int],
+        dict_intervals: dict[str, IntervalsORM],
+        current_page_interval_id: int,
+        st_shifts: list[dict[str, str | int]] | None = None,
 ):
     buttons: list[InlineKeyboardButton] = []
     dict_for_ikb: list[dict[str, str]] = [
@@ -40,9 +38,9 @@ async def create_row_month_year(
     for button in dict_for_ikb:
         if st_shifts:
             if (
-                button["sequence_item"] != "before"
-                and button["sequence_item"] != "after"
-                and button["sequence_item"] in dict_datetimes
+                    button["sequence_item"] != "before"
+                    and button["sequence_item"] != "after"
+                    and button["sequence_item"] in dict_datetimes
             ):
                 month = dict_datetimes[button["sequence_item"]].month
                 year = dict_datetimes[button["sequence_item"]].year
@@ -92,12 +90,12 @@ async def create_row_month_year(
 
 
 async def create_row_pages(
-    dict_datetimes: dict[str, dt.datetime],
-    dict_pages: dict[str, PagesORM],
-    dict_lineups: dict[str, int],
-    dict_intervals: dict[str, IntervalsORM],
-    current_page_interval_id: int,
-    st_shifts: list[dict[str, str | int]] | None = None,
+        dict_datetimes: dict[str, dt.datetime],
+        dict_pages: dict[str, PagesORM],
+        dict_lineups: dict[str, int],
+        dict_intervals: dict[str, IntervalsORM],
+        current_page_interval_id: int,
+        st_shifts: list[dict[str, str | int]] | None = None,
 ):
     buttons: list[InlineKeyboardButton] = []
     dict_for_ikb: list[dict[str, str]] = [
@@ -121,9 +119,9 @@ async def create_row_pages(
     for button in dict_for_ikb:
         if st_shifts:
             if (
-                button["sequence_item"] != "before"
-                and button["sequence_item"] != "after"
-                and button["sequence_item"] in dict_pages
+                    button["sequence_item"] != "before"
+                    and button["sequence_item"] != "after"
+                    and button["sequence_item"] in dict_pages
             ):
                 buttons.append(
                     InlineKeyboardButton(
@@ -161,21 +159,21 @@ async def create_row_pages(
 
 
 async def convert_datetime_to_time_str(
-    default_tz: ZoneInfo,
-    time: dt.datetime,
+        default_tz: ZoneInfo,
+        time: dt.datetime,
 ) -> str:
     time_str: str = time.astimezone(default_tz).strftime("%H:%M")
     return time_str
 
 
 async def create_row_intervals(
-    dict_datetimes: dict[str, dt.datetime],
-    dict_pages: dict[str, PagesORM],
-    dict_lineups: dict[str, int],
-    dict_intervals: dict[str, IntervalsORM],
-    default_tz: ZoneInfo,
-    current_page_interval_id: int,
-    st_shifts: list[dict[str, str | int]] | None = None,
+        dict_datetimes: dict[str, dt.datetime],
+        dict_pages: dict[str, PagesORM],
+        dict_lineups: dict[str, int],
+        dict_intervals: dict[str, IntervalsORM],
+        default_tz: ZoneInfo,
+        current_page_interval_id: int,
+        st_shifts: list[dict[str, str | int]] | None = None,
 ):
     buttons: list[InlineKeyboardButton] = []
     dict_for_ikb: list[dict[str, str]] = [
@@ -205,9 +203,9 @@ async def create_row_intervals(
     for button in dict_for_ikb:
         if st_shifts:
             if (
-                button["sequence_item"] != "before"
-                and button["sequence_item"] != "after"
-                and button["sequence_item"] in dict_intervals
+                    button["sequence_item"] != "before"
+                    and button["sequence_item"] != "after"
+                    and button["sequence_item"] in dict_intervals
             ):
                 month = dict_datetimes["current"].month
                 year = dict_datetimes["current"].year
@@ -257,12 +255,12 @@ async def create_row_intervals(
 
 
 async def create_row_lineups(
-    dict_datetimes: dict[str, dt.datetime],
-    dict_pages: dict[str, PagesORM],
-    dict_lineups: dict[str, int],
-    dict_intervals: dict[str, IntervalsORM],
-    current_page_interval_id: int,
-    st_shifts: list[dict[str, str | int]] | None = None,
+        dict_datetimes: dict[str, dt.datetime],
+        dict_pages: dict[str, PagesORM],
+        dict_lineups: dict[str, int],
+        dict_intervals: dict[str, IntervalsORM],
+        current_page_interval_id: int,
+        st_shifts: list[dict[str, str | int]] | None = None,
 ):
     buttons: list[InlineKeyboardButton] = []
     dict_for_ikb: list[dict[str, str]] = [
@@ -282,9 +280,9 @@ async def create_row_lineups(
     for button in dict_for_ikb:
         if st_shifts:
             if (
-                button["sequence_item"] != "before"
-                and button["sequence_item"] != "after"
-                and button["sequence_item"] in dict_lineups
+                    button["sequence_item"] != "before"
+                    and button["sequence_item"] != "after"
+                    and button["sequence_item"] in dict_lineups
             ):
                 buttons.append(
                     InlineKeyboardButton(

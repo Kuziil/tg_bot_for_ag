@@ -17,19 +17,19 @@ __all__ = (
     "AgenciesUsersORM",
 )
 
-from .base import Base
 from .agencies_orm import AgenciesORM
-from .models_orm import ModelsORM
 from .agencies_pages_orm import AgenciesPagesORM
-from .roles_orm import RolesORM
-from .permissions_orm import PermissionsORM
-from .roles_permissions_orm import RolesPermissionsORM
-from .intervals_orm import IntervalsORM
-from .users_orm import UsersORM
-from .tgs_orm import TgsORM
-from .pages_orm import PagesORM
-from .pages_intervals_orm import PagesIntervalsORM
-from .shifts_orm import ShiftsORM
+from .agencies_users_orm import AgenciesUsersORM
+from .base import Base
 from .earnings_orm import EarningsORM
 from .fines_orm import FinesORM
-from .agencies_users_orm import AgenciesUsersORM
+from .intervals_orm import IntervalsORM
+from .models_orm import ModelsORM
+from .pages_intervals_orm import PagesIntervalsORM
+from .pages_orm import PagesORM
+from .permissions_orm import PermissionsORM
+from .roles_orm import RolesORM
+from .roles_permissions_orm import RolesPermissionsORM
+from .shifts_orm import ShiftsORM
+from .tgs_orm import TgsORM
+from .users_orm import UsersORM

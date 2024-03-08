@@ -1,16 +1,14 @@
 import datetime as dt
+import logging
 from calendar import monthcalendar, monthrange, day_abbr
 from typing import Any
 from zoneinfo import ZoneInfo
-import logging
 
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.requests.with_page import (
-    get_pages_by_user_tg_id,
-)
+from callback_factories.back import BackCallbackData
 from db.models import (
     PagesORM,
     PagesIntervalsORM,
@@ -18,6 +16,9 @@ from db.models import (
     UsersORM,
     TgsORM,
     ShiftsORM,
+)
+from db.requests.with_page import (
+    get_pages_by_user_tg_id,
 )
 from keyboards.schedule.month_v2.classes_callback_data import (
     MonthScheduleCallbackData,
@@ -28,16 +29,15 @@ from keyboards.schedule.month_v2.creators_row import (
     create_row_month_year,
     create_row_pages,
 )
-from callback_factories.back import BackCallbackData
 
 logger = logging.getLogger(__name__)
 
 
 async def process_datetime(
-    default_tz: ZoneInfo,
-    current_day: int | None,
-    current_month: int | None,
-    current_year: int | None,
+        default_tz: ZoneInfo,
+        current_day: int | None,
+        current_month: int | None,
+        current_year: int | None,
 ) -> dict[str, dt.datetime]:
     dict_datetimes: dict[str, dt.datetime] = {}
     current_datetime_now: dt.datetime = dt.datetime.now(tz=default_tz)
@@ -67,17 +67,17 @@ async def process_datetime(
         )[1]
     )
     dict_datetimes["before"] = (
-        dict_datetimes["current"] - timedelta_of_days_for_current_month
+            dict_datetimes["current"] - timedelta_of_days_for_current_month
     )
     dict_datetimes["after"] = (
-        dict_datetimes["current"] + timedelta_of_days_for_current_month
+            dict_datetimes["current"] + timedelta_of_days_for_current_month
     )
     return dict_datetimes
 
 
 async def in_circle(
-    values: list[Any],
-    current: int,
+        values: list[Any],
+        current: int,
 ):
     dict_position: dict[str, Any] = {}
     dict_position["current"] = values[current]
@@ -97,8 +97,8 @@ async def in_circle(
 
 
 async def process_page(
-    pages: list[PagesORM],
-    current_page_id: int,
+        pages: list[PagesORM],
+        current_page_id: int,
 ) -> dict[str, PagesORM]:
     current: int = 0
     for key, page in enumerate(pages):
@@ -110,10 +110,9 @@ async def process_page(
 
 
 async def create_dict_lineups(
-    lineups: list[int],
-    current_lineup: int,
+        lineups: list[int],
+        current_lineup: int,
 ) -> dict[str, int]:
-
     lineups.sort()
     current_lineup_key = current_lineup - 1
 
@@ -127,21 +126,21 @@ async def create_dict_lineups(
 async def is_dict_in_list(dictionary, list_of_dicts):
     for d in list_of_dicts:
         if (
-            d["day"] == dictionary["day"]
-            and d["month"] == dictionary["month"]
-            and d["year"] == dictionary["year"]
-            and d["page_interval_id"] == dictionary["page_interval_id"]
+                d["day"] == dictionary["day"]
+                and d["month"] == dictionary["month"]
+                and d["year"] == dictionary["year"]
+                and d["page_interval_id"] == dictionary["page_interval_id"]
         ):
             return True
     return False
 
 
 async def process_intervals_lineups_emojis(
-    current_interval_id: int | None,
-    current_lineup: int | None,
-    pages_intervals: list[PagesIntervalsORM],
-    user_tg_id: int,
-    st_shifts: list[dict[str, str]] | None,
+        current_interval_id: int | None,
+        current_lineup: int | None,
+        pages_intervals: list[PagesIntervalsORM],
+        user_tg_id: int,
+        st_shifts: list[dict[str, str]] | None,
 ) -> tuple[dict[str, IntervalsORM], dict[str, int], dict[int, str]]:
     """_summary_
 
@@ -204,10 +203,10 @@ async def process_intervals_lineups_emojis(
         # это сделано для того
         # чтобы получать новые current_interval_key после первой инициализации
         if (
-            current_interval_id
-            and current_lineup
-            and interval.id == current_interval_id
-            and lineup == current_lineup
+                current_interval_id
+                and current_lineup
+                and interval.id == current_interval_id
+                and lineup == current_lineup
         ):
             current_page_interval_id = page_interval.id
             current_interval_key = len(intervals) - 1
@@ -242,9 +241,9 @@ async def process_intervals_lineups_emojis(
         # в момент когда определен нужный интервал,
         # а также состав и соответственно страница
         if (
-            current_interval_key is not None
-            and current_lineup is not None
-            and shifts_packed is False
+                current_interval_key is not None
+                and current_lineup is not None
+                and shifts_packed is False
         ):
             shifts: list[ShiftsORM] = page_interval.shifts
             # перебор всех смен для данной page_interval,
@@ -277,11 +276,11 @@ async def process_intervals_lineups_emojis(
         logger.debug(f"st_shifts: {st_shifts}")
         for st_shift in st_shifts:
             if (
-                not await is_dict_in_list(
-                    dictionary=st_shift, list_of_dicts=list_of_dict_shifts
-                )
-                and st_shift["page_interval_id"]
-                in available_pages_intervals_id
+                    not await is_dict_in_list(
+                        dictionary=st_shift, list_of_dicts=list_of_dict_shifts
+                    )
+                    and st_shift["page_interval_id"]
+                    in available_pages_intervals_id
             ):
                 dict_shift_from_st = {
                     "day": st_shift["day"],
@@ -313,17 +312,17 @@ async def process_intervals_lineups_emojis(
 
 
 async def create_month_schedule_v2(
-    user_tg_id: int,
-    session: AsyncSession,
-    i18n: dict[dict[str, str]],
-    default_tz: ZoneInfo,
-    current_page_id: int | None = None,
-    current_year: int | None = None,
-    current_month: int | None = None,
-    current_day: int | None = None,
-    current_interval_id: int | None = None,
-    current_lineup: int | None = None,
-    st_shifts: list[dict[str, str]] | None = None,
+        user_tg_id: int,
+        session: AsyncSession,
+        i18n: dict[dict[str, str]],
+        default_tz: ZoneInfo,
+        current_page_id: int | None = None,
+        current_year: int | None = None,
+        current_month: int | None = None,
+        current_day: int | None = None,
+        current_interval_id: int | None = None,
+        current_lineup: int | None = None,
+        st_shifts: list[dict[str, str]] | None = None,
 ):
     kb_builder = InlineKeyboardBuilder()
     dict_datetimes: dict[str, dt.datetime] = await process_datetime(
@@ -429,10 +428,10 @@ async def create_month_schedule_v2(
                     d_s_day = dict_shift["day"]
                     d_s_page_interval_id = dict_shift["page_interval_id"]
                     if (
-                        d_s_day == day
-                        and d_s_month == dict_datetimes["current"].month
-                        and d_s_year == dict_datetimes["current"].year
-                        and d_s_page_interval_id == current_page_interval_id
+                            d_s_day == day
+                            and d_s_month == dict_datetimes["current"].month
+                            and d_s_year == dict_datetimes["current"].year
+                            and d_s_page_interval_id == current_page_interval_id
                     ):
                         day_str = dict_shift["emoji"]
                         break

@@ -1,18 +1,16 @@
 from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
-from aiogram.types import Message, CallbackQuery
-from aiogram.fsm.state import default_state
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import default_state
+from aiogram.types import Message, CallbackQuery
 
-
-from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
-from keyboards.kb_single_line_horizontally import create_start_keyboard
-from keyboards.kb_single_line_vertically import create_menu_keyboard
-from handlers.in_system.in_system_handlers import in_system_router
-from handlers.not_in_system.not_in_system_handlers import not_in_system_router
 from FSMs.FSMs import FSMFillForm
 from filters.filters import IsUserInSystem
-
+from handlers.in_system.in_system_handlers import in_system_router
+from handlers.not_in_system.not_in_system_handlers import not_in_system_router
+from keyboards.kb_single_line_horizontally import create_start_keyboard
+from keyboards.kb_single_line_vertically import create_menu_keyboard
+from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
 
 main_router = Router()
 
@@ -24,7 +22,7 @@ main_router.include_router(in_system_router)
     Command(commands="start"), StateFilter(default_state), IsUserInSystem()
 )
 async def process_start_command(
-    message: Message,
+        message: Message,
 ):
     """Данный хэндлер реагирует на команду /start
     выдает список кнопок ориентации в главном меню для Junior
@@ -51,7 +49,7 @@ async def process_start_command(
     StateFilter(default_state),
 )
 async def process_start_command_for_new_id(
-    message: Message,
+        message: Message,
 ):
     """Данный хэндлер отвечает на команду /start
     и возвращает текст с кнопками позволяющие пользователю выбрать
@@ -72,7 +70,7 @@ async def process_start_command_for_new_id(
     StateFilter(default_state),
 )
 async def process_help_command(
-    message: Message,
+        message: Message,
 ):
     """Данный хэндлер служит для предоставления списка команд и
     справки по работе с ботом
@@ -89,7 +87,7 @@ async def process_help_command(
     StateFilter(default_state),
 )
 async def process_in_the_system_press(
-    callback: CallbackQuery,
+        callback: CallbackQuery,
 ):
     """Данный хэндлер реагирует на нажатие кнопки в системе
     выдает список кнопок ориентации в главном меню для Junior
@@ -117,8 +115,8 @@ async def process_in_the_system_press(
     StateFilter(default_state),
 )
 async def process_not_in_the_system_press(
-    callback: CallbackQuery,
-    state: FSMContext,
+        callback: CallbackQuery,
+        state: FSMContext,
 ):
     await callback.message.edit_text(text=LEXICON_RU["enter_username"])
     await state.set_state(FSMFillForm.fill_username)

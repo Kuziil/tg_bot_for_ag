@@ -20,9 +20,9 @@ async def test_connection(session: AsyncSession):
 
 
 async def check_for_bot_id_in_db(
-    session: AsyncSession,
-    bot_id: int,
-    agency_id: int | None = None,
+        session: AsyncSession,
+        bot_id: int,
+        agency_id: int | None = None,
 ):
     try:
         if agency_id:

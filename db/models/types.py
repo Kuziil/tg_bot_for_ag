@@ -1,8 +1,7 @@
-from typing import Annotated
 from datetime import datetime, date
+from typing import Annotated
 
 from sqlalchemy import Identity, func
-from sqlalchemy.orm import mapped_column
 from sqlalchemy.dialects.postgresql import (
     TEXT,
     BIGINT,
@@ -10,6 +9,7 @@ from sqlalchemy.dialects.postgresql import (
     TIMESTAMP,
     DATE,
 )
+from sqlalchemy.orm import mapped_column
 
 created_at = Annotated[
     datetime,

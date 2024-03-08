@@ -1,5 +1,5 @@
-import logging
 import datetime as dt
+import logging
 from zoneinfo import ZoneInfo
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,10 +20,10 @@ logger = logging.getLogger(__name__)
 
 
 async def add_shift(
-    session: AsyncSession,
-    date_shift: dt.date,
-    page_interval_id: int,
-    replacement_id: int | None = None,
+        session: AsyncSession,
+        date_shift: dt.date,
+        page_interval_id: int,
+        replacement_id: int | None = None,
 ):
     shift = ShiftsORM(
         date_shift=date_shift,
@@ -35,13 +35,13 @@ async def add_shift(
 
 
 async def add_page(
-    session: AsyncSession,
-    model_id: int,
-    vip: bool,
-    sales_commission: int,
-    work_same_time: int = 1,
-    page_link: str | None = None,
-    senior_id: int | None = None,
+        session: AsyncSession,
+        model_id: int,
+        vip: bool,
+        sales_commission: int,
+        work_same_time: int = 1,
+        page_link: str | None = None,
+        senior_id: int | None = None,
 ) -> None:
     page = PagesORM(
         model_id=model_id,
@@ -56,10 +56,10 @@ async def add_page(
 
 
 async def add_model(
-    session: AsyncSession,
-    agency_id: int,
-    model_title: str,
-    model_description: str | None = None,
+        session: AsyncSession,
+        agency_id: int,
+        model_title: str,
+        model_description: str | None = None,
 ):
     model = ModelsORM(
         title=model_title,
@@ -77,11 +77,11 @@ async def add_model(
 
 
 async def add_user(
-    session: AsyncSession,
-    username: str,
-    emoji: str,
-    user_tg_id: int,
-    agency_id: int,
+        session: AsyncSession,
+        username: str,
+        emoji: str,
+        user_tg_id: int,
+        agency_id: int,
 ):
     user = UsersORM(
         username=username,
@@ -106,9 +106,9 @@ async def add_user(
 
 
 async def add_page_interval(
-    session: AsyncSession,
-    page_id: int,
-    interval_id: int,
+        session: AsyncSession,
+        page_id: int,
+        interval_id: int,
 ) -> None:
     page_interval = PagesIntervalsORM(
         page_id=page_id,
@@ -119,10 +119,10 @@ async def add_page_interval(
 
 
 async def add_interval(
-    session: AsyncSession,
-    default_tz: ZoneInfo,
-    start_at: dt.time,
-    end_at: dt.time,
+        session: AsyncSession,
+        default_tz: ZoneInfo,
+        start_at: dt.time,
+        end_at: dt.time,
 ):
     start_at_1 = dt.datetime(
         year=1970,
@@ -149,8 +149,8 @@ async def add_interval(
 
 
 async def add_shifts(
-    session: AsyncSession,
-    st_shifts: list[dict[str, str]],
+        session: AsyncSession,
+        st_shifts: list[dict[str, str]],
 ):
     shifts = []
     for st_shift in st_shifts:

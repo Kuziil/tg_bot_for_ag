@@ -2,7 +2,6 @@ from sqlalchemy.orm import DeclarativeBase
 
 
 class Base(DeclarativeBase):
-
     repr_cols_num = 100
     repr_cols = tuple()
 

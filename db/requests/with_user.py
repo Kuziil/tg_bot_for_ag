@@ -1,9 +1,9 @@
 import logging
 
-from sqlalchemy.orm import selectinload
 from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from db.models import AgenciesUsersORM, TgsORM, UsersORM, PagesIntervalsORM
 
@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 
 
 async def is_user_in_agency(
-    session: AsyncSession,
-    user_tg_id: int,
-    agency_id: int,
+        session: AsyncSession,
+        user_tg_id: int,
+        agency_id: int,
 ) -> bool:
     stmt = (
         select(AgenciesUsersORM)
@@ -32,8 +32,8 @@ async def is_user_in_agency(
 
 
 async def get_all_users_in_agency(
-    session: AsyncSession,
-    agency_id: int,
+        session: AsyncSession,
+        agency_id: int,
 ) -> list[UsersORM]:
     stmt = (
         select(UsersORM)
@@ -49,8 +49,8 @@ async def get_all_users_in_agency(
 
 
 async def get_user_and_available_pages_intervals_by_tg_id(
-    session: AsyncSession,
-    user_tg_id: int,
+        session: AsyncSession,
+        user_tg_id: int,
 ) -> UsersORM:
     # нужна проверка на скорость и поиграться с последовательностью
     result: Result = await session.execute(

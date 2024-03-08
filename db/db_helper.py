@@ -1,14 +1,14 @@
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from pydantic import SecretStr
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 
 class DatabaseHelper:
     def __init__(
-        self,
-        db_url: SecretStr,
-        echo: bool = False,
-        pool_size: int | None = None,
-        max_overflow: int | None = None,
+            self,
+            db_url: SecretStr,
+            echo: bool = False,
+            pool_size: int | None = None,
+            max_overflow: int | None = None,
     ) -> None:
         self.engine = create_async_engine(
             url=str(db_url),

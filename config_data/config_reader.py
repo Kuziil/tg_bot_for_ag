@@ -18,9 +18,8 @@ class Settings(BaseModel):
 
 # Функция, которая читает YAML-файл, валидирует и создаёт объект Settings
 def parse_settings(
-    local_file_name: str = "settings.yml",
+        local_file_name: str = "settings.yml",
 ) -> Settings:
-
     # Если задана переменная окружения BOT_CONFIG_PATH,
     # то читать будем оттуда
     file_path = getenv("BOT_CONFIG_PATH")
@@ -43,8 +42,8 @@ def parse_settings(
                 "Path %s is not a file or doesn't exist", settings_file)
         file_path = settings_file.absolute()
     with open(
-        file_path,
-        "rt",
+            file_path,
+            "rt",
     ) as file:
         config_data = load(
             file,

@@ -6,7 +6,7 @@ from lexicon.lexicon_ru import LEXICON_COMMANDS_DESC_RU
 
 # Функция для настройки кнопки Menu бота
 async def set_main_menu(
-    bot: Bot,
+        bot: Bot,
 ):
     main_menu_commands = [
         BotCommand(

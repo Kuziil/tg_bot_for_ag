@@ -5,9 +5,9 @@ from environs import Env
 
 @dataclass
 class TgBot:
-    token: str               # Токен для доступа к телеграм-боту
-    id: int                  # id бота
-    admin_ids: list[int]     # Список id администраторов бота
+    token: str  # Токен для доступа к телеграм-боту
+    id: int  # id бота
+    admin_ids: list[int]  # Список id администраторов бота
     operator_ids: list[int]  # Список id операторов бота
 
 
