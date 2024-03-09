@@ -24,12 +24,6 @@ main_router.include_router(in_system_router)
 async def process_start_command(
         message: Message,
 ):
-    """Данный хэндлер реагирует на команду /start
-    выдает список кнопок ориентации в главном меню для Junior
-
-    Args:
-        callback (CallbackQuery): _description_
-    """
     await message.answer(
         text=LEXICON_RU["main_menu_junior"],
         reply_markup=create_menu_keyboard(
