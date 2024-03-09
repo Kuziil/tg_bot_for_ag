@@ -79,8 +79,7 @@ async def in_circle(
         values: list[Any],
         current: int,
 ):
-    dict_position: dict[str, Any] = {}
-    dict_position["current"] = values[current]
+    dict_position: dict[str, Any] = {"current": values[current]}
     len_values: int = len(values)
     if len_values == 1:
         return dict_position
@@ -141,7 +140,7 @@ async def process_intervals_lineups_emojis(
         pages_intervals: list[PagesIntervalsORM],
         user_tg_id: int,
         st_shifts: list[dict[str, str]] | None,
-) -> tuple[dict[str, IntervalsORM], dict[str, int], dict[int, str]]:
+):
     """_summary_
 
     Args:
@@ -152,11 +151,6 @@ async def process_intervals_lineups_emojis(
         current_lineup (int | None): данный параметр = None
         если расписание только открыли,
         в ином случае указывает на то какой состав отобразить
-
-        current_day (int | None): данный параметр = None
-        если расписание только открыли,
-        в ином случае может быть равен числу в месяце или 0,
-        если были нажаты кнопки не ответственные за наполнение смен
 
         pages_intervals (list[PagesIntervalsORM]):
         список всех PagesIntervalsORM которые доступны Pages,
@@ -183,6 +177,8 @@ async def process_intervals_lineups_emojis(
 
     available_pages_intervals_id: list[int] = []
 
+    current_page_interval_id: str | None = None
+
     for page_interval in pages_intervals:
         # интервал в данном page_interval
         interval: IntervalsORM = page_interval.interval
@@ -200,7 +196,7 @@ async def process_intervals_lineups_emojis(
             lineups.append(lineup)
         # если существует current_interval_id и current_lineup,
         # то сравнивать их с текущими значениями
-        # это сделано для того
+        # это сделано, для того
         # чтобы получать новые current_interval_key после первой инициализации
         if (
                 current_interval_id
@@ -212,7 +208,7 @@ async def process_intervals_lineups_emojis(
             current_interval_key = len(intervals) - 1
             current_lineup = lineup
 
-        # Проверка на наличе user в данном page_interval, это нужно
+        # Проверка на присутствие user в данном page_interval, это нужно
         # т.к. не у каждого page_interval может быть пользователь,
         # например в случае открытия новой страницы или увольнения пользователя
         if user is not None:
@@ -230,14 +226,14 @@ async def process_intervals_lineups_emojis(
                     current_user = user
                     available_pages_intervals_id.append(page_interval.id)
                     # если значения по умолчанию не были переданы,
-                    # следовательно это первый запуск расписания,
+                    # следовательно, это первый запуск расписания,
                     # то передаем заполняем
                     # current_interval_key и current_lineup
                     if current_interval_id is None and current_lineup is None:
                         current_page_interval_id = page_interval.id
                         current_interval_key = len(intervals) - 1
                         current_lineup = lineup
-        # Данная проверка нужна для того чтобы паковать days_emojis
+        # Данная проверка нужна, для того чтобы паковать days_emojis
         # в момент когда определен нужный интервал,
         # а также состав и соответственно страница
         if (
@@ -251,11 +247,9 @@ async def process_intervals_lineups_emojis(
             for shift in shifts:
                 # наполняем days_emojis днем и соответствующим ему эмодзи
                 # для отображения в расписании
-                dict_shift: dict[str, str | int] = {}
-                dict_shift["day"] = shift.date_shift.day
-                dict_shift["month"] = shift.date_shift.month
-                dict_shift["year"] = shift.date_shift.year
-                dict_shift["page_interval_id"] = shift.page_interval_id
+                dict_shift: dict[str, str | int] = {"day": shift.date_shift.day, "month": shift.date_shift.month,
+                                                    "year": shift.date_shift.year,
+                                                    "page_interval_id": shift.page_interval_id}
                 # если пользователь существует и у смены нет замены,
                 # то выведется эмодзи пользователя, чья смена сейчас
                 if shift.replacement_id is None and user is not None:
@@ -377,7 +371,7 @@ async def create_month_schedule_v2(
 
     dict_intervals: dict[str, IntervalsORM] = dict_intervals_and_lineups[0]
     dict_lineups: dict[str, int] = dict_intervals_and_lineups[1]
-    dict_days_emojis: dict[int, str] = dict_intervals_and_lineups[2]
+    dict_days_emojis: list[dict[str, str | int]] = dict_intervals_and_lineups[2]
     st_shifts: list[dict[str, str]] = dict_intervals_and_lineups[3]
     current_page_interval_id: int = dict_intervals_and_lineups[4]
 
