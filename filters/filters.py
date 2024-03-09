@@ -55,10 +55,10 @@ class IsStShiftInStShifts(BaseFilter):
             callback: CallbackQuery,  # Нельзя удалять т.к. callback_data связана
             callback_data: MonthScheduleCallbackData,
             state: FSMContext,
-    ) -> bool:
-        st: dict[str, str] = await state.get_data()
-        st_shifts: list[dict[str, str]] = st["shifts"]
-        st_shift: dict[str, str] = {
+    ):
+        st: dict[str, list[dict[str, int]]] = await state.get_data()
+        st_shifts: list[dict[str, int]] = st["shifts"]
+        st_shift: dict[str, int] = {
             "day": callback_data.day,
             "month": callback_data.month,
             "year": callback_data.year,

@@ -79,7 +79,7 @@ async def process_not_day_press(
         callback_data: MonthScheduleCallbackData,
         session: AsyncSession,
         default_tz: ZoneInfo,
-        i18n: dict[dict[str, str]],
+        i18n: dict[str, dict[str, str]],
 ):
     logger.debug("process_not_day_press - start")
     await callback.message.edit_text(

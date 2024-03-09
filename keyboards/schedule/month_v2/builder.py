@@ -308,7 +308,7 @@ async def process_intervals_lineups_emojis(
 async def create_month_schedule_v2(
         user_tg_id: int,
         session: AsyncSession,
-        i18n: dict[dict[str, str]],
+        i18n: dict[str, dict[str, str]],
         default_tz: ZoneInfo,
         current_page_id: int | None = None,
         current_year: int | None = None,
