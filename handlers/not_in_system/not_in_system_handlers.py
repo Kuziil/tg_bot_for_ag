@@ -7,7 +7,6 @@ from aiogram.types import Message, CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMFillForm
-from database.database import db
 from db.requests.with_add import add_user
 from db.requests.with_emoji import get_str_emojis_in_agency
 from filters.filters import IsEmoji, IsBusyEmoji
@@ -96,7 +95,6 @@ async def process_emoticon_sent(
     await state.update_data(emoticon=message.text)
     logger.info(await state.get_data())
     st: dict[str, str] = await state.get_data()
-    db.user_database[message.from_user.id] = st
     await add_user(
         session=session,
         username=st["username"],
@@ -104,12 +102,9 @@ async def process_emoticon_sent(
         user_tg_id=message.from_user.id,
         agency_id=agency_id,
     )
-    await state.clear()
     await message.answer(
-        text=LEXICON_RU["registration_done"]
-             + f"Приветствую {db.user_database[message.from_user.id]['username']}"
-               f"{db.user_database[message.from_user.id]['emoticon']}\n\n"
-             + LEXICON_RU["main_menu_junior"],
+        text=f"{LEXICON_RU["registration_done"]} Приветствую {st["username"]} {st["emoticon"]}\n\n"
+             f"{LEXICON_RU["main_menu_junior"]}",
         reply_markup=create_menu_keyboard(
             "check_in",
             "clock_out",
@@ -120,6 +115,7 @@ async def process_emoticon_sent(
             "training_materials",
         ),
     )
+    await state.clear()
 
 
 @not_in_system_router.message(
