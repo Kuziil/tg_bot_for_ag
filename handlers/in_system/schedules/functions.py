@@ -12,7 +12,20 @@ async def update_shifts(session: AsyncSession, i18n: dict[str, dict[str, str]], 
                         state: FSMContext | None = None, ):
     if st_shifts is None:
         st: dict[str, list[dict[str, str]]] = await state.get_data()
-        st_shifts: list[dict[str, str]] = st["shifts"]
+        try:
+            st_shifts: list[dict[str, str]] = st["shifts"]
+        except KeyError:
+            st_shifts: list[dict[str, str | int]] = [
+                {
+                    "day": callback_data.day,
+                    "month": callback_data.month,
+                    "year": callback_data.year,
+                    "page_id": callback_data.page_id,
+                    "interval_id": callback_data.interval_id,
+                    "lineup": callback_data.lineup,
+                    "page_interval_id": callback_data.page_interval_id,
+                },
+            ]
 
     markup, st_shifts = await create_month_schedule_v2(
         user_tg_id=callback.from_user.id,
