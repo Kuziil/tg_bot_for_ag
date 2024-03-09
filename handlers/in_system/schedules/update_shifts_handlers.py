@@ -16,7 +16,7 @@ from keyboards.schedule.month_v2.classes_callback_data import (
 update_shifts_router = Router()
 
 
-async def update_shifts(session: AsyncSession, i18n: dict[dict[str, str]], callback, callback_data,
+async def update_shifts(session: AsyncSession, i18n: dict[str, dict[str, str]], callback, callback_data,
                         default_tz: ZoneInfo,
                         st_shifts: list[dict[str, str]] | None = None,
                         state: FSMContext | None = None, ):
@@ -50,7 +50,7 @@ async def process_days_press(
         callback_data: MonthScheduleCallbackData,
         session: AsyncSession,
         default_tz: ZoneInfo,
-        i18n: dict[dict[str, str]],
+        i18n: dict[str, dict[str, str]],
         state: FSMContext,
         st_shifts: list[dict[str, str]],
 ):
@@ -78,7 +78,7 @@ async def process_busy_days_press(
         callback_data: MonthScheduleCallbackData,
         session: AsyncSession,
         default_tz: ZoneInfo,
-        i18n: dict[dict[str, str]],
+        i18n: dict[str, dict[str, str]],
         state: FSMContext,
 ):
     markup, st_shifts = await update_shifts(
@@ -105,7 +105,7 @@ async def process_apply_in_st(
         callback_data: MonthScheduleCallbackData,
         session: AsyncSession,
         default_tz: ZoneInfo,
-        i18n: dict[dict[str, str]],
+        i18n: dict[str, dict[str, str]],
         state: FSMContext,
 ):
     st: dict[str, list[dict[str, str]]] = await state.get_data()
@@ -156,7 +156,7 @@ async def process_cancel_press(
         callback_data: MonthScheduleCallbackData,
         session: AsyncSession,
         default_tz: ZoneInfo,
-        i18n: dict[dict[str, str]],
+        i18n: dict[str, dict[str, str]],
         state: FSMContext,
 ):
     await state.clear()
@@ -187,7 +187,7 @@ async def process_not_day_press_in_st(
         callback_data: MonthScheduleCallbackData,
         session: AsyncSession,
         default_tz: ZoneInfo,
-        i18n: dict[dict[str, str]],
+        i18n: dict[str, dict[str, str]],
         state: FSMContext,
 ):
     markup, st_shifts = await update_shifts(
