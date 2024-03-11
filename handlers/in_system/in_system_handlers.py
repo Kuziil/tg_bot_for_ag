@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from aiogram import Router, F
@@ -9,10 +10,10 @@ from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from callback_factories.back import BackCallbackData
-from db.requests.with_shift import update_starts_at_in_shifts
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
+from lexicon.telegram_text_processor.processor import create_text_for_check_in_press
 
 in_system_router = Router()
 
@@ -81,10 +82,13 @@ async def process_check_in_press(
         session: AsyncSession,
         default_tz: ZoneInfo,
 ):
-    await update_starts_at_in_shifts(session=session, user_tg_id=callback.from_user.id, default_tz=default_tz)
-    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=3, text="check_in")
-    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=5, text="check_in")
-    await callback.message.edit_text(text="1",
+
+    start_at: datetime = datetime.now(tz=default_tz)
+    text = await create_text_for_check_in_press(session=session, user_tg_id=callback.from_user.id,
+                                                start_at=start_at)
+    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=3, text=text)
+    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=5, text=text)
+    await callback.message.edit_text(text='1',
                                      reply_markup=create_menu_keyboard(
                                          "clock_out",
                                          "write_a_report",

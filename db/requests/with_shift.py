@@ -12,8 +12,7 @@ from db.models import ShiftsORM, PagesIntervalsORM, UsersORM, PagesORM
 logger = logging.getLogger(__name__)
 
 
-async def update_starts_at_in_shifts(session: AsyncSession, user_tg_id: int, default_tz: ZoneInfo) -> None:
-    start_at = datetime.now(tz=default_tz)
+async def update_starts_at_in_shifts(session: AsyncSession, user_tg_id: int, start_at: datetime):
     logger.debug(start_at)
     result: Result = await session.execute(
         select(ShiftsORM).options(
@@ -30,3 +29,5 @@ async def update_starts_at_in_shifts(session: AsyncSession, user_tg_id: int, def
         update(ShiftsORM).where(ShiftsORM.id.in_(shift_ids)).values(start_at=start_at)
     )
     await session.commit()
+
+    return shifts
