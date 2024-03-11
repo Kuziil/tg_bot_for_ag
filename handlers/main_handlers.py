@@ -28,7 +28,6 @@ async def process_start_command(
         text=LEXICON_RU["main_menu_junior"],
         reply_markup=create_menu_keyboard(
             "check_in",
-            "clock_out",
             "write_a_report",
             "schedule",
             "my_money",

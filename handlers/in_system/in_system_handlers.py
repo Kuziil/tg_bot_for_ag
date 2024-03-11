@@ -32,6 +32,7 @@ async def process_schedule_press(
     выдает инлайн клавиатуру с типами расписания
 
     Args:
+        i18n:
         callback (CallbackQuery): _description_
     """
     await callback.message.edit_text(
@@ -64,3 +65,45 @@ async def process_month_schedule_press(
         ),
     )
     await callback.answer()
+
+
+@in_system_router.callback_query(
+    StateFilter(default_state),
+    F.data == "check_in",
+)
+async def process_check_in_press(
+        callback: CallbackQuery,
+        i18n: dict[str, dict[str, str]],
+):
+    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=3, text="check_in")
+    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=5, text="check_in")
+    await callback.message.edit_text(text="1",
+                                     reply_markup=create_menu_keyboard(
+                                         "clock_out",
+                                         "write_a_report",
+                                         "schedule",
+                                         "my_money",
+                                         "model_statistics",
+                                         "training_materials",
+                                     ), )
+
+
+@in_system_router.callback_query(
+    StateFilter(default_state),
+    F.data == "clock_out",
+)
+async def process_clock_out_press(
+        callback: CallbackQuery,
+        i18n: dict[str, dict[str, str]],
+):
+    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=3, text="clock_out")
+    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=5, text="clock_out")
+    await callback.message.edit_text(text="1",
+                                     reply_markup=create_menu_keyboard(
+                                         "check_in",
+                                         "write_a_report",
+                                         "schedule",
+                                         "my_money",
+                                         "model_statistics",
+                                         "training_materials",
+                                     ), )
