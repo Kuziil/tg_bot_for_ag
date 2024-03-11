@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from db.models.base import Base
-from db.models.types import intpk, dtdate, intbigint
+from db.models.types import intpk, dtdate, intbigint, dtdatetime
 
 if TYPE_CHECKING:
     from .pages_intervals_orm import PagesIntervalsORM
@@ -30,6 +30,8 @@ class ShiftsORM(Base):
             ondelete="CASCADE",
         ),
     )
+    start_at: Mapped[dtdatetime | None]
+    end_at: Mapped[dtdatetime | None]
     # relationships
     page_interval: Mapped["PagesIntervalsORM"] = relationship(
         back_populates="shifts",
