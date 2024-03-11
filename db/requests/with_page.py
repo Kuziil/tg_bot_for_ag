@@ -36,31 +36,3 @@ async def get_pages_by_user_tg_id(
     )
     pages: list[PagesORM] = result.scalars().all()
     return pages
-
-
-async def test_123(
-        session: AsyncSession,
-        user_tg_id: int,
-):
-    result = await session.execute(
-        select(PagesORM)
-        .join(PagesORM.intervals_details)
-        .join(PagesIntervalsORM.user)
-        .options(
-            joinedload(PagesORM.model),
-            selectinload(PagesORM.intervals_details).options(
-                joinedload(PagesIntervalsORM.interval),
-                joinedload(PagesIntervalsORM.user).selectinload(UsersORM.tgs),
-                selectinload(
-                    PagesIntervalsORM.shifts.and_(
-                        extract("month", ShiftsORM.date_shift) == 1
-                    )
-                ),
-            ),
-        )
-        .filter(
-            UsersORM.tgs.any(user_tg_id=user_tg_id),
-        )
-    )
-    pages_intervals: list[PagesIntervalsORM] = result.scalars().all()
-    return pages_intervals

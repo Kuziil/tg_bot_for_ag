@@ -1,3 +1,4 @@
+import logging
 from zoneinfo import ZoneInfo
 
 from aiogram import Router, F
@@ -8,6 +9,7 @@ from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from callback_factories.back import BackCallbackData
+from db.requests.with_shift import update_starts_at_in_shifts
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
@@ -15,6 +17,8 @@ from keyboards.schedule.month_v2.builder import create_month_schedule_v2
 in_system_router = Router()
 
 in_system_router.include_router(month_v2_router)
+
+logger = logging.getLogger(__name__)
 
 
 @in_system_router.callback_query(
@@ -74,7 +78,10 @@ async def process_month_schedule_press(
 async def process_check_in_press(
         callback: CallbackQuery,
         i18n: dict[str, dict[str, str]],
+        session: AsyncSession,
+        default_tz: ZoneInfo,
 ):
+    await update_starts_at_in_shifts(session=session, user_tg_id=callback.from_user.id, default_tz=default_tz)
     await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=3, text="check_in")
     await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=5, text="check_in")
     await callback.message.edit_text(text="1",
