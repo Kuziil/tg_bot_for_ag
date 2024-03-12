@@ -13,6 +13,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMFillReport
 from callback_factories.back import BackCallbackData
+from db.models import PagesIntervalsORM, PagesORM
+from db.requests.with_page_interval import get_page_user_interval_by_page_interval_id
 from filters.filters import IsIntOrFloat
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
 from keyboards.kb_single_line_horizontally import create_start_keyboard
@@ -160,8 +162,6 @@ async def process_write_a_report_press(
 async def process_day_press_in_report(
         callback: CallbackQuery,
         callback_data: MonthScheduleCallbackData,
-        session: AsyncSession,
-        default_tz: ZoneInfo,
         i18n: dict[str, dict[str, str]],
         state: FSMContext,
 ):
@@ -242,3 +242,39 @@ async def process_send_text(
                              'all_correct_in_report'
                          ))
     await state.set_state(FSMFillReport.dirty)
+
+
+@in_system_router.callback_query(
+    StateFilter(FSMFillReport.dirty),
+    F.data == 'all_correct_in_report'
+)
+async def process_all_correct_in_report(
+        callback: CallbackQuery,
+        session: AsyncSession,
+        state: FSMContext,
+        i18n: dict[str, dict[str, str]],
+):
+    st = await state.get_data()
+    page_interval: PagesIntervalsORM = await get_page_user_interval_by_page_interval_id(
+        session=session, user_tg_id=callback.from_user.id, page_interval_id=st['page_interval_id']
+    )
+    page: PagesORM = page_interval.page
+    thread_id: int = page.report_thread_id
+    media_group = MediaGroupBuilder(caption=str(st['dirty']))
+    for photo_id in st['photos']:
+        media_group.add_photo(media=photo_id)
+    await callback.bot.send_media_group(chat_id=-1002098324148, message_thread_id=thread_id, media=media_group.build())
+    await state.clear()
+    await callback.message.edit_text(
+        text=i18n['lexicon']['main_menu_junior'],
+        reply_markup=create_menu_keyboard(
+            "check_in",
+            "clock_out",
+            "write_a_report",
+            "schedule",
+            "my_money",
+            "model_statistics",
+            "training_materials",
+        ),
+    )
+    await callback.answer()

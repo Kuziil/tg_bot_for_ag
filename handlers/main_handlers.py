@@ -78,7 +78,7 @@ async def process_help_command(
 @main_router.callback_query(
     or_f(
         and_f(F.data == "in_the_system", StateFilter(default_state)),
-        and_f(F.data == 'back_from_process_send_text'), StateFilter(FSMFillReport.dirty)
+        and_f(F.data == 'back_from_process_send_text', StateFilter(FSMFillReport.dirty))
     ),
 )
 async def process_in_the_system_press(
