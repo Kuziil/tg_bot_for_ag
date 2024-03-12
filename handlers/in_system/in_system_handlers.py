@@ -7,7 +7,7 @@ from aiogram.filters import StateFilter
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.types import CallbackQuery, Message, InputMediaPhoto
+from aiogram.types import CallbackQuery, Message
 from aiogram.utils.media_group import MediaGroupBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,6 +15,7 @@ from FSMs.FSMs import FSMFillReport
 from callback_factories.back import BackCallbackData
 from filters.filters import IsIntOrFloat
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
+from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
 from keyboards.schedule.month_v2.classes_callback_data import MonthScheduleCallbackData
@@ -235,3 +236,9 @@ async def process_send_text(
     for photo_id in st['photos']:
         media_group.add_photo(media=photo_id)
     await message.answer_media_group(media=media_group.build())
+    await message.answer(text="Данные верны?",
+                         reply_markup=create_start_keyboard(
+                             'back_from_process_send_text',
+                             'all_correct_in_report'
+                         ))
+    await state.set_state(FSMFillReport.dirty)

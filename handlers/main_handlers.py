@@ -1,10 +1,10 @@
 from aiogram import Router, F
-from aiogram.filters import Command, StateFilter
+from aiogram.filters import Command, StateFilter, or_f, and_f
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import Message, CallbackQuery
 
-from FSMs.FSMs import FSMFillForm
+from FSMs.FSMs import FSMFillForm, FSMFillReport
 from filters.filters import IsUserInSystem
 from handlers.in_system.in_system_handlers import in_system_router
 from handlers.not_in_system.not_in_system_handlers import not_in_system_router
@@ -76,20 +76,27 @@ async def process_help_command(
 
 
 @main_router.callback_query(
-    F.data == "in_the_system",
-    StateFilter(default_state),
+    or_f(
+        and_f(F.data == "in_the_system", StateFilter(default_state)),
+        and_f(F.data == 'back_from_process_send_text'), StateFilter(FSMFillReport.dirty)
+    ),
 )
 async def process_in_the_system_press(
         callback: CallbackQuery,
+        i18n: dict[str, dict[str, str]],
+        state: FSMContext,
 ):
     """Данный хэндлер реагирует на нажатие кнопки в системе
     выдает список кнопок ориентации в главном меню для Junior
 
     Args:
+        state:
+        i18n:
         callback (CallbackQuery): _description_
     """
+    await state.clear()
     await callback.message.edit_text(
-        text=LEXICON_RU["main_menu_junior"],
+        text=i18n['lexicon']['main_menu_junior'],
         reply_markup=create_menu_keyboard(
             "check_in",
             "clock_out",
