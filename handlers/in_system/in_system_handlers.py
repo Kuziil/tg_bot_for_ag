@@ -83,10 +83,10 @@ async def process_check_in_press(
         default_tz: ZoneInfo,
 ):
     start_at: datetime = datetime.now(tz=default_tz)
-    text = await create_text_for_check_in_press(session=session, user_tg_id=callback.from_user.id,
-                                                start_at=start_at)
-    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=3, text=text)
-    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=5, text=text)
+    text_and_thread_id = await create_text_for_check_in_press(session=session, user_tg_id=callback.from_user.id,
+                                                              start_at=start_at)
+    for text, thread_id in text_and_thread_id:
+        await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=thread_id, text=text)
     await callback.message.edit_text(text='1',
                                      reply_markup=create_menu_keyboard(
                                          "clock_out",
@@ -109,10 +109,10 @@ async def process_clock_out_press(
         default_tz: ZoneInfo,
 ):
     end_at: datetime = datetime.now(tz=default_tz)
-    text = await create_text_for_check_in_press(session=session, user_tg_id=callback.from_user.id,
-                                                end_at=end_at)
-    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=3, text=text)
-    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=5, text=text)
+    text_and_thread_id = await create_text_for_check_in_press(session=session, user_tg_id=callback.from_user.id,
+                                                              end_at=end_at)
+    for text, thread_id in text_and_thread_id:
+        await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=thread_id, text=text)
     await callback.message.edit_text(text="1",
                                      reply_markup=create_menu_keyboard(
                                          "check_in",
