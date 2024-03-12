@@ -7,11 +7,13 @@ from aiogram.filters import StateFilter
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, Message, InputMediaPhoto
+from aiogram.utils.media_group import MediaGroupBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMFillReport
 from callback_factories.back import BackCallbackData
+from filters.filters import IsIntOrFloat
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
@@ -151,7 +153,7 @@ async def process_write_a_report_press(
 
 
 @in_system_router.callback_query(
-    StateFilter(FSMFillReport),
+    StateFilter(FSMFillReport.page_interval_id),
     MonthScheduleCallbackData.filter(F.day > 0),
 )
 async def process_day_press_in_report(
@@ -171,7 +173,7 @@ async def process_day_press_in_report(
 
 
 @in_system_router.callback_query(
-    StateFilter(FSMFillReport),
+    StateFilter(FSMFillReport.page_interval_id),
     MonthScheduleCallbackData.filter(),
 )
 async def process_not_day_press_in_report(
@@ -197,3 +199,39 @@ async def process_not_day_press_in_report(
         ),
     )
     await callback.answer()
+
+
+@in_system_router.message(
+    StateFilter(FSMFillReport.photos),
+    F.photo
+)
+async def process_send_photos(
+        message: Message,
+        state: FSMContext,
+):
+    st = await state.get_data()
+    try:
+        st_photos = st['photos']
+    except KeyError:
+        st_photos = []
+    photos = message.photo[-1]
+    st_photos.append(photos.file_id)
+
+    await state.update_data(photos=st_photos)
+
+
+@in_system_router.message(
+    StateFilter(FSMFillReport.photos),
+    IsIntOrFloat()
+)
+async def process_send_text(
+        message: Message,
+        state: FSMContext,
+        dirty: int | float,
+):
+    await state.update_data(dirty=dirty)
+    st = await state.get_data()
+    media_group = MediaGroupBuilder(caption=str(st['dirty']))
+    for photo_id in st['photos']:
+        media_group.add_photo(media=photo_id)
+    await message.answer_media_group(media=media_group.build())

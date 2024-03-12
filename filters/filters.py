@@ -72,3 +72,20 @@ class IsStShiftInStShifts(BaseFilter):
         else:
             st_shifts.append(st_shift)
             return {"st_shifts": st_shifts}
+
+
+class IsIntOrFloat(BaseFilter):
+    async def __call__(
+            self,
+            message: Message
+    ):
+        text = message.text
+        try:
+            dirty = int(text)
+            return {"dirty": dirty}
+        except ValueError:
+            try:
+                dirty = float(text)
+                return {"dirty": dirty}
+            except ValueError:
+                return False
