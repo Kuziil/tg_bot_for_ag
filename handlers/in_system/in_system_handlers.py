@@ -82,7 +82,6 @@ async def process_check_in_press(
         session: AsyncSession,
         default_tz: ZoneInfo,
 ):
-
     start_at: datetime = datetime.now(tz=default_tz)
     text = await create_text_for_check_in_press(session=session, user_tg_id=callback.from_user.id,
                                                 start_at=start_at)
@@ -106,9 +105,14 @@ async def process_check_in_press(
 async def process_clock_out_press(
         callback: CallbackQuery,
         i18n: dict[str, dict[str, str]],
+        session: AsyncSession,
+        default_tz: ZoneInfo,
 ):
-    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=3, text="clock_out")
-    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=5, text="clock_out")
+    end_at: datetime = datetime.now(tz=default_tz)
+    text = await create_text_for_check_in_press(session=session, user_tg_id=callback.from_user.id,
+                                                end_at=end_at)
+    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=3, text=text)
+    await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=5, text=text)
     await callback.message.edit_text(text="1",
                                      reply_markup=create_menu_keyboard(
                                          "check_in",
