@@ -13,21 +13,18 @@ logger = logging.getLogger(__name__)
 
 async def update_starts_at_in_shifts(session: AsyncSession, user_tg_id: int, start_at: datetime | None = None,
                                      end_at: datetime | None = None):
+    stmt = select(ShiftsORM).join(PagesIntervalsORM, ShiftsORM.page_interval_id == PagesIntervalsORM.id).join(
+        UsersORM, PagesIntervalsORM.user_id == UsersORM.id).options(
+        joinedload(ShiftsORM.page_interval).options(
+            selectinload(PagesIntervalsORM.user).joinedload(UsersORM.tgs),
+            selectinload(PagesIntervalsORM.page).selectinload(PagesORM.model)))
     if start_at is not None:
-        stmt = select(ShiftsORM).join(PagesIntervalsORM, ShiftsORM.page_interval_id == PagesIntervalsORM.id).join(
-            UsersORM, PagesIntervalsORM.user_id == UsersORM.id).options(
-            joinedload(ShiftsORM.page_interval).options(
-                selectinload(PagesIntervalsORM.user).joinedload(UsersORM.tgs),
-                selectinload(PagesIntervalsORM.page).selectinload(PagesORM.model))).filter(
+        stmt = stmt.filter(
             UsersORM.tgs.any(user_tg_id=user_tg_id),
             ShiftsORM.date_shift == start_at.date()
         )
     else:
-        stmt = select(ShiftsORM).join(PagesIntervalsORM, ShiftsORM.page_interval_id == PagesIntervalsORM.id).join(
-            UsersORM, PagesIntervalsORM.user_id == UsersORM.id).options(
-            joinedload(ShiftsORM.page_interval).options(
-                selectinload(PagesIntervalsORM.user).joinedload(UsersORM.tgs),
-                selectinload(PagesIntervalsORM.page).selectinload(PagesORM.model))).filter(
+        stmt = stmt.filter(
             UsersORM.tgs.any(user_tg_id=user_tg_id),
             ShiftsORM.date_shift == end_at.date()
         )

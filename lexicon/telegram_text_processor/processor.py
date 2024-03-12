@@ -1,13 +1,13 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import ShiftsORM, PagesIntervalsORM, UsersORM, PagesORM
 from db.requests.with_shift import update_starts_at_in_shifts
 
-
 logger = logging.getLogger(__name__)
+
 
 async def create_text_for_check_in_press(
         session: AsyncSession,
