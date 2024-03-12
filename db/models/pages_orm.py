@@ -46,6 +46,7 @@ class PagesORM(Base):
         ),
     )
     reshift_thread_id: Mapped[intbigint | None]
+    report_thread_id: Mapped[intbigint | None]
 
     # relationships
     seniors: Mapped["UsersORM"] = relationship(
