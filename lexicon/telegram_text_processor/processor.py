@@ -16,12 +16,12 @@ async def create_text_for_check_in_press(
         formatted_date = start_at.strftime('%Y-%m-%d %H:%M %Z')
         shifts: list[ShiftsORM] = await update_starts_at_in_shifts(session=session, user_tg_id=user_tg_id,
                                                                    start_at=start_at)
-        start_or_end = "Начал"
+        start_or_end = "🟩 Начал"
     else:
         formatted_date = end_at.strftime('%Y-%m-%d %H:%M %Z')
         shifts: list[ShiftsORM] = await update_starts_at_in_shifts(session=session, user_tg_id=user_tg_id,
                                                                    end_at=end_at)
-        start_or_end = "Закончил"
+        start_or_end = "🟥 Закончил"
     user: UsersORM | None = None
     text: str | None = None
     for shift in shifts:
@@ -32,8 +32,9 @@ async def create_text_for_check_in_press(
             username: str = user.username
             emoji: str = user.emoji
             text: str = (f'{emoji}{username}\n'
-                         f'{start_or_end} смену в {formatted_date}\n'
+                         f'{start_or_end} смену\n'
+                         f'<b>{formatted_date}</b>\n'
                          f'на страницах:\n')
-        page_title: str = page.title
+        page_title: str = f"- {page.title}\n"
         text += page_title
     return text
