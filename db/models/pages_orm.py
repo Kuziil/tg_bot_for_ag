@@ -45,6 +45,7 @@ class PagesORM(Base):
             ondelete="CASCADE",
         ),
     )
+    thread_id: Mapped[intbigint | None]
 
     # relationships
     seniors: Mapped["UsersORM"] = relationship(
