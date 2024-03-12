@@ -32,7 +32,7 @@ async def create_text_for_check_in_press(
         user: UsersORM = page_interval.user
         username: str = user.username
         emoji: str = user.emoji
-        thread_id: int = page.thread_id
+        thread_id: int = page.reshift_thread_id
         logger.debug(user_tg_id)
         text: str = (f'{emoji}<a href="tg://user?id={user_tg_id}">{username}</a>\n'
                      f'{start_or_end} смену\n'
