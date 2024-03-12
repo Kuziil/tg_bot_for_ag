@@ -36,7 +36,6 @@ async def create_text_for_check_in_press(
         logger.debug(user_tg_id)
         text: str = (f'{emoji}<a href="tg://user?id={user_tg_id}">{username}</a>\n'
                      f'{start_or_end} смену\n'
-                     f'<b>{formatted_date}</b>\n'
-                     f'на страницах:\n')
+                     f'<b>{formatted_date}</b>\n')
         text_and_thread_id.append((text, thread_id))
     return text_and_thread_id
