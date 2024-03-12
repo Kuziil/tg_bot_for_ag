@@ -1,10 +1,13 @@
 from datetime import datetime
+import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import ShiftsORM, PagesIntervalsORM, UsersORM, PagesORM
 from db.requests.with_shift import update_starts_at_in_shifts
 
+
+logger = logging.getLogger(__name__)
 
 async def create_text_for_check_in_press(
         session: AsyncSession,
@@ -31,7 +34,8 @@ async def create_text_for_check_in_press(
             user: UsersORM = page_interval.user
             username: str = user.username
             emoji: str = user.emoji
-            text: str = (f'{emoji}{username}\n'
+            logger.debug(user_tg_id)
+            text: str = (f'{emoji}<a href="tg://user?id={user_tg_id}">{username}</a>\n'
                          f'{start_or_end} смену\n'
                          f'<b>{formatted_date}</b>\n'
                          f'на страницах:\n')
