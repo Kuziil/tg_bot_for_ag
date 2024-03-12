@@ -5,14 +5,17 @@ from zoneinfo import ZoneInfo
 from aiogram import Router, F
 from aiogram.filters import StateFilter
 from aiogram.filters import or_f
+from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from FSMs.FSMs import FSMFillReport
 from callback_factories.back import BackCallbackData
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
+from keyboards.schedule.month_v2.classes_callback_data import MonthScheduleCallbackData
 from lexicon.telegram_text_processor.processor import create_text_for_check_in_press
 
 in_system_router = Router()
@@ -122,3 +125,75 @@ async def process_clock_out_press(
                                          "model_statistics",
                                          "training_materials",
                                      ), )
+
+
+@in_system_router.callback_query(
+    StateFilter(default_state),
+    F.data == "write_a_report",
+)
+async def process_write_a_report_press(
+        callback: CallbackQuery,
+        i18n: dict[str, dict[str, str]],
+        session: AsyncSession,
+        default_tz: ZoneInfo,
+        state: FSMContext
+):
+    await callback.message.edit_text(
+        text="Пожалуйста выберите страницу и дату",
+        reply_markup=await create_month_schedule_v2(
+            session=session,
+            user_tg_id=callback.from_user.id,
+            i18n=i18n,
+            default_tz=default_tz,
+        )
+    )
+    await state.set_state(FSMFillReport.page_interval_id)
+
+
+@in_system_router.callback_query(
+    StateFilter(FSMFillReport),
+    MonthScheduleCallbackData.filter(F.day > 0),
+)
+async def process_day_press_in_report(
+        callback: CallbackQuery,
+        callback_data: MonthScheduleCallbackData,
+        session: AsyncSession,
+        default_tz: ZoneInfo,
+        i18n: dict[str, dict[str, str]],
+        state: FSMContext,
+):
+    await callback.message.answer(
+        text=f"Отправьте фото для\n"
+             f"{callback_data.year}.{callback_data.month}.{callback_data.day}",
+    )
+    await state.update_data(page_interval_id=callback_data.page_interval_id)
+    await state.set_state(FSMFillReport.photos)
+
+
+@in_system_router.callback_query(
+    StateFilter(FSMFillReport),
+    MonthScheduleCallbackData.filter(),
+)
+async def process_not_day_press_in_report(
+        callback: CallbackQuery,
+        callback_data: MonthScheduleCallbackData,
+        session: AsyncSession,
+        default_tz: ZoneInfo,
+        i18n: dict[str, dict[str, str]],
+):
+    await callback.message.edit_text(
+        text="22",
+        reply_markup=await create_month_schedule_v2(
+            user_tg_id=callback.from_user.id,
+            session=session,
+            i18n=i18n,
+            default_tz=default_tz,
+            current_month=callback_data.month,
+            current_year=callback_data.year,
+            current_day=callback_data.day,
+            current_page_id=callback_data.page_id,
+            current_interval_id=callback_data.interval_id,
+            current_lineup=callback_data.lineup,
+        ),
+    )
+    await callback.answer()

@@ -9,3 +9,9 @@ class FSMFillForm(StatesGroup):
 
 class FSMSetShifts(StatesGroup):
     shifts = State()
+
+
+class FSMFillReport(StatesGroup):
+    page_interval_id = State()
+    photos = State()
+    dirty = State()
