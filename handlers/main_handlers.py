@@ -6,6 +6,7 @@ from aiogram.types import Message, CallbackQuery
 
 from FSMs.FSMs import FSMFillForm, FSMFillReport
 from filters.filters import IsUserInSystem
+from handlers.DRY import send_menu_and_clear_state
 from handlers.in_system.in_system_handlers import in_system_router
 from handlers.not_in_system.not_in_system_handlers import not_in_system_router
 from keyboards.kb_single_line_horizontally import create_start_keyboard
@@ -74,40 +75,26 @@ async def process_help_command(
     """
     await message.answer(LEXICON_COMMANDS_RU[message.text])
 
-
-@main_router.callback_query(
-    or_f(
-        and_f(F.data == "in_the_system", StateFilter(default_state)),
-        and_f(F.data == 'back_from_process_send_text', StateFilter(FSMFillReport.dirty))
-    ),
-)
-async def process_in_the_system_press(
-        callback: CallbackQuery,
-        i18n: dict[str, dict[str, str]],
-        state: FSMContext,
-):
-    """Данный хэндлер реагирует на нажатие кнопки в системе
-    выдает список кнопок ориентации в главном меню для Junior
-
-    Args:
-        state:
-        i18n:
-        callback (CallbackQuery): _description_
-    """
-    await state.clear()
-    await callback.message.edit_text(
-        text=i18n['lexicon']['main_menu_junior'],
-        reply_markup=create_menu_keyboard(
-            "check_in",
-            "clock_out",
-            "write_a_report",
-            "schedule",
-            "my_money",
-            "model_statistics",
-            "training_materials",
+    @main_router.callback_query(
+        or_f(
+            and_f(F.data == "in_the_system", StateFilter(default_state)),
+            and_f(F.data == 'back_from_process_send_text', StateFilter(FSMFillReport.dirty))
         ),
     )
-    await callback.answer()
+    async def process_in_the_system_press(
+            callback: CallbackQuery,
+            i18n: dict[str, dict[str, str]],
+            state: FSMContext,
+    ):
+        """Данный хэндлер реагирует на нажатие кнопки в системе
+        выдает список кнопок ориентации в главном меню для Junior
+
+        Args:
+            state:
+            i18n:
+            callback (CallbackQuery): _description_
+        """
+        await send_menu_and_clear_state(callback=callback, i18n=i18n, state=state)
 
 
 @main_router.callback_query(

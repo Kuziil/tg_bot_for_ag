@@ -17,6 +17,7 @@ from db.models import PagesIntervalsORM, PagesORM
 from db.requests.with_page_interval import get_page_user_interval_by_page_interval_id
 from filters.filters import IsIntOrFloat
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
+from handlers.main_handlers import send_menu_and_clear_state
 from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
@@ -264,17 +265,4 @@ async def process_all_correct_in_report(
     for photo_id in st['photos']:
         media_group.add_photo(media=photo_id)
     await callback.bot.send_media_group(chat_id=-1002098324148, message_thread_id=thread_id, media=media_group.build())
-    await state.clear()
-    await callback.message.edit_text(
-        text=i18n['lexicon']['main_menu_junior'],
-        reply_markup=create_menu_keyboard(
-            "check_in",
-            "clock_out",
-            "write_a_report",
-            "schedule",
-            "my_money",
-            "model_statistics",
-            "training_materials",
-        ),
-    )
-    await callback.answer()
+    await send_menu_and_clear_state(callback=callback, i18n=i18n, state=state)
