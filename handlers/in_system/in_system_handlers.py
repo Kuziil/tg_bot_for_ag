@@ -12,13 +12,14 @@ from aiogram.utils.media_group import MediaGroupBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMFillReport
-from callback_factories.back import BackCallbackData
+from callback_factories.back import BackCallbackData, ConfirmCallbackData
 from db.models import PagesIntervalsORM, PagesORM
+from db.requests.with_add import add_earning
 from db.requests.with_page_interval import get_page_user_interval_by_page_interval_id
 from filters.filters import IsIntOrFloat
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
 from handlers.main_handlers import send_menu_and_clear_state
-from keyboards.kb_single_line_horizontally import create_start_keyboard
+from keyboards.kb_single_line_horizontally import create_start_keyboard, create_confirm_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
 from keyboards.schedule.month_v2.classes_callback_data import MonthScheduleCallbackData
@@ -170,7 +171,10 @@ async def process_day_press_in_report(
         text=f"Отправьте фото для\n"
              f"{callback_data.year}.{callback_data.month}.{callback_data.day}",
     )
-    await state.update_data(page_interval_id=callback_data.page_interval_id)
+    await state.update_data(page_interval_id=callback_data.page_interval_id,
+                            day=callback_data.day,
+                            month=callback_data.month,
+                            year=callback_data.year)
     await state.set_state(FSMFillReport.photos)
 
 
@@ -269,5 +273,31 @@ async def process_all_correct_in_report(
     message_to_reply = messages[0]
     message_to_reply_id = message_to_reply.message_id
     await callback.bot.send_message(text='123', chat_id=-1002098324148, message_thread_id=thread_id,
-                                    reply_to_message_id=message_to_reply_id)
+                                    reply_to_message_id=message_to_reply_id,
+                                    reply_markup=await create_confirm_keyboard(
+                                        day=st["day"],
+                                        month=st["month"],
+                                        year=st["year"],
+                                        page_interval_id=st["page_interval_id"],
+                                        dirty=st["dirty"]
+                                    ))
     await send_menu_and_clear_state(callback=callback, i18n=i18n, state=state)
+
+
+@in_system_router.callback_query(
+    ConfirmCallbackData.filter()
+)
+async def process_confirm(
+        callback: CallbackQuery,
+        callback_data: ConfirmCallbackData,
+        session: AsyncSession,
+):
+    await add_earning(
+        session=session,
+        page_interval_id=callback_data.page_interval_id,
+        day=callback_data.day,
+        month=callback_data.month,
+        year=callback_data.year,
+        dirty=callback_data.dirty
+    )
+    await callback.message.edit_text(text="смена подтверждена")

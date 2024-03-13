@@ -2,6 +2,7 @@ import datetime as dt
 import logging
 from zoneinfo import ZoneInfo
 
+from sqlalchemy import Result, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import (
@@ -13,7 +14,7 @@ from db.models import (
     PagesORM,
     TgsORM,
     UsersORM,
-    ShiftsORM,
+    ShiftsORM, EarningsORM,
 )
 
 logger = logging.getLogger(__name__)
@@ -166,4 +167,30 @@ async def add_shifts(
         )
 
     session.add_all(shifts)
+    await session.commit()
+
+
+async def add_earning(
+        session: AsyncSession,
+        day: int,
+        month: int,
+        year: int,
+        page_interval_id: int,
+        dirty: int,
+):
+    shift_date = dt.date(year=year, month=month, day=day)
+    result: Result = await session.execute(
+        select(ShiftsORM).where(
+            ShiftsORM.date_shift == shift_date,
+            ShiftsORM.page_interval_id == page_interval_id
+        )
+    )
+    shift: ShiftsORM = result.scalar()
+    shift_id = shift.id
+    earning = EarningsORM(
+        dirty=dirty,
+        shift_id=shift_id,
+        confirm=True
+    )
+    session.add(earning)
     await session.commit()

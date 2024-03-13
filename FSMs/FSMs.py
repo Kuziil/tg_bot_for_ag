@@ -13,5 +13,8 @@ class FSMSetShifts(StatesGroup):
 
 class FSMFillReport(StatesGroup):
     page_interval_id = State()
+    day = State()
+    month = State()
+    year = State()
     photos = State()
     dirty = State()

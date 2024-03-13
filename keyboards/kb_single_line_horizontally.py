@@ -1,6 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from callback_factories.back import ConfirmCallbackData
 from lexicon.lexicon_ru import LEXICON_BUTTON_RU
 
 
@@ -38,4 +39,31 @@ def create_start_keyboard(
         *ikb_buttons
     )
     # Возвращаем объект инлайн-клавиатуры
+    return kb_builder.as_markup()
+
+
+async def create_confirm_keyboard(
+        day: int,
+        month: int,
+        year: int,
+        page_interval_id: int,
+        dirty: int,
+):
+    kb_builder = InlineKeyboardBuilder()
+    kb_builder.row(
+        InlineKeyboardButton(
+            text="confirm",
+            callback_data=ConfirmCallbackData(
+                day=day,
+                month=month,
+                year=year,
+                page_interval_id=page_interval_id,
+                dirty=dirty
+            ).pack()
+        ),
+        InlineKeyboardButton(
+            text="not_confirm",
+            callback_data="not_confirm"
+        )
+    )
     return kb_builder.as_markup()

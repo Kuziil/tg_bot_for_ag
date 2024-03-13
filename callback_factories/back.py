@@ -7,3 +7,15 @@ class BackCallbackData(
     sep="-",
 ):
     handler: str
+
+
+class ConfirmCallbackData(
+    CallbackData,
+    prefix='conf',
+    sep='-'
+):
+    day: int
+    month: int
+    year: int
+    page_interval_id: int
+    dirty: int
