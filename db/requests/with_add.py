@@ -190,7 +190,7 @@ async def add_earning(
     earning = EarningsORM(
         dirty=dirty,
         shift_id=shift_id,
-        confirm=True
+        confirm=False
     )
     session.add(earning)
     await session.commit()

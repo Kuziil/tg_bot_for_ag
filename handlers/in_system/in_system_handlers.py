@@ -13,9 +13,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMFillReport
 from callback_factories.back import BackCallbackData, ConfirmCallbackData
-from db.models import PagesIntervalsORM, PagesORM
+from db.models import PagesIntervalsORM, PagesORM, UsersORM, ShiftsORM, EarningsORM
 from db.requests.with_add import add_earning
 from db.requests.with_page_interval import get_page_user_interval_by_page_interval_id
+from db.requests.with_user import get_user_pages_shifts_earnings
 from filters.filters import IsIntOrFloat
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
 from handlers.main_handlers import send_menu_and_clear_state
@@ -301,3 +302,22 @@ async def process_confirm(
         dirty=callback_data.dirty
     )
     await callback.message.edit_text(text="смена подтверждена")
+
+
+@in_system_router.callback_query(
+    F.data == "my_money"
+)
+async def process_press_my_money(
+        callback: CallbackQuery,
+        session: AsyncSession,
+):
+    user: UsersORM = await get_user_pages_shifts_earnings(session=session, user_tg_id=callback.from_user.id)
+    pages_intervals: list[PagesIntervalsORM] = user.pages_intervals
+    for pag_interval in pages_intervals:
+        logger.debug(pag_interval)
+        logger.debug(pag_interval.page)
+        for shift in pag_interval.shifts:  # type: ShiftsORM
+            # logger.debug(shift)
+            for earning in shift.earnings:  # type: EarningsORM
+                logger.debug(earning)
+    await callback.message.edit_text(text='123')

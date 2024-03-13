@@ -3,9 +3,10 @@ import logging
 from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy.sql import false
 
-from db.models import AgenciesUsersORM, TgsORM, UsersORM, PagesIntervalsORM
+from db.models import AgenciesUsersORM, TgsORM, UsersORM, PagesIntervalsORM, ShiftsORM, EarningsORM
 
 logger = logging.getLogger(__name__)
 
@@ -66,5 +67,27 @@ async def get_user_and_available_pages_intervals_by_tg_id(
         )
         .where(TgsORM.user_tg_id == user_tg_id)
     )
-    user: UsersORM = result.scalars().all()
+    user: UsersORM = result.scalar()
+    return user
+
+
+async def get_user_pages_shifts_earnings(
+        session: AsyncSession,
+        user_tg_id: int,
+):
+    result: Result = await session.execute(
+        select(UsersORM).options(
+            selectinload(UsersORM.tgs),
+            selectinload(UsersORM.pages_intervals).options(
+                joinedload(PagesIntervalsORM.page),
+                selectinload(PagesIntervalsORM.shifts).selectinload(
+                    ShiftsORM.earnings.and_(EarningsORM.confirm == false())
+                )
+            )
+        )
+        .filter(
+            UsersORM.tgs.any(user_tg_id=user_tg_id),
+        )
+    )
+    user: UsersORM = result.scalar()
     return user
