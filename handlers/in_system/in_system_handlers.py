@@ -264,5 +264,10 @@ async def process_all_correct_in_report(
     media_group = MediaGroupBuilder(caption=str(st['dirty']))
     for photo_id in st['photos']:
         media_group.add_photo(media=photo_id)
-    await callback.bot.send_media_group(chat_id=-1002098324148, message_thread_id=thread_id, media=media_group.build())
+    messages = await callback.bot.send_media_group(chat_id=-1002098324148, message_thread_id=thread_id,
+                                                   media=media_group.build())
+    message_to_reply = messages[0]
+    message_to_reply_id = message_to_reply.message_id
+    await callback.bot.send_message(text='123', chat_id=-1002098324148, message_thread_id=thread_id,
+                                    reply_to_message_id=message_to_reply_id)
     await send_menu_and_clear_state(callback=callback, i18n=i18n, state=state)
