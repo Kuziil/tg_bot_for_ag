@@ -52,6 +52,10 @@ async def create_confirm_keyboard(
     kb_builder = InlineKeyboardBuilder()
     kb_builder.row(
         InlineKeyboardButton(
+            text="not_confirm",
+            callback_data="not_confirm"
+        ),
+        InlineKeyboardButton(
             text="confirm",
             callback_data=ConfirmCallbackData(
                 day=day,
@@ -60,10 +64,6 @@ async def create_confirm_keyboard(
                 page_interval_id=page_interval_id,
                 dirty=dirty
             ).pack()
-        ),
-        InlineKeyboardButton(
-            text="not_confirm",
-            callback_data="not_confirm"
         )
     )
     return kb_builder.as_markup()

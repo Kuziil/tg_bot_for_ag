@@ -24,7 +24,8 @@ from keyboards.kb_single_line_horizontally import create_start_keyboard, create_
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
 from keyboards.schedule.month_v2.classes_callback_data import MonthScheduleCallbackData
-from lexicon.text_processor.processor import create_text_for_check_in_press, create_my_money
+from lexicon.text_processor.processor import create_text_for_check_in_press, create_my_money, \
+    text_for_process_day_press_in_report
 
 in_system_router = Router()
 
@@ -44,15 +45,9 @@ async def process_schedule_press(
         callback: CallbackQuery,
         i18n: dict[str, dict[str, str]],
 ):
-    """Данный хэндлер отрабатывает на нажатие кнопки расписание ->
-    выдает инлайн клавиатуру с типами расписания
-
-    Args:
-        i18n:
-        callback (CallbackQuery): _description_
-    """
+    text: str = i18n["lexicon"]["schedule_type"]
     await callback.message.edit_text(
-        text=i18n["lexicon"]["schedule_type"],
+        text=text,
         reply_markup=create_menu_keyboard(
             "month_schedule",
             "week_schedule",
@@ -71,8 +66,9 @@ async def process_month_schedule_press(
         i18n: dict[str, dict[str, str]],
         default_tz: ZoneInfo,
 ):
+    text: str = i18n["lexicon"]["schedule"]
     await callback.message.edit_text(
-        text=i18n["lexicon"]["week_schedule"],
+        text=text,
         reply_markup=await create_month_schedule_v2(
             session=session,
             user_tg_id=callback.from_user.id,
@@ -93,12 +89,8 @@ async def process_check_in_press(
         session: AsyncSession,
         default_tz: ZoneInfo,
 ):
-    start_at: datetime = datetime.now(tz=default_tz)
-    text_and_thread_id = await create_text_for_check_in_press(session=session, user_tg_id=callback.from_user.id,
-                                                              start_at=start_at)
-    for text, thread_id in text_and_thread_id:
-        await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=thread_id, text=text)
-    await callback.message.edit_text(text='1',
+    text: str = i18n['lexicon']['main_menu_junior']
+    await callback.message.edit_text(text=text,
                                      reply_markup=create_menu_keyboard(
                                          "clock_out",
                                          "write_a_report",
@@ -106,7 +98,14 @@ async def process_check_in_press(
                                          "my_money",
                                          "model_statistics",
                                          "training_materials",
-                                     ), )
+                                     ))
+    start_at: datetime = datetime.now(tz=default_tz)
+    texts_and_thread_ids: list[tuple[str, int]] = await create_text_for_check_in_press(session=session,
+                                                                                       user_tg_id=callback.from_user.id,
+                                                                                       start_at=start_at,
+                                                                                       i18n=i18n)
+    for text, thread_id in texts_and_thread_ids:
+        await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=thread_id, text=text)
 
 
 @in_system_router.callback_query(
@@ -119,12 +118,8 @@ async def process_clock_out_press(
         session: AsyncSession,
         default_tz: ZoneInfo,
 ):
-    end_at: datetime = datetime.now(tz=default_tz)
-    text_and_thread_id = await create_text_for_check_in_press(session=session, user_tg_id=callback.from_user.id,
-                                                              end_at=end_at)
-    for text, thread_id in text_and_thread_id:
-        await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=thread_id, text=text)
-    await callback.message.edit_text(text="1",
+    text: str = i18n['lexicon']['main_menu_junior']
+    await callback.message.edit_text(text=text,
                                      reply_markup=create_menu_keyboard(
                                          "check_in",
                                          "write_a_report",
@@ -132,7 +127,12 @@ async def process_clock_out_press(
                                          "my_money",
                                          "model_statistics",
                                          "training_materials",
-                                     ), )
+                                     ))
+    end_at: datetime = datetime.now(tz=default_tz)
+    texts_and_thread_ids = await create_text_for_check_in_press(session=session, user_tg_id=callback.from_user.id,
+                                                                end_at=end_at, i18n=i18n)
+    for text, thread_id in texts_and_thread_ids:
+        await callback.bot.send_message(chat_id=-1002078072009, message_thread_id=thread_id, text=text)
 
 
 @in_system_router.callback_query(
@@ -146,8 +146,9 @@ async def process_write_a_report_press(
         default_tz: ZoneInfo,
         state: FSMContext
 ):
+    text: str = i18n['lexicon']['select_shift_when_fill_report']
     await callback.message.edit_text(
-        text="Пожалуйста выберите страницу и дату",
+        text=text,
         reply_markup=await create_month_schedule_v2(
             session=session,
             user_tg_id=callback.from_user.id,
@@ -168,10 +169,9 @@ async def process_day_press_in_report(
         i18n: dict[str, dict[str, str]],
         state: FSMContext,
 ):
-    await callback.message.answer(
-        text=f"Отправьте фото для\n"
-             f"{callback_data.year}.{callback_data.month}.{callback_data.day}",
-    )
+    text: str = await text_for_process_day_press_in_report(i18n=i18n, year=callback_data.day, month=callback_data.month,
+                                                           day=callback_data.day)
+    await callback.message.answer(text=text)
     await state.update_data(page_interval_id=callback_data.page_interval_id,
                             day=callback_data.day,
                             month=callback_data.month,
@@ -190,20 +190,22 @@ async def process_not_day_press_in_report(
         default_tz: ZoneInfo,
         i18n: dict[str, dict[str, str]],
 ):
+    text: str = i18n['lexicon']['select_shift_when_fill_report']
+    markup = await create_month_schedule_v2(
+        user_tg_id=callback.from_user.id,
+        session=session,
+        i18n=i18n,
+        default_tz=default_tz,
+        current_month=callback_data.month,
+        current_year=callback_data.year,
+        current_day=callback_data.day,
+        current_page_id=callback_data.page_id,
+        current_interval_id=callback_data.interval_id,
+        current_lineup=callback_data.lineup,
+    )
     await callback.message.edit_text(
-        text="22",
-        reply_markup=await create_month_schedule_v2(
-            user_tg_id=callback.from_user.id,
-            session=session,
-            i18n=i18n,
-            default_tz=default_tz,
-            current_month=callback_data.month,
-            current_year=callback_data.year,
-            current_day=callback_data.day,
-            current_page_id=callback_data.page_id,
-            current_interval_id=callback_data.interval_id,
-            current_lineup=callback_data.lineup,
-        ),
+        text=text,
+        reply_markup=markup
     )
     await callback.answer()
 
@@ -223,7 +225,6 @@ async def process_send_photos(
         st_photos = []
     photos = message.photo[-1]
     st_photos.append(photos.file_id)
-
     await state.update_data(photos=st_photos)
 
 
@@ -234,6 +235,7 @@ async def process_send_photos(
 async def process_send_text(
         message: Message,
         state: FSMContext,
+        i18n: dict[str, dict[str, str]],
         dirty: int | float,
 ):
     await state.update_data(dirty=dirty)
@@ -242,7 +244,9 @@ async def process_send_text(
     for photo_id in st['photos']:
         media_group.add_photo(media=photo_id)
     await message.answer_media_group(media=media_group.build())
-    await message.answer(text="Данные верны?",
+
+    text: str = i18n['lexicon']['is_that_correct']
+    await message.answer(text=text,
                          reply_markup=create_start_keyboard(
                              'back_from_process_send_text',
                              'all_correct_in_report'
@@ -260,21 +264,22 @@ async def process_all_correct_in_report(
         state: FSMContext,
         i18n: dict[str, dict[str, str]],
 ):
-    text: str = i18n['lexicon']['main_menu_junior']
     st = await state.get_data()
     page_interval: PagesIntervalsORM = await get_page_user_interval_by_page_interval_id(
         session=session, user_tg_id=callback.from_user.id, page_interval_id=st['page_interval_id']
     )
     page: PagesORM = page_interval.page
     thread_id: int = page.report_thread_id
-    media_group = MediaGroupBuilder(caption=str(st['dirty']))
+    text_1: str = f"{i18n['lexicon']['send_report_to_topik']} {st['dirty']}"
+    media_group = MediaGroupBuilder(caption=text_1)
     for photo_id in st['photos']:
         media_group.add_photo(media=photo_id)
     messages = await callback.bot.send_media_group(chat_id=-1002098324148, message_thread_id=thread_id,
                                                    media=media_group.build())
     message_to_reply = messages[0]
     message_to_reply_id = message_to_reply.message_id
-    await callback.bot.send_message(text='123', chat_id=-1002098324148, message_thread_id=thread_id,
+    text_2: str = i18n['lexicon']['report_is_right_or_not']
+    await callback.bot.send_message(text=text_2, chat_id=-1002098324148, message_thread_id=thread_id,
                                     reply_to_message_id=message_to_reply_id,
                                     reply_markup=await create_confirm_keyboard(
                                         day=st["day"],
@@ -283,7 +288,8 @@ async def process_all_correct_in_report(
                                         page_interval_id=st["page_interval_id"],
                                         dirty=st["dirty"]
                                     ))
-    await send_menu_and_clear_state(callback=callback, text=text, state=state)
+    text_3: str = i18n['lexicon']['main_menu_junior']
+    await send_menu_and_clear_state(callback=callback, text=text_3, state=state)
 
 
 @in_system_router.callback_query(
@@ -293,6 +299,7 @@ async def process_confirm(
         callback: CallbackQuery,
         callback_data: ConfirmCallbackData,
         session: AsyncSession,
+        i18n: dict[str, dict[str, str]],
 ):
     await add_earning(
         session=session,
@@ -302,7 +309,8 @@ async def process_confirm(
         year=callback_data.year,
         dirty=callback_data.dirty
     )
-    await callback.message.edit_text(text="смена подтверждена")
+    text: str = i18n['lexicon']['report_is_right']
+    await callback.message.edit_text(text=text)
 
 
 @in_system_router.callback_query(
@@ -311,7 +319,8 @@ async def process_confirm(
 async def process_press_my_money(
         callback: CallbackQuery,
         session: AsyncSession,
+        i18n: dict[str, dict[str, str]],
 ):
     user: UsersORM = await get_user_pages_shifts_earnings(session=session, user_tg_id=callback.from_user.id)
-    text: str = await create_my_money(user=user)
+    text: str = await create_my_money(user=user, i18n=i18n)
     await callback.message.edit_text(text=text)

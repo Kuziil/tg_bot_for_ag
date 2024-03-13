@@ -38,13 +38,13 @@ async def process_first_day_press(
 ):
     markup, st_shifts = await update_shifts(session=session, i18n=i18n, callback=callback, callback_data=callback_data,
                                             default_tz=default_tz, state=state)
+    text: str = i18n['lexicon']['select_days']
     await callback.message.edit_text(
-        text="3",
+        text=text,
         reply_markup=markup,
     )
     await state.set_state(FSMSetShifts.shifts)
     await state.update_data(shifts=st_shifts)
-    logger.debug("process_first_day_press - finish")
 
 
 @month_v2_router.callback_query(
@@ -58,21 +58,21 @@ async def process_not_day_press(
         default_tz: ZoneInfo,
         i18n: dict[str, dict[str, str]],
 ):
-    logger.debug("process_not_day_press - start")
+    text: str = i18n['lexicon']['select_shift_when_fill_report']
+    markup = await create_month_schedule_v2(
+        user_tg_id=callback.from_user.id,
+        session=session,
+        i18n=i18n,
+        default_tz=default_tz,
+        current_month=callback_data.month,
+        current_year=callback_data.year,
+        current_day=callback_data.day,
+        current_page_id=callback_data.page_id,
+        current_interval_id=callback_data.interval_id,
+        current_lineup=callback_data.lineup,
+    )
     await callback.message.edit_text(
-        text="2",
-        reply_markup=await create_month_schedule_v2(
-            user_tg_id=callback.from_user.id,
-            session=session,
-            i18n=i18n,
-            default_tz=default_tz,
-            current_month=callback_data.month,
-            current_year=callback_data.year,
-            current_day=callback_data.day,
-            current_page_id=callback_data.page_id,
-            current_interval_id=callback_data.interval_id,
-            current_lineup=callback_data.lineup,
-        ),
+        text=text,
+        reply_markup=markup
     )
     await callback.answer()
-    logger.debug("process_not_day_press - finish")

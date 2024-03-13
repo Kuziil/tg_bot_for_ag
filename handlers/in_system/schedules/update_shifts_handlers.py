@@ -39,8 +39,9 @@ async def process_days_press(
         default_tz=default_tz,
         st_shifts=st_shifts,
     )
+    text: str = i18n['lexicon']['select_days']
     await callback.message.edit_text(
-        text="3",
+        text=text,
         reply_markup=markup,
     )
     await state.update_data(shifts=st_shifts)
@@ -66,8 +67,9 @@ async def process_busy_days_press(
         default_tz=default_tz,
         state=state,
     )
+    text: str = i18n['lexicon']['select_days']
     await callback.message.edit_text(
-        text="3",
+        text=text,
         reply_markup=markup,
     )
     await state.update_data(shifts=st_shifts)
@@ -113,13 +115,15 @@ async def process_apply_in_st(
             current_interval_id=callback_data.interval_id,
             current_lineup=callback_data.lineup,
         )
+        text: str = i18n['lexicon']['shifts_is_apply']
         await callback.message.edit_text(
-            text="5",
+            text=text,
             reply_markup=markup,
         )
     else:
+        text: str = i18n['lexicon']['shifts_is_not_apply']
         await callback.message.edit_text(
-            text="6",
+            text=text,
             reply_markup=markup,
         )
 
@@ -149,8 +153,9 @@ async def process_cancel_press(
         current_interval_id=callback_data.interval_id,
         current_lineup=callback_data.lineup,
     )
+    text: str = i18n['lexicon']['select_days']
     await callback.message.edit_text(
-        text="3",
+        text=text,
         reply_markup=markup,
     )
 
@@ -175,8 +180,9 @@ async def process_not_day_press_in_st(
         default_tz=default_tz,
         state=state,
     )
+    text: str = i18n['lexicon']['select_days']
     await callback.message.edit_text(
-        text="3",
+        text=text,
         reply_markup=markup,
     )
     await state.update_data(shifts=st_shifts)
