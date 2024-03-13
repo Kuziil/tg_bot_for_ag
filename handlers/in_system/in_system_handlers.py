@@ -313,11 +313,13 @@ async def process_press_my_money(
 ):
     user: UsersORM = await get_user_pages_shifts_earnings(session=session, user_tg_id=callback.from_user.id)
     pages_intervals: list[PagesIntervalsORM] = user.pages_intervals
-    for pag_interval in pages_intervals:
-        logger.debug(pag_interval)
-        logger.debug(pag_interval.page)
-        for shift in pag_interval.shifts:  # type: ShiftsORM
-            # logger.debug(shift)
+    text: str = "Ожидает выплаты:\n"
+    for page_interval in pages_intervals:
+        page: PagesORM = page_interval.page
+        page_title: str = page.title
+        total_dirty_earnings: int = 0
+        for shift in page_interval.shifts:  # type: ShiftsORM
             for earning in shift.earnings:  # type: EarningsORM
-                logger.debug(earning)
-    await callback.message.edit_text(text='123')
+                total_dirty_earnings += earning.dirty
+        text += f'{page_title}: {total_dirty_earnings}$\n'
+    await callback.message.edit_text(text=text)

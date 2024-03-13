@@ -66,7 +66,7 @@ async def main():
     # Инициализируем хелпер для базы данных
     db_helper = DatabaseHelper(
         db_url=settings.db_url,
-        echo=False,  # Режим отладки
+        echo=True,  # Режим отладки
         pool_size=5,  # Количество подключений
         max_overflow=10,  # Максимальное количество подключений
     )
