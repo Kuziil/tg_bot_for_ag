@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMFillReport
 from callback_factories.back import BackCallbackData, ConfirmCallbackData
-from db.models import PagesIntervalsORM, PagesORM, UsersORM, ShiftsORM, EarningsORM
+from db.models import PagesIntervalsORM, PagesORM, UsersORM
 from db.requests.with_add import add_earning
 from db.requests.with_page_interval import get_page_user_interval_by_page_interval_id
 from db.requests.with_user import get_user_pages_shifts_earnings
@@ -24,7 +24,7 @@ from keyboards.kb_single_line_horizontally import create_start_keyboard, create_
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
 from keyboards.schedule.month_v2.classes_callback_data import MonthScheduleCallbackData
-from lexicon.telegram_text_processor.processor import create_text_for_check_in_press
+from lexicon.text_processor.processor import create_text_for_check_in_press, create_my_money
 
 in_system_router = Router()
 
@@ -260,6 +260,7 @@ async def process_all_correct_in_report(
         state: FSMContext,
         i18n: dict[str, dict[str, str]],
 ):
+    text: str = i18n['lexicon']['main_menu_junior']
     st = await state.get_data()
     page_interval: PagesIntervalsORM = await get_page_user_interval_by_page_interval_id(
         session=session, user_tg_id=callback.from_user.id, page_interval_id=st['page_interval_id']
@@ -282,7 +283,7 @@ async def process_all_correct_in_report(
                                         page_interval_id=st["page_interval_id"],
                                         dirty=st["dirty"]
                                     ))
-    await send_menu_and_clear_state(callback=callback, i18n=i18n, state=state)
+    await send_menu_and_clear_state(callback=callback, text=text, state=state)
 
 
 @in_system_router.callback_query(
@@ -312,14 +313,5 @@ async def process_press_my_money(
         session: AsyncSession,
 ):
     user: UsersORM = await get_user_pages_shifts_earnings(session=session, user_tg_id=callback.from_user.id)
-    pages_intervals: list[PagesIntervalsORM] = user.pages_intervals
-    text: str = "Ожидает выплаты:\n"
-    for page_interval in pages_intervals:
-        page: PagesORM = page_interval.page
-        page_title: str = page.title
-        total_dirty_earnings: int = 0
-        for shift in page_interval.shifts:  # type: ShiftsORM
-            for earning in shift.earnings:  # type: EarningsORM
-                total_dirty_earnings += earning.dirty
-        text += f'{page_title}: {total_dirty_earnings}$\n'
+    text: str = await create_my_money(user=user)
     await callback.message.edit_text(text=text)

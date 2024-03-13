@@ -11,7 +11,6 @@ from handlers.in_system.in_system_handlers import in_system_router
 from handlers.not_in_system.not_in_system_handlers import not_in_system_router
 from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
-from lexicon.lexicon_ru import LEXICON_COMMANDS_RU, LEXICON_RU
 
 main_router = Router()
 
@@ -24,9 +23,11 @@ main_router.include_router(in_system_router)
 )
 async def process_start_command(
         message: Message,
+        i18n: dict[str, dict[str, str]],
 ):
+    text: str = i18n["lexicon"]["main_menu_junior"]
     await message.answer(
-        text=LEXICON_RU["main_menu_junior"],
+        text=text,
         reply_markup=create_menu_keyboard(
             "check_in",
             "write_a_report",
@@ -44,14 +45,16 @@ async def process_start_command(
 )
 async def process_start_command_for_new_id(
         message: Message,
+        i18n: dict[str, dict[str, str]],
 ):
     """Данный хэндлер отвечает на команду /start
     и возвращает текст с кнопками позволяющие пользователю выбрать
     существует ли у него уже аккаунт
     Args:
+        i18n:
         message (Message): _description_
     """
-    text = LEXICON_COMMANDS_RU[message.text]
+    text: str = i18n["commands"][message.text]
     await message.answer(
         text=text,
         reply_markup=create_start_keyboard(
@@ -65,36 +68,33 @@ async def process_start_command_for_new_id(
 )
 async def process_help_command(
         message: Message,
+        i18n: dict[str, dict[str, str]],
 ):
     """Данный хэндлер служит для предоставления списка команд и
     справки по работе с ботом
     реагирует на /help
 
     Args:
+        i18n:
         message (Message): _description_
     """
-    await message.answer(LEXICON_COMMANDS_RU[message.text])
+    text: str = i18n["commands"][message.text]
+    await message.answer(text=text)
 
-    @main_router.callback_query(
-        or_f(
-            and_f(F.data == "in_the_system", StateFilter(default_state)),
-            and_f(F.data == 'back_from_process_send_text', StateFilter(FSMFillReport.dirty))
-        ),
-    )
-    async def process_in_the_system_press(
-            callback: CallbackQuery,
-            i18n: dict[str, dict[str, str]],
-            state: FSMContext,
-    ):
-        """Данный хэндлер реагирует на нажатие кнопки в системе
-        выдает список кнопок ориентации в главном меню для Junior
 
-        Args:
-            state:
-            i18n:
-            callback (CallbackQuery): _description_
-        """
-        await send_menu_and_clear_state(callback=callback, i18n=i18n, state=state)
+@main_router.callback_query(
+    or_f(
+        and_f(F.data == "in_the_system", StateFilter(default_state)),
+        and_f(F.data == 'back_from_process_send_text', StateFilter(FSMFillReport.dirty))
+    ),
+)
+async def process_in_the_system_press(
+        callback: CallbackQuery,
+        state: FSMContext,
+        i18n: dict[str, dict[str, str]]
+):
+    text: str = i18n['lexicon']['main_menu_junior']
+    await send_menu_and_clear_state(callback=callback, text=text, state=state)
 
 
 @main_router.callback_query(
@@ -104,6 +104,8 @@ async def process_help_command(
 async def process_not_in_the_system_press(
         callback: CallbackQuery,
         state: FSMContext,
+        i18n: dict[str, dict[str, str]]
 ):
-    await callback.message.edit_text(text=LEXICON_RU["enter_username"])
+    text: str = i18n["lexicon"]["enter_username"]
+    await callback.message.edit_text(text=text)
     await state.set_state(FSMFillForm.fill_username)

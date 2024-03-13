@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.models import ShiftsORM, PagesIntervalsORM, UsersORM, PagesORM
+from db.models import ShiftsORM, PagesIntervalsORM, UsersORM, PagesORM, EarningsORM
 from db.requests.with_shift import update_starts_at_in_shifts
 
 logger = logging.getLogger(__name__)
@@ -39,3 +39,29 @@ async def create_text_for_check_in_press(
                      f'<b>{formatted_date}</b>\n')
         text_and_thread_id.append((text, thread_id))
     return text_and_thread_id
+
+
+async def create_my_money(user: UsersORM) -> str:
+    pages_intervals: list[PagesIntervalsORM] = user.pages_intervals
+    text = "Ожидает выплаты:\n"
+    for page_interval in pages_intervals:
+        page: PagesORM = page_interval.page
+        page_title: str = page.title
+        total_dirty_earnings: int = 0
+        for shift in page_interval.shifts:  # type: ShiftsORM
+            for earning in shift.earnings:  # type: EarningsORM
+                total_dirty_earnings += earning.dirty
+        text += f'{page_title}: {total_dirty_earnings}$\n'
+    return text
+
+
+async def text_for_process_emoji_sent(
+        username: str,
+        emoji: str,
+        i18n: dict[str, dict[str, str]],
+):
+    text_1: str = i18n['lexicon']["registration_done"]
+    text_2: str = i18n['lexicon']["main_menu_junior"]
+    text: str = (f"{text_1} {username}{emoji}\n\n"
+                 f"{text_2}")
+    return text

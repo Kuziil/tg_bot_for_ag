@@ -12,6 +12,7 @@ from db.requests.with_emoji import get_str_emojis_in_agency
 from filters.filters import IsEmoji, IsBusyEmoji
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from lexicon.lexicon_ru import LEXICON_RU
+from lexicon.text_processor.processor import text_for_process_emoji_sent
 
 logger = logging.getLogger(__name__)
 not_in_system_router = Router()
@@ -24,14 +25,15 @@ not_in_system_router = Router()
 async def process_name_sent(
         message: Message,
         state: FSMContext,
+        i18n: dict[str, dict[str, str]]
 ):
-    # Сохраняем введенное имя в хранилище по ключу "name"
+    text: str = i18n["lexicon"]["enter_emoji"]
     await state.update_data(username=message.text)
     await message.answer(
-        text=LEXICON_RU["enter_emoticon"],
+        text=text,
         reply_markup=create_menu_keyboard("busy_emojis"),
     )
-    await state.set_state(FSMFillForm.fill_emoticon)
+    await state.set_state(FSMFillForm.fill_emoji)
 
 
 @not_in_system_router.message(
@@ -39,14 +41,16 @@ async def process_name_sent(
 )
 async def warning_not_name(
         message: Message,
+        i18n: dict[str, dict[str, str]]
 ):
+    text: str = i18n["lexicon"]["entered_not_username"]
     await message.answer(
-        text=LEXICON_RU["entered_not_username"] + LEXICON_RU["enter_username"]
+        text=text
     )
 
 
 @not_in_system_router.callback_query(
-    StateFilter(FSMFillForm.fill_emoticon),
+    StateFilter(FSMFillForm.fill_emoji),
     F.data == "busy_emojis",
 )
 async def process_show_busy_emojis(
@@ -55,56 +59,59 @@ async def process_show_busy_emojis(
         session: AsyncSession,
         agency_id: int,
 ):
-    emojis = await get_str_emojis_in_agency(
+    text: str = await get_str_emojis_in_agency(
         session=session,
         agency_id=agency_id,
     )
-    await callback.message.answer(text=emojis)
+    await callback.message.answer(text=text)
     await callback.answer()
-    await state.set_state(FSMFillForm.fill_emoticon)
+    await state.set_state(FSMFillForm.fill_emoji)
 
 
 @not_in_system_router.message(
-    StateFilter(FSMFillForm.fill_emoticon),
+    StateFilter(FSMFillForm.fill_emoji),
     IsEmoji(),
     IsBusyEmoji(),
 )
 async def warning_busy_emoji(
         message: Message,
         session: AsyncSession,
-        agency_id: int,
+        i18n: dict[str, dict[str, str]],
+        agency_id: int
 ):
-    emojis = await get_str_emojis_in_agency(
+    text_1: str = i18n['lexicon']["busy_emoji"]
+    text_2: str = await get_str_emojis_in_agency(
         session=session,
         agency_id=agency_id,
     )
-    await message.answer(text=LEXICON_RU["busy_emoji"])
-    await message.answer(emojis)
+    await message.answer(text=text_1)
+    await message.answer(text=text_2)
 
 
 @not_in_system_router.message(
-    StateFilter(FSMFillForm.fill_emoticon),
+    StateFilter(FSMFillForm.fill_emoji),
     IsEmoji(),
 )
-async def process_emoticon_sent(
+async def process_emoji_sent(
         message: Message,
         state: FSMContext,
         session: AsyncSession,
-        agency_id,
+        i18n: dict[str, dict[str, str]],
+        agency_id: int,
 ):
-    await state.update_data(emoticon=message.text)
-    logger.info(await state.get_data())
     st: dict[str, str] = await state.get_data()
+    emoji: str = message.text
+    username: str = st["username"]
     await add_user(
         session=session,
-        username=st["username"],
-        emoji=st["emoticon"],
+        username=username,
+        emoji=emoji,
         user_tg_id=message.from_user.id,
         agency_id=agency_id,
     )
+    text: str = await text_for_process_emoji_sent(username=username, emoji=emoji, i18n=i18n)
     await message.answer(
-        text=f"{LEXICON_RU["registration_done"]} Приветствую {st["username"]} {st["emoticon"]}\n\n"
-             f"{LEXICON_RU["main_menu_junior"]}",
+        text=text,
         reply_markup=create_menu_keyboard(
             "check_in",
             "clock_out",
@@ -119,9 +126,11 @@ async def process_emoticon_sent(
 
 
 @not_in_system_router.message(
-    StateFilter(FSMFillForm.fill_emoticon),
+    StateFilter(FSMFillForm.fill_emoji),
 )
-async def warning_not_emoticon(
+async def warning_not_emoji(
         message: Message,
+        i18n: dict[str, dict[str, str]],
 ):
-    await message.answer(text=LEXICON_RU["entered_not_emoticon"])
+    text: str = i18n['lexicon']["entered_not_emoji"]
+    await message.answer(text=text)

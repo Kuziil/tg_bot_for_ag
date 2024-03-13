@@ -12,4 +12,5 @@ router = Router()
 async def send_echo(message: Message,
                     i18n: dict[str, dict[str, str]],
                     ):
-    await message.answer(i18n['lexicon']['other'])
+    text: str = i18n['lexicon']['other']
+    await message.answer(text=text)
