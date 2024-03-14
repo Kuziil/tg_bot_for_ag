@@ -33,8 +33,6 @@ async def process_start_command(
             "write_a_report",
             "schedule",
             "my_money",
-            "model_statistics",
-            "training_materials",
         ),
     )
 

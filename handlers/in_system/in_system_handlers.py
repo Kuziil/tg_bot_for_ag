@@ -96,8 +96,6 @@ async def process_check_in_press(
                                          "write_a_report",
                                          "schedule",
                                          "my_money",
-                                         "model_statistics",
-                                         "training_materials",
                                      ))
     start_at: datetime = datetime.now(tz=default_tz)
     texts_and_thread_ids: list[tuple[str, int]] = await create_text_for_check_in_press(session=session,
@@ -125,8 +123,6 @@ async def process_clock_out_press(
                                          "write_a_report",
                                          "schedule",
                                          "my_money",
-                                         "model_statistics",
-                                         "training_materials",
                                      ))
     end_at: datetime = datetime.now(tz=default_tz)
     texts_and_thread_ids = await create_text_for_check_in_press(session=session, user_tg_id=callback.from_user.id,

@@ -16,8 +16,6 @@ async def send_menu_and_clear_state(callback: CallbackQuery,
             "write_a_report",
             "schedule",
             "my_money",
-            "model_statistics",
-            "training_materials",
         ),
     )
     await callback.answer()

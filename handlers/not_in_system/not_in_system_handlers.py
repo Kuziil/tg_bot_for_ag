@@ -118,8 +118,6 @@ async def process_emoji_sent(
             "write_a_report",
             "schedule",
             "my_money",
-            "model_statistics",
-            "training_materials",
         ),
     )
     await state.clear()
