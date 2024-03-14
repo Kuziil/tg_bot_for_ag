@@ -12,7 +12,6 @@ async def send_menu_and_clear_state(callback: CallbackQuery,
         text=text,
         reply_markup=create_menu_keyboard(
             "check_in",
-            "clock_out",
             "write_a_report",
             "schedule",
             "my_money",

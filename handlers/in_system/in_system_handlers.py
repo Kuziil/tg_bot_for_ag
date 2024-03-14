@@ -63,9 +63,6 @@ async def process_check_in_press(
     await callback.message.edit_text(text=text,
                                      reply_markup=create_menu_keyboard(
                                          "clock_out",
-                                         "write_a_report",
-                                         "schedule",
-                                         "my_money",
                                      ))
     start_at: datetime = datetime.now(tz=default_tz)
     texts_and_thread_ids: list[tuple[str, int]] = await create_text_for_check_in_press(session=session,

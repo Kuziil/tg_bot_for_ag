@@ -114,7 +114,6 @@ async def process_emoji_sent(
         text=text,
         reply_markup=create_menu_keyboard(
             "check_in",
-            "clock_out",
             "write_a_report",
             "schedule",
             "my_money",
