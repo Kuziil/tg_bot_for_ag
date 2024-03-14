@@ -5,6 +5,7 @@ from aiogram.fsm.state import default_state
 from aiogram.types import Message, CallbackQuery
 
 from FSMs.FSMs import FSMFillForm, FSMFillReport
+from callback_factories.back import BackCallbackData
 from filters.filters import IsUserInSystem
 from handlers.DRY import send_menu_and_clear_state
 from handlers.in_system.in_system_handlers import in_system_router
@@ -83,7 +84,8 @@ async def process_help_command(
 @main_router.callback_query(
     or_f(
         and_f(F.data == "in_the_system", StateFilter(default_state)),
-        and_f(F.data == 'back_from_process_send_text', StateFilter(FSMFillReport.dirty))
+        and_f(F.data == 'back_from_process_send_text', StateFilter(FSMFillReport.dirty)),
+        and_f(BackCallbackData.filter(F.handler == "process_schedule_press"))
     ),
 )
 async def process_in_the_system_press(
