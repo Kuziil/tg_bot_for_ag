@@ -1,14 +1,13 @@
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from db.models.base import Base
 from db.models.types import intpk, intbigint
 
 if TYPE_CHECKING:
-    from db.models.roles_orm import RolesORM
-    from db.models.permissions_orm import PermissionsORM
+    pass
 
 
 class RolesPermissionsORM(Base):
@@ -34,12 +33,4 @@ class RolesPermissionsORM(Base):
             column="permissions.id",
             ondelete="CASCADE",
         ),
-    )
-
-    # relationships
-    role: Mapped["RolesORM"] = relationship(
-        back_populates="permissions_details",
-    )
-    permission: Mapped["PermissionsORM"] = relationship(
-        back_populates="roles_details",
     )
