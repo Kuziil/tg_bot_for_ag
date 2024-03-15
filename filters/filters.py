@@ -1,3 +1,5 @@
+import logging
+
 from aiogram.filters import BaseFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
@@ -9,6 +11,8 @@ from db.requests.with_emoji import is_busy_emoji_in_agency
 from db.requests.with_user import check_user_in_agency_and_get
 from keyboards.schedule.month_v2.classes_callback_data import (
     MonthScheduleCallbackData)
+
+logger = logging.getLogger(__name__)
 
 
 class IsEmoji(BaseFilter):
@@ -53,8 +57,9 @@ class IsUserInAgencyAndGetRoleDict(BaseFilter):
         else:
             role: RolesORM = user.role
             role_dict = {
+                "username": user.username,
+                "emoji": user.emoji,
                 "role_id": role.id,
-                "role_title": role.title,
                 "permissions": [],
                 "buttons": []
             }
@@ -66,6 +71,8 @@ class IsUserInAgencyAndGetRoleDict(BaseFilter):
                                                      "write_a_report",
                                                      "schedule",
                                                      "my_money", ])
+                    case 3:
+                        role_dict["buttons"].append("statistics_of_all_pages")
                 return {"role_dict": role_dict}
 
 

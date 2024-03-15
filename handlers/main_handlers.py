@@ -12,6 +12,7 @@ from handlers.in_system.in_system_handlers import in_system_router
 from handlers.not_in_system.not_in_system_handlers import not_in_system_router
 from keyboards.kb_single_line_horizontally import create_start_keyboard
 from keyboards.kb_single_line_vertically import create_menu_keyboard
+from lexicon.text_processor.processor import text_for_user_in_menu
 
 main_router = Router()
 
@@ -25,9 +26,9 @@ main_router.include_router(in_system_router)
 async def process_start_command(
         message: Message,
         i18n: dict[str, dict[str, str]],
-        role_dict: dict[str, dict[str, int | str | list[int] | list[str]]] | bool,
+        role_dict: dict[str, int | str | list[int] | list[str]],
 ):
-    text: str = i18n["lexicon"]["main_menu_junior"]
+    text: str = await text_for_user_in_menu(i18n=i18n, role_dict=role_dict)
     await message.answer(
         text=text,
         reply_markup=create_menu_keyboard(

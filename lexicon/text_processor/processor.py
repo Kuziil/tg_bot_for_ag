@@ -79,3 +79,21 @@ async def text_for_process_day_press_in_report(
     text = (f'{text_1}'
             f'{day}.{month}.{year}')
     return text
+
+
+async def text_for_user_in_menu(
+        i18n: dict[str, dict[str, str]],
+        role_dict: dict[str, int | str | list[int] | list[str]],
+) -> str:
+    role: str | None = None
+    username: str = role_dict["username"]
+    emoji: str = role_dict["emoji"]
+    match role_dict["role_id"]:
+        case 1:
+            role = i18n["roles"]["junior"]
+        case 2:
+            role = i18n["roles"]["senior"]
+        case 3:
+            role = i18n["roles"]["head"]
+    text: str = f"Приветствую, {emoji}{role} {username}, выберите интересующую опцию"
+    return text

@@ -67,3 +67,9 @@ LEXICON_BUTTON_RU: dict[str, str] = {
     "month_schedule": "Расписание по месяцам",
     "week_schedule": "Расписание по неделям",
 }
+
+LEXICON_ROLES_RU: dict[str, str] = {
+    "junior": "оператор",
+    "senior": "старший оператор",
+    "head": "руководитель"
+}

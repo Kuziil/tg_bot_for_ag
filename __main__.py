@@ -23,6 +23,7 @@ from lexicon.lexicon_ru import (
     LEXICON_COMMANDS_RU,
     LEXICON_COMMANDS_DESC_RU,
     LEXICON_BUTTON_RU,
+    LEXICON_ROLES_RU
 )
 from middlewares import DbSessionMiddleware, TranslatorMiddleware
 
@@ -42,6 +43,7 @@ translations = {
         "commands": LEXICON_COMMANDS_RU,
         "commands_desc": LEXICON_COMMANDS_DESC_RU,
         "button": LEXICON_BUTTON_RU,
+        "roles": LEXICON_ROLES_RU
     },
 }
 
