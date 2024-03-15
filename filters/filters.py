@@ -4,8 +4,9 @@ from aiogram.types import Message, CallbackQuery
 from emoji import emoji_count
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from db.models import RolesORM, PermissionsORM
 from db.requests.with_emoji import is_busy_emoji_in_agency
-from db.requests.with_user import is_user_in_agency
+from db.requests.with_user import check_user_in_agency_and_get
 from keyboards.schedule.month_v2.classes_callback_data import (
     MonthScheduleCallbackData)
 
@@ -34,19 +35,38 @@ class IsBusyEmoji(BaseFilter):
         )
 
 
-class IsUserInSystem(BaseFilter):
+class IsUserInAgencyAndGetRoleDict(BaseFilter):
     async def __call__(
             self,
             message: Message,
             session: AsyncSession,
             agency_id: int,
-    ) -> bool:
+    ) -> dict[str, dict[str, int | str | list[int] | list[str]]] | bool:
         user_tg_id: int = message.from_user.id
-        return await is_user_in_agency(
+        user = await check_user_in_agency_and_get(
             session=session,
             user_tg_id=user_tg_id,
             agency_id=agency_id,
         )
+        if user is None:
+            return False
+        else:
+            role: RolesORM = user.role
+            role_dict = {
+                "role_id": role.id,
+                "role_title": role.title,
+                "permissions": [],
+                "buttons": []
+            }
+            for permission in role.permissions:  # type: PermissionsORM
+                role_dict["permissions"].append(permission.id)
+                match permission.id:
+                    case 1:
+                        role_dict["buttons"].extend(["check_in",
+                                                     "write_a_report",
+                                                     "schedule",
+                                                     "my_money", ])
+                return {"role_dict": role_dict}
 
 
 class IsStShiftInStShifts(BaseFilter):

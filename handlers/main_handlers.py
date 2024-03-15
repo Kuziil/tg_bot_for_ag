@@ -6,7 +6,7 @@ from aiogram.types import Message, CallbackQuery
 
 from FSMs.FSMs import FSMFillForm, FSMFillReport
 from callback_factories.back import BackCallbackData
-from filters.filters import IsUserInSystem
+from filters.filters import IsUserInAgencyAndGetRoleDict
 from handlers.DRY import send_menu_and_clear_state
 from handlers.in_system.in_system_handlers import in_system_router
 from handlers.not_in_system.not_in_system_handlers import not_in_system_router
@@ -20,20 +20,18 @@ main_router.include_router(in_system_router)
 
 
 @main_router.message(
-    Command(commands="start"), StateFilter(default_state), IsUserInSystem()
+    Command(commands="start"), StateFilter(default_state), IsUserInAgencyAndGetRoleDict()
 )
 async def process_start_command(
         message: Message,
         i18n: dict[str, dict[str, str]],
+        role_dict: dict[str, dict[str, int | str | list[int] | list[str]]] | bool,
 ):
     text: str = i18n["lexicon"]["main_menu_junior"]
     await message.answer(
         text=text,
         reply_markup=create_menu_keyboard(
-            "check_in",
-            "write_a_report",
-            "schedule",
-            "my_money",
+            *role_dict["buttons"]
         ),
     )
 
