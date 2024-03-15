@@ -2,6 +2,7 @@ import datetime as dt
 from zoneinfo import ZoneInfo
 
 from aiogram.types import InlineKeyboardButton
+from aiogram.utils.i18n import gettext as _
 
 from db.models import IntervalsORM, PagesORM
 from keyboards.schedule.month_v2.classes_callback_data import (
@@ -24,19 +25,19 @@ async def create_row_month_year(
     dict_for_ikb: list[dict[str, str]] = [
         {
             "sequence_item": "before",
-            "text": "<",
+            "text": _("<"),
         },
         {
             "sequence_item": "current",
-            "text": dict_datetimes["current"].strftime("%b"),
+            "text": _('{month}').format(month=dict_datetimes["current"].strftime("%b")),
         },
         {
             "sequence_item": "current",
-            "text": f'{dict_datetimes["current"].year}',
+            "text": _('{year}').format(year=dict_datetimes["current"].year),
         },
         {
             "sequence_item": "after",
-            "text": ">",
+            "text": _(">"),
         },
     ]
     for button in dict_for_ikb:
@@ -85,19 +86,19 @@ async def create_row_pages(
     dict_for_ikb: list[dict[str, str]] = [
         {
             "sequence_item": "before",
-            "text": "<<<",
+            "text": _("<<<"),
         },
         {
             "sequence_item": "current",
-            "text": dict_pages["current"].model.title,
+            "text": _('{model_title}').format(model_title=dict_pages["current"].model.title),
         },
         {
             "sequence_item": "current",
-            "text": dict_pages["current"].type_in_agency,
+            "text": _('{type_in_agency}').format(type_in_agency=dict_pages["current"].type_in_agency),
         },
         {
             "sequence_item": "after",
-            "text": ">>>",
+            "text": _(">>>"),
         },
     ]
     for button in dict_for_ikb:
@@ -138,8 +139,7 @@ async def convert_datetime_to_time_str(
         default_tz: ZoneInfo,
         time: dt.datetime,
 ) -> str:
-    time_str: str = time.astimezone(default_tz).strftime("%H:%M")
-    return time_str
+    return _('{time_str}').format(time_str=time.astimezone(default_tz).strftime("%H:%M"))
 
 
 async def create_row_intervals(
@@ -155,7 +155,7 @@ async def create_row_intervals(
     dict_for_ikb: list[dict[str, str]] = [
         {
             "sequence_item": "before",
-            "text": "<<<",
+            "text": _("<<<"),
         },
         {
             "sequence_item": "current",
@@ -173,7 +173,7 @@ async def create_row_intervals(
         },
         {
             "sequence_item": "after",
-            "text": ">>>",
+            "text": _(">>>"),
         },
     ]
     for button in dict_for_ikb:
@@ -222,15 +222,15 @@ async def create_row_lineups(
     dict_for_ikb: list[dict[str, str]] = [
         {
             "sequence_item": "before",
-            "text": "<<<",
+            "text": _("<<<"),
         },
         {
             "sequence_item": "current",
-            "text": f'{dict_lineups["current"]}',
+            "text": _('{lineup}').format(lineup=dict_lineups["current"]),
         },
         {
             "sequence_item": "after",
-            "text": ">>>",
+            "text": _(">>>"),
         },
     ]
     for button in dict_for_ikb:

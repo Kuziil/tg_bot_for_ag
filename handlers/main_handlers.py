@@ -3,6 +3,7 @@ from aiogram.filters import Command, StateFilter, or_f, and_f
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import Message, CallbackQuery
+from aiogram.utils.i18n import gettext as _
 
 from FSMs.FSMs import FSMFillForm, FSMFillReport
 from callback_factories.back import BackCallbackData
@@ -25,12 +26,10 @@ main_router.include_router(in_system_router)
 )
 async def process_start_command(
         message: Message,
-        i18n: dict[str, dict[str, str]],
         role_dict: dict[str, int | str | list[int] | list[str]],
 ):
-    text: str = await text_for_user_in_menu(i18n=i18n, role_dict=role_dict)
     await message.answer(
-        text=text,
+        text=await text_for_user_in_menu(role_dict=role_dict),
         reply_markup=create_menu_keyboard(
             *role_dict["buttons"]
         ),
@@ -43,18 +42,9 @@ async def process_start_command(
 )
 async def process_start_command_for_new_id(
         message: Message,
-        i18n: dict[str, dict[str, str]],
 ):
-    """Данный хэндлер отвечает на команду /start
-    и возвращает текст с кнопками позволяющие пользователю выбрать
-    существует ли у него уже аккаунт
-    Args:
-        i18n:
-        message (Message): _description_
-    """
-    text: str = i18n["commands"][message.text]
     await message.answer(
-        text=text,
+        text=_("команда start"),
         reply_markup=create_start_keyboard(
             "not_in_the_system", "in_the_system"),
     )
@@ -66,18 +56,8 @@ async def process_start_command_for_new_id(
 )
 async def process_help_command(
         message: Message,
-        i18n: dict[str, dict[str, str]],
 ):
-    """Данный хэндлер служит для предоставления списка команд и
-    справки по работе с ботом
-    реагирует на /help
-
-    Args:
-        i18n:
-        message (Message): _description_
-    """
-    text: str = i18n["commands"][message.text]
-    await message.answer(text=text)
+    await message.answer(text=_("может помогать, но пока не умеет"))
 
 
 @main_router.callback_query(
@@ -90,10 +70,11 @@ async def process_help_command(
 async def process_in_the_system_press(
         callback: CallbackQuery,
         state: FSMContext,
-        i18n: dict[str, dict[str, str]]
 ):
-    text: str = i18n['lexicon']['main_menu_junior']
-    await send_menu_and_clear_state(callback=callback, text=text, state=state)
+    await send_menu_and_clear_state(
+        callback=callback,
+        text=_('Выберите интересующую вас опцию'),
+        state=state)
 
 
 @main_router.callback_query(
@@ -103,8 +84,9 @@ async def process_in_the_system_press(
 async def process_not_in_the_system_press(
         callback: CallbackQuery,
         state: FSMContext,
-        i18n: dict[str, dict[str, str]]
 ):
-    text: str = i18n["lexicon"]["enter_username"]
-    await callback.message.edit_text(text=text)
+    await callback.message.edit_text(
+        text=_("Пожалуйста введите свое имя\n"
+               "Имя должно состоять полностью из букв")
+    )
     await state.set_state(FSMFillForm.fill_username)

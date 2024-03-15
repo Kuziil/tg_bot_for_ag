@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from aiogram.utils.i18n import gettext as _
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import ShiftsORM, PagesIntervalsORM, UsersORM, PagesORM, EarningsORM
@@ -12,7 +13,6 @@ logger = logging.getLogger(__name__)
 async def create_text_for_check_in_press(
         session: AsyncSession,
         user_tg_id: int,
-        i18n: dict[str, dict[str, str]],
         start_at: datetime | None = None,
         end_at: datetime | None = None,
 
@@ -22,78 +22,69 @@ async def create_text_for_check_in_press(
         formatted_date = start_at.strftime('%Y.%m.%d %H:%M %Z')
         shifts: list[ShiftsORM] = await update_starts_at_in_shifts(session=session, user_tg_id=user_tg_id,
                                                                    start_at=start_at)
-        start_or_end = i18n['lexicon']['start']
+        start_or_end = True
     else:
         formatted_date = end_at.strftime('%Y.%m.%d %H:%M %Z')
         shifts: list[ShiftsORM] = await update_starts_at_in_shifts(session=session, user_tg_id=user_tg_id,
                                                                    end_at=end_at)
-        start_or_end = i18n['lexicon']['end']
+        start_or_end = False
     for shift in shifts:
         page_interval: PagesIntervalsORM = shift.page_interval
         page: PagesORM = page_interval.page
         user: UsersORM = page_interval.user
-        username: str = user.username
-        emoji: str = user.emoji
         thread_id: int = page.reshift_thread_id
-        logger.debug(user_tg_id)
-        text: str = (f'{emoji}<a href="tg://user?id={user_tg_id}">{username}</a>\n'
-                     f'{start_or_end} смену\n'
-                     f'<b>{formatted_date}</b>\n')
+        if start_or_end is True:
+            text: str = _('{emoji}<a href="tg://user?id={user_tg_id}">{username}</a>\n'
+                          '🟩 Начал смену\n'
+                          '<b>{formatted_date}</b>\n').format(emoji=user.emoji, user_tg_id=user_tg_id,
+                                                              username=user.username, formatted_date=formatted_date)
+        else:
+            text: str = _('{emoji}<a href="tg://user?id={user_tg_id}">{username}</a>\n'
+                          '🟥 Закончил\n'
+                          '<b>{formatted_date}</b>\n').format(emoji=user.emoji, user_tg_id=user_tg_id,
+                                                              username=user.username, formatted_date=formatted_date)
         text_and_thread_id.append((text, thread_id))
     return text_and_thread_id
 
 
-async def create_my_money(user: UsersORM, i18n: dict[str, dict[str, str]]) -> str:
+async def create_my_money(user: UsersORM) -> str:
     pages_intervals: list[PagesIntervalsORM] = user.pages_intervals
-    text = i18n['lexicon']['waiting_for_payment']
+    text = _('Ожидает оплаты \n')
     for page_interval in pages_intervals:
         page: PagesORM = page_interval.page
-        page_title: str = page.title
         total_dirty_earnings: int = 0
         for shift in page_interval.shifts:  # type: ShiftsORM
             for earning in shift.earnings:  # type: EarningsORM
                 total_dirty_earnings += earning.dirty
-        text += f'{page_title}: {total_dirty_earnings}$\n'
+        text += _('{page_title}: {total_dirty_earnings}$\n').format(page_title=page.title,
+                                                                    total_dirty_earnings=total_dirty_earnings)
     return text
 
 
 async def text_for_process_emoji_sent(
         username: str,
         emoji: str,
-        i18n: dict[str, dict[str, str]],
 ):
-    text_1: str = i18n['lexicon']["registration_done"]
-    text_2: str = i18n['lexicon']["main_menu_junior"]
-    text: str = (f"{text_1} {username}{emoji}\n\n"
-                 f"{text_2}")
-    return text
-
-
-async def text_for_process_day_press_in_report(
-        i18n: dict[str, dict[str, str]],
-        year: int,
-        month: int,
-        day: int
-):
-    text_1: str = i18n['lexicon']['send_photo']
-    text = (f'{text_1}'
-            f'{day}.{month}.{year}')
+    text: str = _("Регистрация успешно выполнена\n\n"
+                  "{username}{emoji}\n\n"
+                  "Выберите интересующую вас опцию").format(username=username,
+                                                            emoji=emoji)
     return text
 
 
 async def text_for_user_in_menu(
-        i18n: dict[str, dict[str, str]],
         role_dict: dict[str, int | str | list[int] | list[str]],
 ) -> str:
     role: str | None = None
-    username: str = role_dict["username"]
-    emoji: str = role_dict["emoji"]
     match role_dict["role_id"]:
         case 1:
-            role = i18n["roles"]["junior"]
+            role = _("оператор")
         case 2:
-            role = i18n["roles"]["senior"]
+            role = _("старший оператор")
         case 3:
-            role = i18n["roles"]["head"]
-    text: str = f"Приветствую, {emoji}{role} {username}, выберите интересующую опцию"
+            role = _("руководитель")
+    text: str = _("Приветствую, {emoji}{role} {username}, "
+                  "выберите интересующую опцию").format(emoji=role_dict["emoji"],
+                                                        role=role,
+                                                        username=role_dict["username"])
     return text

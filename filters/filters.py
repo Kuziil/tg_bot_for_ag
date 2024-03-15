@@ -3,7 +3,7 @@ import logging
 from aiogram.filters import BaseFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
-from emoji import emoji_count
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import RolesORM, PermissionsORM
@@ -21,7 +21,7 @@ class IsEmoji(BaseFilter):
             message: Message,
     ) -> bool:
         text: str = message.text
-        return emoji_count(text) == 1 == len(text)
+        return 1 == len(text)
 
 
 class IsBusyEmoji(BaseFilter):

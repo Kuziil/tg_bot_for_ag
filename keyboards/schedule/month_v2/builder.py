@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession
+from aiogram.utils.i18n import gettext as _
 
 from callback_factories.back import BackCallbackData
 from db.models import (
@@ -263,11 +264,9 @@ async def process_intervals_lineups_emojis(
 
     # в данной проверке оценивается, был ле передан st_shifts,
     # для того чтобы в дальнейшем отобразить смены на расписании
-    logger.debug(f"!!!!!st_shifts: {st_shifts}")
     if st_shifts is not None and current_user is not None:
 
         # данный цикл нужен для отображения новых данных, до отправки их в бд
-        logger.debug(f"st_shifts: {st_shifts}")
         for st_shift in st_shifts:
             if (
                     not await is_dict_in_list(
@@ -308,7 +307,6 @@ async def process_intervals_lineups_emojis(
 async def create_month_schedule_v2(
         user_tg_id: int,
         session: AsyncSession,
-        i18n: dict[str, dict[str, str]],
         default_tz: ZoneInfo,
         current_page_id: int | None = None,
         current_year: int | None = None,
@@ -488,7 +486,7 @@ async def create_month_schedule_v2(
     if st_shifts:
         kb_builder.row(
             InlineKeyboardButton(
-                text="Отменить",
+                text=_("Отменить"),
                 callback_data=MonthScheduleCallbackData(
                     day=0,
                     month=dict_datetimes["current"].month,
@@ -501,7 +499,7 @@ async def create_month_schedule_v2(
                 ).pack(),
             ),
             InlineKeyboardButton(
-                text="Применить",
+                text=_("Применить"),
                 callback_data=MonthScheduleCallbackData(
                     day=0,
                     month=dict_datetimes["current"].month,
@@ -518,13 +516,13 @@ async def create_month_schedule_v2(
     else:
         kb_builder.row(
             InlineKeyboardButton(
-                text="назад",
+                text=_("назад"),
                 callback_data=BackCallbackData(
                     handler="process_schedule_press",
                 ).pack(),
             ),
             InlineKeyboardButton(
-                text="обновить",
+                text=_("обновить"),
                 callback_data=MonthScheduleCallbackData(
                     day=0,
                     month=dict_datetimes["current"].month,

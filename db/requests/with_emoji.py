@@ -40,7 +40,7 @@ async def get_str_emojis_in_agency(
         session=session,
         agency_id=agency_id,
     )
-    return " ".join(emojis)
+    return "".join(emojis)
 
 
 async def get_emoji_by_user_tg_id(
