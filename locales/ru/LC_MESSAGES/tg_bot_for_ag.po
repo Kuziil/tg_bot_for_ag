@@ -1,0 +1,247 @@
+# Russian translations for tg_bot_for_ag.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-03-15 19:11+0700\n"
+"PO-Revision-Date: 2024-03-15 21:58+0700\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: handlers/other_handlers.py:12
+msgid "простите, я вас не понимаю"
+msgstr ""
+
+#: handlers/not_in_system/not_in_system_handlers.py:31
+msgid ""
+"Имя принято.\n"
+"\n"
+"Пожалуйста, отправьте эмодзи из классического набора.\n"
+"Если стикер будет добавлен из Telegram Premium,то он будет автоматически "
+"отформатирован.\n"
+"Эмодзи нужно отправить без дополнительных символов\n"
+"В дальнейшем можно всегда заменить эмодзи"
+msgstr ""
+
+#: handlers/not_in_system/not_in_system_handlers.py:49
+msgid ""
+"Данное имя не подходит, оно содержит не только буквы\n"
+"\n"
+"Пожалуйста введите свое имя\n"
+"Имя должно состоять полностью из букв"
+msgstr ""
+
+#: handlers/not_in_system/not_in_system_handlers.py:86
+msgid ""
+"Данное эмодзи уже занято, выберете,то которое не входит в данный список\n"
+"\n"
+msgstr ""
+
+#: handlers/not_in_system/not_in_system_handlers.py:134
+msgid ""
+"Вы допустили ошибку, при вводе эмодзи\n"
+"\n"
+"Пожалуйста, отправьте только эмодзи\n"
+"Например: 🙈"
+msgstr ""
+
+#: handlers/in_system/schedules/month_v2_handlers.py:42
+#: handlers/in_system/schedules/update_shifts_handlers.py:42
+#: handlers/in_system/schedules/update_shifts_handlers.py:67
+msgid "Выберите даты на которые выйдете"
+msgstr ""
+
+#: handlers/in_system/schedules/update_shifts_handlers.py:111
+msgid "Смены проставлены"
+msgstr ""
+
+#: handlers/in_system/schedules/update_shifts_handlers.py:116
+msgid "Некоторые смены обновились, проверьте еще раз и подтвердите"
+msgstr ""
+
+#: handlers/in_system/in_system_handlers.py:105
+#: handlers/in_system/report/report_handlers.py:56
+#: handlers/in_system/schedules/month_v2_handlers.py:71
+#: handlers/in_system/schedules/update_shifts_handlers.py:145
+#: handlers/in_system/schedules/update_shifts_handlers.py:169
+msgid "Пожалуйста выберите страницу и дату смены"
+msgstr ""
+
+#: handlers/in_system/report/report_handlers.py:35
+msgid ""
+"Отправьте фото для\n"
+"смены прошедшей {day}.{month}.{year}"
+msgstr ""
+
+#: handlers/in_system/report/report_handlers.py:102
+msgid "{dirty}$"
+msgstr ""
+
+#: handlers/in_system/report/report_handlers.py:108
+msgid "Проверьте, верны ли данные перед отправкой"
+msgstr ""
+
+#: handlers/in_system/report/report_handlers.py:132
+msgid "Заработано - {dirty}"
+msgstr ""
+
+#: handlers/in_system/report/report_handlers.py:139
+msgid "Проверьте отчет, и если все верно, подтвердите"
+msgstr ""
+
+#: handlers/in_system/report/report_handlers.py:150
+msgid "Отчет успешно отправлен"
+msgstr ""
+
+#: handlers/in_system/report/report_handlers.py:169
+msgid "Отчет подтвержден"
+msgstr ""
+
+#: handlers/in_system/in_system_handlers.py:40
+msgid "Выберете интересующую дату"
+msgstr ""
+
+#: handlers/in_system/in_system_handlers.py:59
+msgid "Выберите интересующую опцию"
+msgstr ""
+
+#: handlers/in_system/in_system_handlers.py:80
+msgid "выберите интересующую вас опцию"
+msgstr ""
+
+#: handlers/main_handlers.py:47
+msgid "команда start"
+msgstr ""
+
+#: handlers/main_handlers.py:60
+msgid "может помогать, но пока не умеет"
+msgstr ""
+
+#: handlers/main_handlers.py:76
+msgid "Выберите интересующую вас опцию"
+msgstr ""
+
+#: handlers/main_handlers.py:89
+msgid ""
+"Пожалуйста введите свое имя\n"
+"Имя должно состоять полностью из букв"
+msgstr ""
+
+#: lexicon/text_processor/processor.py:37
+msgid ""
+"{emoji}<a href=\"tg://user?id={user_tg_id}\">{username}</a>\n"
+"🟩 Начал смену\n"
+"<b>{formatted_date}</b>\n"
+msgstr ""
+
+#: lexicon/text_processor/processor.py:42
+msgid ""
+"{emoji}<a href=\"tg://user?id={user_tg_id}\">{username}</a>\n"
+"🟥 Закончил\n"
+"<b>{formatted_date}</b>\n"
+msgstr ""
+
+#: lexicon/text_processor/processor.py:52
+msgid "Ожидает оплаты \n"
+msgstr ""
+
+#: lexicon/text_processor/processor.py:59
+msgid "{page_title}: {total_dirty_earnings}$\n"
+msgstr ""
+
+#: lexicon/text_processor/processor.py:68
+msgid ""
+"Регистрация успешно выполнена\n"
+"\n"
+"{username}{emoji}\n"
+"\n"
+"Выберите интересующую вас опцию"
+msgstr ""
+
+#: lexicon/text_processor/processor.py:81
+msgid "оператор"
+msgstr ""
+
+#: lexicon/text_processor/processor.py:83
+msgid "старший оператор"
+msgstr ""
+
+#: lexicon/text_processor/processor.py:85
+msgid "руководитель"
+msgstr ""
+
+#: lexicon/text_processor/processor.py:86
+msgid "Приветствую, {emoji}{role} {username}, выберите интересующую опцию"
+msgstr ""
+
+#: keyboards/schedule/month_v2/builder.py:489
+msgid "Отменить"
+msgstr ""
+
+#: keyboards/schedule/month_v2/builder.py:502
+msgid "Применить"
+msgstr ""
+
+#: keyboards/schedule/month_v2/builder.py:519
+msgid "назад"
+msgstr ""
+
+#: keyboards/schedule/month_v2/builder.py:525
+msgid "обновить"
+msgstr ""
+
+#: keyboards/schedule/month_v2/creators_row.py:28
+msgid "<"
+msgstr ""
+
+#: keyboards/schedule/month_v2/creators_row.py:32
+msgid "{month}"
+msgstr ""
+
+#: keyboards/schedule/month_v2/creators_row.py:36
+msgid "{year}"
+msgstr ""
+
+#: keyboards/schedule/month_v2/creators_row.py:40
+msgid ">"
+msgstr ""
+
+#: keyboards/schedule/month_v2/creators_row.py:89
+#: keyboards/schedule/month_v2/creators_row.py:158
+#: keyboards/schedule/month_v2/creators_row.py:225
+msgid "<<<"
+msgstr ""
+
+#: keyboards/schedule/month_v2/creators_row.py:93
+msgid "{model_title}"
+msgstr ""
+
+#: keyboards/schedule/month_v2/creators_row.py:97
+msgid "{type_in_agency}"
+msgstr ""
+
+#: keyboards/schedule/month_v2/creators_row.py:101
+#: keyboards/schedule/month_v2/creators_row.py:176
+#: keyboards/schedule/month_v2/creators_row.py:233
+msgid ">>>"
+msgstr ""
+
+#: keyboards/schedule/month_v2/creators_row.py:142
+msgid "{time_str}"
+msgstr ""
+
+#: keyboards/schedule/month_v2/creators_row.py:229
+msgid "{lineup}"
+msgstr ""
+

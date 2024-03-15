@@ -54,7 +54,7 @@ async def main():
 
     i18n = I18n(path="locales", default_locale="ru", domain="i18n_example_bot")
 
-    dp.update.middleware(ConstI18nMiddleware(locale='en', i18n=i18n))
+    dp.update.middleware(ConstI18nMiddleware(locale='ru', i18n=i18n))
 
     # Регистрируем мидлвари в диспетчере
     dp.update.middleware(
