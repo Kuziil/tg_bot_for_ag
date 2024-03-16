@@ -2,12 +2,13 @@ import datetime as dt
 import logging
 from calendar import monthcalendar, monthrange, day_abbr
 from typing import Any
+from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
 
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from fluentogram import TranslatorRunner
 from sqlalchemy.ext.asyncio import AsyncSession
-from aiogram.utils.i18n import gettext as _
 
 from callback_factories.back import BackCallbackData
 from db.models import (
@@ -30,6 +31,9 @@ from keyboards.schedule.month_v2.creators_row import (
     create_row_month_year,
     create_row_pages,
 )
+
+if TYPE_CHECKING:
+    from locales.stub import TranslatorRunner
 
 logger = logging.getLogger(__name__)
 
@@ -308,6 +312,7 @@ async def create_month_schedule_v2(
         user_tg_id: int,
         session: AsyncSession,
         default_tz: ZoneInfo,
+        i18n: TranslatorRunner,
         current_page_id: int | None = None,
         current_year: int | None = None,
         current_month: int | None = None,
@@ -381,6 +386,7 @@ async def create_month_schedule_v2(
             dict_lineups=dict_lineups,
             dict_intervals=dict_intervals,
             current_page_interval_id=current_page_interval_id,
+            i18n=i18n,
             st_shifts=st_shifts,
         )
     )
@@ -432,7 +438,7 @@ async def create_month_schedule_v2(
 
             week_ikb.append(
                 InlineKeyboardButton(
-                    text=day_str,
+                    text=i18n.button.day(day=day_str),
                     callback_data=MonthScheduleCallbackData(
                         day=day,
                         month=dict_datetimes["current"].month,
@@ -456,6 +462,7 @@ async def create_month_schedule_v2(
                 dict_lineups=dict_lineups,
                 dict_intervals=dict_intervals,
                 current_page_interval_id=current_page_interval_id,
+                i18n=i18n,
                 st_shifts=st_shifts,
             )
         )
@@ -467,6 +474,7 @@ async def create_month_schedule_v2(
             dict_lineups=dict_lineups,
             dict_intervals=dict_intervals,
             current_page_interval_id=current_page_interval_id,
+            i18n=i18n,
             st_shifts=st_shifts,
         )
     )
@@ -479,6 +487,7 @@ async def create_month_schedule_v2(
             dict_intervals=dict_intervals,
             default_tz=default_tz,
             current_page_interval_id=current_page_interval_id,
+            i18n=i18n,
             st_shifts=st_shifts,
         )
     )
@@ -486,7 +495,7 @@ async def create_month_schedule_v2(
     if st_shifts:
         kb_builder.row(
             InlineKeyboardButton(
-                text=_("Отменить"),
+                text=i18n.button.cancel(),
                 callback_data=MonthScheduleCallbackData(
                     day=0,
                     month=dict_datetimes["current"].month,
@@ -499,7 +508,7 @@ async def create_month_schedule_v2(
                 ).pack(),
             ),
             InlineKeyboardButton(
-                text=_("Применить"),
+                text=i18n.button.apply(),
                 callback_data=MonthScheduleCallbackData(
                     day=0,
                     month=dict_datetimes["current"].month,
@@ -516,13 +525,13 @@ async def create_month_schedule_v2(
     else:
         kb_builder.row(
             InlineKeyboardButton(
-                text=_("назад"),
+                text=i18n.button.back(),
                 callback_data=BackCallbackData(
                     handler="process_schedule_press",
                 ).pack(),
             ),
             InlineKeyboardButton(
-                text=_("обновить"),
+                text=i18n.button.update(),
                 callback_data=MonthScheduleCallbackData(
                     day=0,
                     month=dict_datetimes["current"].month,

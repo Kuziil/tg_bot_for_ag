@@ -2,11 +2,11 @@ from aiogram import Router
 from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
 from aiogram.types import Message
-from aiogram.utils.i18n import gettext as _
+from fluentogram import TranslatorRunner
 
-router = Router()
+other_router = Router()
 
 
-@router.message(StateFilter(default_state))
-async def send_echo(message: Message):
-    await message.answer(text=_("простите, я вас не понимаю"))
+@other_router.message(StateFilter(default_state))
+async def send_echo(message: Message, i18n: TranslatorRunner):
+    await message.answer(text=i18n.text.other.no())

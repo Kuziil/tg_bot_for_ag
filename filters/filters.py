@@ -3,10 +3,8 @@ import logging
 from aiogram.filters import BaseFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
-
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from emoji import is_emoji
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import RolesORM, PermissionsORM
 from db.requests.with_emoji import is_busy_emoji_in_agency
@@ -61,7 +59,7 @@ class IsUserInAgencyAndGetRoleDict(BaseFilter):
             role_dict = {
                 "username": user.username,
                 "emoji": user.emoji,
-                "role_id": role.id,
+                "role_title": role.title,
                 "permissions": [],
                 "buttons": []
             }

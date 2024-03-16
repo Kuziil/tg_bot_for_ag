@@ -1,10 +1,11 @@
 import logging
+from typing import TYPE_CHECKING
 
 from aiogram import Router, F
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
-from aiogram.utils.i18n import gettext as _
+from fluentogram import TranslatorRunner
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMFillForm
@@ -12,48 +13,44 @@ from db.requests.with_add import add_user
 from db.requests.with_emoji import get_str_emojis_in_agency
 from filters.filters import IsEmoji, IsBusyEmoji
 from keyboards.kb_single_line_vertically import create_menu_keyboard
-from lexicon.text_processor.processor import text_for_process_emoji_sent
+
+if TYPE_CHECKING:
+    from locales.stub import TranslatorRunner
 
 logger = logging.getLogger(__name__)
-not_in_system_router = Router()
+not_in_agency_router = Router()
 
 
-@not_in_system_router.message(
+@not_in_agency_router.message(
     StateFilter(FSMFillForm.fill_username),
     F.text.isalpha(),
 )
 async def process_name_sent(
         message: Message,
         state: FSMContext,
+        i18n: TranslatorRunner,
 ):
     await state.update_data(username=message.text)
     await message.answer(
-        text=_("Имя принято.\n\n"
-               "Пожалуйста, отправьте эмодзи из классического набора.\n"
-               "Если стикер будет добавлен из Telegram Premium,"
-               "то он будет автоматически отформатирован.\n"
-               "Эмодзи нужно отправить без дополнительных символов\n"
-               "В дальнейшем можно всегда заменить эмодзи"),
+        text=i18n.text.not_in_agency.name.sent(),
         reply_markup=create_menu_keyboard("busy_emojis"),
     )
     await state.set_state(FSMFillForm.fill_emoji)
 
 
-@not_in_system_router.message(
+@not_in_agency_router.message(
     StateFilter(FSMFillForm.fill_username),
 )
 async def warning_not_name(
         message: Message,
+        i18n: TranslatorRunner,
 ):
     await message.answer(
-        text=_("Данное имя не подходит, "
-               "оно содержит не только буквы\n\n"
-               "Пожалуйста введите свое имя\n"
-               "Имя должно состоять полностью из букв")
+        text=i18n.text.not_in_agency.name.sent.wrong()
     )
 
 
-@not_in_system_router.callback_query(
+@not_in_agency_router.callback_query(
     StateFilter(FSMFillForm.fill_emoji),
     F.data == "busy_emojis",
 )
@@ -72,7 +69,7 @@ async def process_show_busy_emojis(
     await state.set_state(FSMFillForm.fill_emoji)
 
 
-@not_in_system_router.message(
+@not_in_agency_router.message(
     StateFilter(FSMFillForm.fill_emoji),
     IsEmoji(),
     IsBusyEmoji(),
@@ -80,11 +77,11 @@ async def process_show_busy_emojis(
 async def warning_busy_emoji(
         message: Message,
         session: AsyncSession,
-        agency_id: int
+        agency_id: int,
+        i18n: TranslatorRunner,
 ):
     await message.answer(
-        text=_("Данное эмодзи уже занято, выберете,"
-               "то которое не входит в данный список\n\n"))
+        text=i18n.text.not_in_agency.emoji.sent.busy())
     await message.answer(
         text=await get_str_emojis_in_agency(
             session=session,
@@ -92,7 +89,7 @@ async def warning_busy_emoji(
         ))
 
 
-@not_in_system_router.message(
+@not_in_agency_router.message(
     StateFilter(FSMFillForm.fill_emoji),
     IsEmoji(),
 )
@@ -101,6 +98,7 @@ async def process_emoji_sent(
         state: FSMContext,
         session: AsyncSession,
         agency_id: int,
+        i18n: TranslatorRunner,
 ):
     st: dict[str, str] = await state.get_data()
     emoji: str = message.text
@@ -113,25 +111,21 @@ async def process_emoji_sent(
         agency_id=agency_id,
     )
     await message.answer(
-        text=await text_for_process_emoji_sent(username=username, emoji=emoji),
-        reply_markup=create_menu_keyboard(
-            "check_in",
-            "write_a_report",
-            "schedule",
-            "my_money",
-        ),
+        text=i18n.text.not_in_agency.emoji.sent,
     )
     await state.clear()
 
 
-@not_in_system_router.message(
+@not_in_agency_router.message(
     StateFilter(FSMFillForm.fill_emoji),
 )
 async def warning_not_emoji(
         message: Message,
+        i18n: TranslatorRunner,
 ):
     await message.answer(
-        text=_("Вы допустили ошибку, при вводе эмодзи\n\n"
-               "Пожалуйста, отправьте только эмодзи\n"
-               "Например: 🙈")
+        text=i18n.text.not_in_agency.emoji.sent.wrong()
+    )
+    await message.answer(
+        text=i18n.text.not_in_agency.emoji.example()
     )

@@ -1,11 +1,12 @@
+from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
 
 from aiogram import Router, F
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
-from aiogram.utils.i18n import gettext as _
 from aiogram.utils.media_group import MediaGroupBuilder
+from fluentogram import TranslatorRunner
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from FSMs.FSMs import FSMFillReport
@@ -19,6 +20,9 @@ from keyboards.kb_single_line_horizontally import create_start_keyboard, create_
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
 from keyboards.schedule.month_v2.classes_callback_data import MonthScheduleCallbackData
 
+if TYPE_CHECKING:
+    from locales.stub import TranslatorRunner
+
 report_router = Router()
 
 
@@ -30,11 +34,10 @@ async def process_day_press_in_report(
         callback: CallbackQuery,
         callback_data: MonthScheduleCallbackData,
         state: FSMContext,
+        i18n: TranslatorRunner
 ):
     await callback.message.answer(
-        text=_('Отправьте фото для\nсмены прошедшей {day}.{month}.{year}').format(day=callback_data.day,
-                                                                                  month=callback_data.month,
-                                                                                  year=callback_data.year))
+        text=i18n.text.report.photos.fill(day=callback_data.day, month=callback_data.month, year=callback_data.year))
     await state.update_data(page_interval_id=callback_data.page_interval_id,
                             day=callback_data.day,
                             month=callback_data.month,
@@ -51,13 +54,15 @@ async def process_not_day_press_in_report(
         callback_data: MonthScheduleCallbackData,
         session: AsyncSession,
         default_tz: ZoneInfo,
+        i18n: TranslatorRunner
 ):
     await callback.message.edit_text(
-        text=_('Пожалуйста выберите страницу и дату смены'),
+        text=i18n.text.in_agency.write_a_report(),
         reply_markup=await create_month_schedule_v2(
             user_tg_id=callback.from_user.id,
             session=session,
             default_tz=default_tz,
+            i18n=i18n,
             current_month=callback_data.month,
             current_year=callback_data.year,
             current_day=callback_data.day,
@@ -91,21 +96,22 @@ async def process_send_photos(
     StateFilter(FSMFillReport.photos),
     IsIntOrFloat()
 )
-async def process_send_text(
+async def process_send_dirty(
         message: Message,
         state: FSMContext,
         dirty: int | float,
+        i18n: TranslatorRunner
 ):
     await state.update_data(dirty=dirty)
 
     st = await state.get_data()
-    media_group = MediaGroupBuilder(caption=_('{dirty}$').format(dirty=st['dirty']))
+    media_group = MediaGroupBuilder(caption=i18n.caption.report.dirty(dirty=st['dirty']))
     for photo_id in st['photos']:
         media_group.add_photo(media=photo_id)
 
     await message.answer_media_group(media=media_group.build())
 
-    await message.answer(text=_('Проверьте, верны ли данные перед отправкой'),
+    await message.answer(text=i18n.text.report.media.check(),
                          reply_markup=create_start_keyboard(
                              'back_from_process_send_text',
                              'all_correct_in_report'
@@ -122,6 +128,7 @@ async def process_all_correct_in_report(
         callback: CallbackQuery,
         session: AsyncSession,
         state: FSMContext,
+        i18n: TranslatorRunner
 ):
     st = await state.get_data()
     page_interval: PagesIntervalsORM = await get_page_user_interval_by_page_interval_id(
@@ -129,14 +136,14 @@ async def process_all_correct_in_report(
     )
     page: PagesORM = page_interval.page
     thread_id: int = page.report_thread_id
-    media_group = MediaGroupBuilder(caption=_('Заработано - {dirty}').format(dirty=st['dirty']))
+    media_group = MediaGroupBuilder(caption=i18n.caption.report.thread.correct(dirty=st['dirty']))
     for photo_id in st['photos']:
         media_group.add_photo(media=photo_id)
     messages = await callback.bot.send_media_group(chat_id=-1002098324148, message_thread_id=thread_id,
                                                    media=media_group.build())
     message_to_reply = messages[0]
     message_to_reply_id = message_to_reply.message_id
-    await callback.bot.send_message(text=_('Проверьте отчет, и если все верно, подтвердите'),
+    await callback.bot.send_message(text=i18n.text.report.thread.check(),
                                     chat_id=-1002098324148,
                                     message_thread_id=thread_id,
                                     reply_to_message_id=message_to_reply_id,
@@ -147,7 +154,7 @@ async def process_all_correct_in_report(
                                         page_interval_id=st["page_interval_id"],
                                         dirty=st["dirty"]
                                     ))
-    await send_menu_and_clear_state(callback=callback, text=_('Отчет успешно отправлен'), state=state)
+    await send_menu_and_clear_state(callback=callback, text=i18n.text.report.sent(), state=state)
 
 
 @report_router.callback_query(
@@ -157,6 +164,7 @@ async def process_confirm(
         callback: CallbackQuery,
         callback_data: ConfirmCallbackData,
         session: AsyncSession,
+        i18n: TranslatorRunner
 ):
     await add_earning(
         session=session,
@@ -166,4 +174,4 @@ async def process_confirm(
         year=callback_data.year,
         dirty=callback_data.dirty
     )
-    await callback.message.edit_text(text=_('Отчет подтвержден'))
+    await callback.message.edit_text(text=i18n.report.thread.confirmed())

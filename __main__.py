@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types.user import User
-from aiogram.utils.i18n import I18n, ConstI18nMiddleware
+from fluentogram import TranslatorHub
 
 from config_data.config_reader import settings
 from db.db_helper import DatabaseHelper
@@ -15,6 +15,8 @@ from db.requests.with_test import test_connection
 from handlers import main_handlers, other_handlers
 from keyboards.main_menu import set_main_menu
 from middlewares import DbSessionMiddleware
+from middlewares.i18n import TranslatorRunnerMiddleware
+from utils.i18n import create_translator_hub
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -52,9 +54,9 @@ async def main():
     # Инициализируем диспетчер
     dp = Dispatcher(storage=storage)
 
-    i18n = I18n(path="locales", default_locale="ru", domain="i18n_example_bot")
+    translator_hub: TranslatorHub = create_translator_hub()
 
-    dp.update.middleware(ConstI18nMiddleware(locale='ru', i18n=i18n))
+    dp.update.middleware(TranslatorRunnerMiddleware())
 
     # Регистрируем мидлвари в диспетчере
     dp.update.middleware(
@@ -65,7 +67,7 @@ async def main():
 
     # Регистрируем роутеры в диспетчере
     dp.include_router(main_handlers.main_router)
-    dp.include_router(other_handlers.router)
+    dp.include_router(other_handlers.other_router)
 
     # Инициализируем бота и получаем информацию о нем от API Telegram.
     bot = Bot(
@@ -91,6 +93,7 @@ async def main():
         agency_title=agency[1],
         # TODO: подтянуть из бд
         default_tz=ZoneInfo("Europe/Moscow"),
+        _translator_hub=translator_hub
     )
 
 

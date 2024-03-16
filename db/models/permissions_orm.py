@@ -7,6 +7,7 @@ from db.models.types import intpk, strtext
 
 if TYPE_CHECKING:
     from db.models.roles_orm import RolesORM
+
     pass
 
 

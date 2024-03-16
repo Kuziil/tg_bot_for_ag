@@ -1,11 +1,15 @@
 import logging
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from aiogram.utils.i18n import gettext as _
+from fluentogram import TranslatorRunner
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import ShiftsORM, PagesIntervalsORM, UsersORM, PagesORM, EarningsORM
 from db.requests.with_shift import update_starts_at_in_shifts
+
+if TYPE_CHECKING:
+    from locales.stub import TranslatorRunner
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +17,7 @@ logger = logging.getLogger(__name__)
 async def create_text_for_check_in_press(
         session: AsyncSession,
         user_tg_id: int,
+        i18n: TranslatorRunner,
         start_at: datetime | None = None,
         end_at: datetime | None = None,
 
@@ -34,57 +39,25 @@ async def create_text_for_check_in_press(
         user: UsersORM = page_interval.user
         thread_id: int = page.reshift_thread_id
         if start_or_end is True:
-            text: str = _('{emoji}<a href="tg://user?id={user_tg_id}">{username}</a>\n'
-                          '🟩 Начал смену\n'
-                          '<b>{formatted_date}</b>\n').format(emoji=user.emoji, user_tg_id=user_tg_id,
-                                                              username=user.username, formatted_date=formatted_date)
+            text: str = i18n.text.in_agency.check_in_or_clock_out(userEmoji=user.emoji, userTgId=user_tg_id,
+                                                                  checkInOrClockOut="check_in",
+                                                                  userName=user.username, formattedDate=formatted_date)
         else:
-            text: str = _('{emoji}<a href="tg://user?id={user_tg_id}">{username}</a>\n'
-                          '🟥 Закончил\n'
-                          '<b>{formatted_date}</b>\n').format(emoji=user.emoji, user_tg_id=user_tg_id,
-                                                              username=user.username, formatted_date=formatted_date)
+            text: str = i18n.text.in_agency.check_in_or_clock_out(userEmoji=user.emoji, userTgId=user_tg_id,
+                                                                  checkInOrClockOut="clock_out",
+                                                                  userName=user.username, formattedDate=formatted_date)
         text_and_thread_id.append((text, thread_id))
     return text_and_thread_id
 
 
-async def create_my_money(user: UsersORM) -> str:
+async def create_my_money(user: UsersORM, i18n: TranslatorRunner) -> str:
     pages_intervals: list[PagesIntervalsORM] = user.pages_intervals
-    text = _('Ожидает оплаты \n')
+    text = i18n.text.in_agency.my_money.head()
     for page_interval in pages_intervals:
         page: PagesORM = page_interval.page
         total_dirty_earnings: int = 0
         for shift in page_interval.shifts:  # type: ShiftsORM
             for earning in shift.earnings:  # type: EarningsORM
-                total_dirty_earnings += earning.dirty
-        text += _('{page_title}: {total_dirty_earnings}$\n').format(page_title=page.title,
-                                                                    total_dirty_earnings=total_dirty_earnings)
-    return text
-
-
-async def text_for_process_emoji_sent(
-        username: str,
-        emoji: str,
-):
-    text: str = _("Регистрация успешно выполнена\n\n"
-                  "{username}{emoji}\n\n"
-                  "Выберите интересующую вас опцию").format(username=username,
-                                                            emoji=emoji)
-    return text
-
-
-async def text_for_user_in_menu(
-        role_dict: dict[str, int | str | list[int] | list[str]],
-) -> str:
-    role: str | None = None
-    match role_dict["role_id"]:
-        case 1:
-            role = _("оператор")
-        case 2:
-            role = _("старший оператор")
-        case 3:
-            role = _("руководитель")
-    text: str = _("Приветствую, {emoji}{role} {username}, "
-                  "выберите интересующую опцию").format(emoji=role_dict["emoji"],
-                                                        role=role,
-                                                        username=role_dict["username"])
+                total_dirty_earnings += int(earning.dirty)
+        text += i18n.text.in_agency.my_money.body(pageTitle=page.title, totalDirtyEarnings=total_dirty_earnings)
     return text
