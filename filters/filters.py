@@ -6,6 +6,8 @@ from aiogram.types import Message, CallbackQuery
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from emoji import is_emoji
+
 from db.models import RolesORM, PermissionsORM
 from db.requests.with_emoji import is_busy_emoji_in_agency
 from db.requests.with_user import check_user_in_agency_and_get
@@ -21,7 +23,7 @@ class IsEmoji(BaseFilter):
             message: Message,
     ) -> bool:
         text: str = message.text
-        return 1 == len(text)
+        return is_emoji(text)
 
 
 class IsBusyEmoji(BaseFilter):
