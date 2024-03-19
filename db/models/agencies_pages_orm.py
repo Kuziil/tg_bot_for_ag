@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.models.base import Base
-from db.models.types import intpk
+from db.models.types import intpk, strtext
 
 if TYPE_CHECKING:
     from .agencies_orm import AgenciesORM
@@ -35,6 +35,7 @@ class AgenciesPagesORM(Base):
             ondelete="CASCADE",
         ),
     )
+    status: Mapped[strtext | None]
 
     # relationships
     agency: Mapped["AgenciesORM"] = relationship(
