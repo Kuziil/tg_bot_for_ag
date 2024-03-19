@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from sqlalchemy import select, extract
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,5 +36,20 @@ async def get_pages_by_user_tg_id(
             UsersORM.tgs.any(user_tg_id=user_tg_id),
         )
     )
-    pages: list[PagesORM] = result.scalars().all()
+    pages: Sequence[PagesORM] = result.scalars().all()
+    return pages
+
+
+async def get_all_pages(
+        session: AsyncSession,
+        agency_id: int
+):
+    stmt = select(PagesORM).options(
+        selectinload(PagesORM.agencies_details),
+        selectinload(PagesORM.intervals_details).joinedload(PagesIntervalsORM.user).selectinload(UsersORM.tgs)
+    ).filter(
+        PagesORM.agencies_details.any(agency_id=agency_id),
+    )
+    result: Result = await session.execute(stmt)
+    pages: Sequence[PagesORM] = result.scalars().all()
     return pages

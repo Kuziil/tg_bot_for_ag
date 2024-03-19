@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
 
 from aiogram import Router, F
@@ -17,17 +16,16 @@ from db.requests.with_user import get_user_pages_shifts_earnings
 from filters.filters import IsUserInAgencyAndGetRoleDict
 from handlers.in_system.report.report_handlers import report_router
 from handlers.in_system.schedules.month_v2_handlers import month_v2_router
+from handlers.in_system.statistics.statistics_handlers import statistic_router
 from keyboards.kb_single_line_vertically import create_menu_keyboard
 from keyboards.schedule.month_v2.builder import create_month_schedule_v2
 from lexicon.text_processor.processor import create_my_money, create_text_for_check_in_press
-
-if TYPE_CHECKING:
-    from locales.stub import TranslatorRunner
 
 in_agency_router = Router()
 
 in_agency_router.include_router(month_v2_router)
 in_agency_router.include_router(report_router)
+in_agency_router.include_router(statistic_router)
 
 logger = logging.getLogger(__name__)
 

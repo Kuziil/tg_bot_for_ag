@@ -152,3 +152,9 @@ button-lineup =
 
 button-day =
     {$day}
+
+text-statistic-select-page =
+    Выберите страницу по которой хотите посмотреть статистику
+
+button-statistic-page =
+    {$pageTitle}
