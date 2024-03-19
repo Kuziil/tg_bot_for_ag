@@ -8,8 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.models import ShiftsORM, PagesIntervalsORM, UsersORM, PagesORM, EarningsORM
 from db.requests.with_shift import update_starts_at_in_shifts
 
-if TYPE_CHECKING:
-    from locales.stub import TranslatorRunner
 
 logger = logging.getLogger(__name__)
 
