@@ -18,10 +18,10 @@ async def process_statistics_of_all_pages(
         agency_id: int,
         i18n: TranslatorRunner,
 ):
-    await callback.message.answer(text=i18n.text.statistic.select.page(),
-                                  reply_markup=create_kb_pages_and_back_forward(
-                                      i18n=i18n,
-                                      pages=await get_all_pages(
-                                          session=session, agency_id=agency_id
-                                      ),
-                                      user_tg_id=callback.from_user.id))
+    await callback.message.edit_text(text=i18n.text.statistic.select.page(),
+                                     reply_markup=create_kb_pages_and_back_forward(
+                                         i18n=i18n,
+                                         pages=await get_all_pages(
+                                             session=session, agency_id=agency_id, user_tg_id=callback.from_user.id
+                                         ),
+                                         user_tg_id=callback.from_user.id))

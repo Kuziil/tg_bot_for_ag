@@ -42,13 +42,16 @@ async def get_pages_by_user_tg_id(
 
 async def get_all_pages(
         session: AsyncSession,
+        user_tg_id: int,
         agency_id: int
 ):
     stmt = select(PagesORM).options(
         selectinload(PagesORM.agencies_details),
         selectinload(PagesORM.intervals_details).joinedload(PagesIntervalsORM.user).selectinload(UsersORM.tgs)
     ).filter(
-        PagesORM.agencies_details.any(agency_id=agency_id),
+        PagesORM.agencies_details.any(agency_id=agency_id, status="work_now"),
+        UsersORM.role_id == 3,
+        UsersORM.tgs.any(user_tg_id=user_tg_id)
     )
     result: Result = await session.execute(stmt)
     pages: Sequence[PagesORM] = result.scalars().all()
