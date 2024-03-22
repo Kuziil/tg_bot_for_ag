@@ -4,7 +4,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from fluentogram import TranslatorRunner
 
-from callback_factories.back import PagesCallbackData
+from callback_factories.back import PagesCallbackData, BackCallbackData
 from db.models import PagesORM
 from lexicon.lexicon_ru import LEXICON_BUTTON_RU
 
@@ -50,5 +50,7 @@ def create_kb_pages_and_back_forward(
         kb_builder.row(InlineKeyboardButton(text=i18n.button.statistic.page(pageTitle=page.title),
                                             callback_data=PagesCallbackData(page_id=page.id,
                                                                             user_tg_id=user_tg_id).pack()))
-
+    kb_builder.row(InlineKeyboardButton(text=i18n.button.back(),
+                                        callback_data=BackCallbackData(
+                                            handler="statistics_of_all_pages").pack()))
     return kb_builder.as_markup()

@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__)
 
 
 @main_router.message(
-    Command(commands="start"), StateFilter(default_state), IsUserInAgencyAndGetRoleDict()
+    Command(commands="start"),
+    IsUserInAgencyAndGetRoleDict(),
+    StateFilter(default_state)
 )
 async def process_start_command(
         message: Message,
@@ -33,6 +35,26 @@ async def process_start_command(
         role_dict: dict[str, int | str | list[int] | list[str]],
 ):
     await message.answer(
+        text=i18n.text.main.menu(userEmoji=role_dict["emoji"], userRole=role_dict['role_title'],
+                                 userName=role_dict["username"]),
+        reply_markup=create_menu_keyboard(
+            *role_dict["buttons"]
+        ),
+    )
+
+
+@main_router.callback_query(
+    BackCallbackData.filter(F.handler == "statistics_of_all_pages"),
+    IsUserInAgencyAndGetRoleDict(),
+    StateFilter(default_state)
+
+)
+async def process_start_command(
+        callback: CallbackQuery,
+        i18n: TranslatorRunner,
+        role_dict: dict[str, int | str | list[int] | list[str]],
+):
+    await callback.message.edit_text(
         text=i18n.text.main.menu(userEmoji=role_dict["emoji"], userRole=role_dict['role_title'],
                                  userName=role_dict["username"]),
         reply_markup=create_menu_keyboard(

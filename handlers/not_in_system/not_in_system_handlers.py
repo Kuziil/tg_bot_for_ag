@@ -111,7 +111,7 @@ async def process_emoji_sent(
         agency_id=agency_id,
     )
     await message.answer(
-        text=i18n.text.not_in_agency.emoji.sent,
+        text=i18n.text.not_in_agency.emoji.sent(),
     )
     await state.clear()
 

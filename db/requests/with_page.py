@@ -45,6 +45,8 @@ async def get_all_pages(
         user_tg_id: int,
         agency_id: int
 ):
+    # sys:1: SAWarning: SELECT statement has a cartesian product between FROM element(s) "users" and
+    # FROM element "pages".  Apply join condition(s) between each element to resolve.
     stmt = select(PagesORM).options(
         selectinload(PagesORM.agencies_details),
         selectinload(PagesORM.intervals_details).joinedload(PagesIntervalsORM.user).selectinload(UsersORM.tgs)
