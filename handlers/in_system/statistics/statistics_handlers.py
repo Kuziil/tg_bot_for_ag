@@ -1,6 +1,8 @@
+import io
+
 import matplotlib.pyplot as plt
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, FSInputFile
+from aiogram.types import CallbackQuery, BufferedInputFile
 from fluentogram import TranslatorRunner
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -46,5 +48,8 @@ async def process_page_in_statistic_press(
         plt.xlabel('День недели')
         plt.ylabel('Количество обращений')
         plt.grid(True)
-        plt.savefig('customer_calls.png')
-    await callback.message.answer_photo(photo=FSInputFile("customer_calls.png"))
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        plt.clf()
+    await callback.message.answer_photo(photo=BufferedInputFile(buffer.read(), filename='plot.png'))
