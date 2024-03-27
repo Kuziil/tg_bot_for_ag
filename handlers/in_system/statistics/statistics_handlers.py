@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from callback_factories.back import PagesCallbackData
 from db.requests.with_page import get_all_pages
 from keyboards.kb_single_line_vertically import create_kb_pages_and_back_forward
+from utils.graphics import create_graphics_for_pages
 
 statistic_router = Router()
 
@@ -39,17 +40,5 @@ async def process_page_in_statistic_press(
         callback_data: PagesCallbackData,
         i18n: TranslatorRunner,
 ):
-    days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт']
-    customer_calls = [20, 30, 25, 35, 40]
-
-    with plt.style.context('https://github.com/dhaitz/matplotlib-stylesheets/raw/master/pitayasmoothie-dark.mplstyle'):
-        plt.plot(days, customer_calls, marker='o')
-        plt.title('Коли')
-        plt.xlabel('День недели')
-        plt.ylabel('Количество обращений')
-        plt.grid(True)
-        buffer = io.BytesIO()
-        plt.savefig(buffer, format='png')
-        buffer.seek(0)
-        plt.clf()
+    buffer = create_graphics_for_pages()
     await callback.message.answer_photo(photo=BufferedInputFile(buffer.read(), filename='plot.png'))
